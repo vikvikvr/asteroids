@@ -35,7 +35,7 @@ class GUI {
   }
 
   private drawShipInfo(ship: ShipSnapshot) {
-    let { life, speed } = ship;
+    let { life } = ship;
     let { p5 } = this;
     let [x, y] = [SPACING, SPACING];
     p5.fill('white');

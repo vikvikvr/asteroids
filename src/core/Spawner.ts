@@ -7,7 +7,6 @@ import {
   Rect
 } from '../lib/geometry';
 import Asteroid, { AsteroidOptions, AsteroidSize } from './Asteroid';
-import { filter } from 'lodash';
 
 export interface SpawnOptions {
   count?: number;
