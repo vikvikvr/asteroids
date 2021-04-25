@@ -11,38 +11,15 @@ import Drop, { DropSnapshot } from './Drop';
 import Spawner, { SpawnerEtas } from './Spawner';
 
 export type GameStatus = 'playing' | 'won' | 'lost' | 'idle';
-export type ScoreEvent =
-  | 'DESTROY_LARGE'
-  | 'DESTROY_MEDIUM'
-  | 'DESTROY_SMALL'
-  | 'HIT_BY_LARGE'
-  | 'HIT_BY_MEDIUM'
-  | 'HIT_BY_SMALL';
-export type ScoreMap = Record<AsteroidSize, number>;
-
-const SCORES: ScoreMap = {
-  large: 50,
-  medium: 100,
-  small: 200
-};
-
-export type LevelOptions = {
-  startAsteroids: number;
-  asteroidSpawner: {
-    every: number;
-    amount: number;
-  };
-  bonusSpawner: {
-    every: number;
-  };
-};
 
 export interface GameState {
   score: number;
+  level: number;
   ship: Ship;
   asteroids: Asteroid[];
   bonuses: Drop[];
-  events: ev.GameEvent[];
+  events: ev.TGameEvent[];
+  frozen: boolean;
 }
 
 export interface GameSnapshot {
@@ -55,6 +32,8 @@ export interface GameSnapshot {
   bonuses: DropSnapshot[];
   events: ev.GameEventSnapshot[];
   score: number;
+  level: number;
+  frozen: boolean;
 }
 
 class GameEngine {
@@ -74,7 +53,9 @@ class GameEngine {
       bonuses: [],
       events: [],
       ship: new Ship({ world, coords: centerOf(world) }),
-      score: 0
+      score: 0,
+      level: 1,
+      frozen: false
     };
     this.world = world;
     this.spawner = new Spawner(this.state, this.world);
@@ -84,10 +65,7 @@ class GameEngine {
     let { spawner } = this;
     this.status = 'playing';
     spawner.spawnAsteroid({ count: 30 });
-    spawner.asteroidEvery(5_000, { count: 6 });
-    spawner.bonusEvery(3_000, { type: 'ammo' });
-    spawner.bonusEvery(3_000, { type: 'fix' });
-    spawner.bonusEvery(3_000, { type: 'fuel' });
+    spawner.asteroidEvery(5_000, { count: 5 });
     this.snapshotTimeout = setInterval(() => {
       callback(this.createSnapshot());
     }, 16);
@@ -103,9 +81,10 @@ class GameEngine {
 
   private update(): void {
     this.state.ship.update();
-    this.updateAsteroids();
+    this.updateAsteroids(this.state.frozen);
     this.updateBonuses();
     this.checkCollisions();
+    this.updateLevel();
     this.checkGameWon();
     this.checkGameLost();
   }
@@ -132,6 +111,7 @@ class GameEngine {
     let { ship, asteroids, bonuses, events } = this.state;
     let snapshot = {
       score: this.state.score,
+      level: this.state.level,
       world: this.world,
       createdAt: Date.now(),
       status: this.status,
@@ -139,10 +119,10 @@ class GameEngine {
       ship: ship.serialize(),
       asteroids: asteroids.map((a) => a.serialize()),
       bonuses: bonuses.map((b) => b.serialize()),
-      events: events.map((e) => e.serialize())
+      events: events.map((e) => e.serialize()),
+      frozen: this.state.frozen
     };
 
-    // let serializedSnapshot = JSON.parse(JSON.stringify(snapshot));
     this.state.events = [];
 
     return snapshot;
@@ -155,11 +135,7 @@ class GameEngine {
       if (this.snapshotTimeout) {
         clearInterval(this.snapshotTimeout);
       }
-      if (this.gameOverCallback) {
-        this.gameOverCallback();
-      } else {
-        console.log('game over without a callback');
-      }
+      this.gameOverCallback?.();
     }
   }
 
@@ -169,15 +145,12 @@ class GameEngine {
       if (this.snapshotTimeout) {
         clearInterval(this.snapshotTimeout);
       }
-      if (this.gameWonCallback) {
-        this.gameWonCallback();
-      } else {
-        console.log('game won without a callback');
-      }
+      this.gameWonCallback?.();
     }
   }
 
-  private updateAsteroids(): void {
+  private updateAsteroids(skip: boolean): void {
+    if (skip) return;
     this.state.asteroids.forEach((asteroid) => {
       asteroid.update();
     });
@@ -190,47 +163,47 @@ class GameEngine {
   }
 
   private checkCollisions(): void {
-    let { asteroids, ship, events, bonuses } = this.state;
+    this.checkAsteroidBulletCollisions();
+    this.checkAsteroidShipCollisions();
+    this.checkBonusShipCollisions();
+  }
+
+  private checkAsteroidBulletCollisions(): void {
+    let { asteroids, ship, events } = this.state;
     asteroids.forEach((asteroid) => {
       ship.bullets.forEach((bullet) => {
         if (haveCollided(asteroid, bullet)) {
-          let event = new ev.BulletHit(bullet, asteroid);
+          let event = new ev.BulletHit(bullet, asteroid, this.state.frozen);
           events.push(event);
           this.processBulletHit(event);
           this.assignScore(event);
         }
       });
+    });
+  }
+
+  private checkAsteroidShipCollisions(): void {
+    let { asteroids, ship, events } = this.state;
+    asteroids.forEach((asteroid) => {
       if (haveCollided(asteroid, ship)) {
-        let event = new ev.ShipHit(asteroid);
+        let event = new ev.ShipHit(asteroid, ship.shielded);
         events.push(event);
         this.processShipHit(event);
         this.assignScore(event);
       }
     });
+  }
+
+  private checkBonusShipCollisions(): void {
+    let { bonuses, ship, events } = this.state;
     bonuses.forEach((bonus) => {
       if (haveCollided(bonus, ship)) {
         let event = new ev.GotBonus(bonus);
         events.push(event);
         this.processGotBonus(event);
-        this.assignScore(event);
       }
     });
   }
-
-  // private processEvents(): void {
-  //   this.state.events.forEach((event) => {
-  //     if (event instanceof ev.BulletHit) {
-  //       this.processBulletHit(event);
-  //     } else if (event instanceof ev.ShipHit) {
-  //       this.processShipHit(event);
-  //     } else if (event instanceof ev.GotBonus) {
-  //       this.processGotBonus(event);
-  //     } else {
-  //       console.log('invalid event', event);
-  //     }
-  //   });
-  //   this.state.events = [];
-  // }
 
   private processBulletHit(event: ev.BulletHit): void {
     let { asteroids, ship } = this.state;
@@ -238,7 +211,7 @@ class GameEngine {
     if (asteroid) {
       this.createLoot(asteroid.coords);
       let nextSize = asteroid.splitSize();
-      if (nextSize) {
+      if (nextSize && !this.state.frozen) {
         this.spawner.spawnAsteroid({
           count: 2,
           size: nextSize,
@@ -254,26 +227,62 @@ class GameEngine {
   }
 
   private assignScore(event: ev.GameEvent): void {
+    const SCORES: Record<AsteroidSize, number> = {
+      large: 50,
+      medium: 100,
+      small: 200
+    };
     if (event instanceof ev.BulletHit) {
-      this.state.score += SCORES[event.size];
-    } else if (event instanceof ev.ShipHit) {
-      this.state.score -= SCORES[event.size];
+      if (this.state.frozen) {
+        // also assign score for non-split asteroid
+        if (event.size === 'large') {
+          this.state.score +=
+            SCORES.large + SCORES.medium * 2 + SCORES.small * 4;
+        } else if (event.size === 'medium') {
+          this.state.score += SCORES.medium + SCORES.small * 2;
+        } else {
+          this.state.score += SCORES.small;
+        }
+      } else {
+        this.state.score += SCORES[event.size];
+      }
     }
+  }
+
+  private updateLevel() {
+    this.state.level = Math.floor(this.state.score / 2600) + 1;
   }
 
   private processShipHit(event: ev.ShipHit): void {
     let { asteroids, ship } = this.state;
     remove(asteroids, { id: event.asteroidId });
-    ship.life -= event.damage;
+    if (!ship.shielded) ship.life -= event.damage;
   }
 
   private processGotBonus(event: ev.GotBonus): void {
     let { ship, bonuses } = this.state;
-    ship.collectBonus(event.bonusType);
+    switch (event.bonusType) {
+      case 'fix':
+        ship.restoreLife();
+        break;
+      case 'shield':
+        ship.activateShield();
+        break;
+      case 'freeze':
+        this.state.frozen = true;
+        // TODO: case when freeze is already active
+        setTimeout(() => {
+          this.state.frozen = false;
+        }, 5000);
+        break;
+    }
     remove(bonuses, { id: event.bonusId });
   }
 
   private createLoot(coords: Point): void {
+    let dropRate = 1 / 20;
+    let canDrop = Math.random() > 1 - dropRate;
+    canDrop && this.spawner.spawnBonus({ coords });
     // console.log('create loot not implemented');
   }
 }

@@ -37,25 +37,7 @@ class GameServer {
 
   private handleCommand(event: CustomEvent) {
     let command = event.detail as Command;
-    let { ship } = this.engine.state;
-    switch (command) {
-      case 'turnLeft':
-        return ship.turnLeft();
-      case 'turnRight':
-        return ship.turnRight();
-      case 'accelerate':
-        return ship.accelerate();
-      case 'decelerate':
-        return ship.decelerate();
-      case 'fire':
-        return ship.fire();
-      case 'useFix':
-        return ship.useBonus('fix');
-      case 'useFuel':
-        return ship.useBonus('fuel');
-      case 'useAmmo':
-        return ship.useBonus('ammo');
-    }
+    this.engine.state.ship[command]?.();
   }
 }
 

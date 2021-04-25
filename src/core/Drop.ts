@@ -4,10 +4,10 @@ import GameObject, {
 } from './GameObject';
 
 // aliases
-export type DropType = 'fix' | 'fuel' | 'ammo';
+export type DropType = 'fix' | 'freeze' | 'shield';
 
 // constants
-export const droppable: DropType[] = ['fix', 'fuel', 'ammo'];
+export const droppable: DropType[] = ['fix', 'freeze', 'shield'];
 
 // interfaces
 export interface DropOptions

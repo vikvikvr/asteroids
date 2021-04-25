@@ -3,10 +3,7 @@ export type Command =
   | 'turnRight'
   | 'accelerate'
   | 'decelerate'
-  | 'fire'
-  | 'useFix'
-  | 'useFuel'
-  | 'useAmmo';
+  | 'fire';
 
 enum Keys {
   ARROW_LEFT = 37,
@@ -14,11 +11,8 @@ enum Keys {
   ARROW_UP = 38,
   ARROW_DOWN = 40,
   SPACE_BAR = 32,
-  LETTER_E = 69,
   LETTER_H = 72,
-  LETTER_P = 80,
-  LETTER_Q = 81,
-  LETTER_W = 87
+  LETTER_P = 80
 }
 
 class KeyController {
@@ -36,12 +30,6 @@ class KeyController {
         return this.sendCommand('decelerate');
       case Keys.SPACE_BAR:
         return this.sendCommand('fire');
-      case Keys.LETTER_E:
-        return this.sendCommand('useFix');
-      case Keys.LETTER_Q:
-        return this.sendCommand('useFuel');
-      case Keys.LETTER_W:
-        return this.sendCommand('useAmmo');
     }
   }
 

@@ -7,7 +7,9 @@ import { DropSnapshot } from '../core/Drop';
 import { AsteroidSnapshot } from '../core/Asteroid';
 import GUI from './GUI';
 import COLORS from './colors';
-import Animation from './Animation';
+import Animation, { ImageAnimation, OverlayAnimation } from './Animation';
+import { ShipSnapshot } from '../core/Ship';
+import { GotBonusSnapshot, ShipHitSnapshot } from '../core/Events';
 
 interface DrawGameObjectOptions {
   image: P5.Image;
@@ -60,7 +62,7 @@ class Drawer {
       height: this.p5.windowHeight
     };
     this.gui = new GUI(this.p5, COLORS);
-    console.log('drawer assets', this.assets);
+    // console.log('drawer assets', this.assets);
   }
 
   public updateSnapshot(snapshot: GameSnapshot) {
@@ -71,17 +73,17 @@ class Drawer {
     this.snapshot = snapshot;
   }
 
-  public draw(): void {
+  public drawScreen(): void {
     if (this.snapshot) {
       switch (this.snapshot.status) {
         case 'playing':
-          this.gameScreen(this.snapshot);
+          this.drawGameScreen(this.snapshot);
           break;
         case 'lost':
-          this.gameOverScreen(this.snapshot.score);
+          this.drawGameOverScreen(this.snapshot.score);
           break;
         case 'won':
-          this.gameWonScreen(this.snapshot.score);
+          this.drawGameWonScreen(this.snapshot.score);
           break;
         case 'idle':
           console.log('idle');
@@ -90,18 +92,20 @@ class Drawer {
     }
   }
 
-  public resizeScreen(width: number, heigth: number): void {
-    this.p5.resizeCanvas(width, heigth);
+  public resizeScreen(width: number, height: number): void {
+    this.p5.resizeCanvas(width, height);
+    this.screen = { width, height };
   }
 
-  private gameScreen(snapshot: GameSnapshot): void {
+  private drawGameScreen(snapshot: GameSnapshot): void {
     this.drawEnvironment();
     this.drawGameObjects(snapshot);
-    this.drawAnimations(snapshot);
+    this.createNewAnimations(snapshot);
+    this.drawAnimations();
     this.gui.draw(snapshot);
   }
 
-  private gameOverScreen(score: number): void {
+  private drawGameOverScreen(score: number): void {
     let { p5 } = this;
     p5.background(COLORS.space);
     p5.fill('yellow');
@@ -116,7 +120,7 @@ class Drawer {
     p5.textAlign(p5.LEFT);
   }
 
-  private gameWonScreen(score: number): void {
+  private drawGameWonScreen(score: number): void {
     let { p5 } = this;
     p5.background(COLORS.space);
     p5.fill('yellow');
@@ -142,23 +146,63 @@ class Drawer {
     this.drawBullets(ship.bullets);
     this.drawShip(ship);
     this.drawBonuses(bonuses);
-    this.drawAsteroids(asteroids);
+    this.drawAsteroids(asteroids, snapshot.frozen);
   }
 
-  private drawAnimations(snapshot: GameSnapshot): void {
+  private createNewAnimations(snapshot: GameSnapshot): void {
     // save new animations
     snapshot.events.forEach((event) => {
-      if (event.type === 'BULLET_HIT' || event.type === 'SHIP_HIT') {
-        this.animations.push(
-          new Animation(this.assets.explosionAnimation, event.coords)
-        );
+      // explosion animation
+      if (event.type !== 'GOT_BONUS') {
+        let frames = this.assets[
+          snapshot.frozen ? 'shatterAnimation' : 'explosionAnimation'
+        ];
+        // TODO: adapt explosion size to event
+        this.animations.push(new ImageAnimation(frames, event.coords, 1));
+        // overlay animation
+        if (event.type === 'SHIP_HIT') {
+          let myEvent = event as ShipHitSnapshot;
+          if (!myEvent.shielded) {
+            this.animations.push(new OverlayAnimation(30, 'red'));
+          }
+        }
+      } else {
+        // got bonus
+        let myEvent = event as GotBonusSnapshot;
+        let color: string;
+        if (myEvent.bonusType === 'shield') color = 'green';
+        else if (myEvent.bonusType === 'freeze') color = 'blue';
+        else color = 'white';
+        this.animations.push(new OverlayAnimation(30, color));
       }
     });
-    // draw existing animations
+  }
+
+  private drawAnimations(): void {
+    let { p5 } = this;
     this.animations.forEach((animation) => {
-      let drawable = animation.next();
-      if (drawable) {
-        this.drawGameObject(drawable, { image: drawable.image });
+      // explosion
+      if (animation instanceof ImageAnimation) {
+        let drawable = animation.getNextFrame();
+        if (drawable) {
+          // console.log(drawable);
+          this.drawGameObject(drawable, { image: drawable.image });
+        }
+      } else if (animation instanceof OverlayAnimation) {
+        // overlay
+        let frame = animation.next();
+        if (frame) {
+          let alpha =
+            ((animation.frameCount - frame) / animation.frameCount) * 128;
+          let color = animation.color;
+          if (color === 'red') p5.fill(128, 0, 0, alpha);
+          else if (color === 'green') p5.fill(0, 128, 0, alpha);
+          else if (color === 'blue') p5.fill(0, 200, 255, alpha);
+          else p5.fill(128, 128, 128, alpha);
+          p5.rectMode(p5.CORNER);
+          p5.noStroke();
+          p5.rect(0, 0, this.screen.width, this.screen.height);
+        }
       }
     });
     // remove expired animations
@@ -202,9 +246,11 @@ class Drawer {
     });
   }
 
-  private drawAsteroids(asteroids: AsteroidSnapshot[]): void {
-    asteroids.forEach((a) => {
-      this.drawGameObject(a, { image: this.assets.images.asteroid });
+  private drawAsteroids(asteroids: AsteroidSnapshot[], frozen: boolean): void {
+    asteroids.forEach((asteroid) => {
+      this.drawGameObject(asteroid, {
+        image: this.assets.images[`${frozen ? 'frozen-' : ''}asteroid`]
+      });
     });
   }
 
@@ -221,7 +267,7 @@ class Drawer {
     p5.translate(coords.x, coords.y);
     p5.rotate(object.orientation);
     p5.rotate(options.rotateDirection ? object.direction : 0);
-    p5.rotate(options.rotationOffset ? options.rotationOffset : 0);
+    p5.rotate(options.rotationOffset || 0);
     p5.image(options.image, 0, 0, side, side);
     if (this.showHitBoxes) {
       p5.noFill();
@@ -232,7 +278,24 @@ class Drawer {
     return true;
   }
 
-  private drawShip(ship: GameObjectSnapshot): void {
+  private drawShip(ship: ShipSnapshot): void {
+    let { p5 } = this;
+    // tail
+    ship.tail.forEach((point, i) => {
+      let size = (1 - (ship.tail.length - i) / ship.tail.length + 1) * 10;
+      let alpha = (1 - (ship.tail.length - i) / ship.tail.length) * 255;
+      p5.noStroke();
+      p5.fill(50, 50, 50, alpha);
+      let coords = this.drawableCoords(point);
+      coords && p5.circle(coords.x, coords.y, size);
+    });
+    // shield
+    if (ship.shielded) {
+      p5.stroke(0, 255, 0, 128);
+      p5.fill(0, 55, 0, 128);
+      p5.circle(p5.windowWidth / 2, p5.windowHeight / 2, 80);
+    }
+    // ship
     this.drawGameObject(ship, {
       image: this.assets.images.ship,
       rotateDirection: true,

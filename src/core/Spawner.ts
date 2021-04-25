@@ -61,7 +61,6 @@ class Spawner {
     let added: Drop[] = [];
     for (let i = 0; i < (options.count || 1); i++) {
       let dropOptions = this.makeDropOptions(options);
-      if (!this.allowDropSpawn(dropOptions.type)) return added;
       let drop = new Drop(dropOptions);
       bonuses.push(drop);
       added.push(drop);
@@ -89,16 +88,16 @@ class Spawner {
     }, ms);
   }
 
-  public bonusEvery(ms: number, options: BonusSpawnOptions = {}) {
-    this.nextBonusSpawnAt = Date.now() + ms;
-    this.bonusTimer = setInterval(() => {
-      this.spawnBonus(options);
-      this.nextBonusSpawnAt = Date.now() + ms;
-    }, ms);
-  }
-
   private makeDropOptions(options: BonusSpawnOptions = {}): DropOptions {
-    let type = options.type || 'ammo';
+    let type: DropType;
+    if (!options.type) {
+      let roll = Math.random();
+      if (roll < 1 / 3) type = 'fix';
+      else if (roll < 2 / 3) type = 'freeze';
+      else type = 'shield';
+    } else {
+      type = options.type;
+    }
     let coords =
       options.coords ||
       randomCoordsFarFrom(this.state.ship, this.world, this.HIT_BOX_MULTIPLIER);
@@ -107,12 +106,6 @@ class Spawner {
       world: this.world,
       coords
     };
-  }
-
-  private allowDropSpawn(type: DropType): Boolean {
-    let { bonuses } = this.state;
-    let alreadySpawned = filter(bonuses, { dropType: type }).length;
-    return alreadySpawned < 3;
   }
 
   private makeAsteroidOptions(

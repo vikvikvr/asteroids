@@ -125,33 +125,4 @@ describe('Spawner', () => {
       }
     });
   });
-  describe('bonus every', () => {
-    it('calls spawn bonus with the given interval', () => {
-      jest.useFakeTimers();
-      let ms = 500;
-      spawner.spawnBonus = jest.fn();
-      spawner.bonusEvery(ms);
-      jest.advanceTimersByTime(ms * 5);
-      expect(spawner.spawnBonus).toHaveBeenCalledTimes(5);
-    });
-    it('passes options to spawn bonus', () => {
-      jest.useFakeTimers();
-      let ms = 500;
-      spawner.spawnBonus = jest.fn();
-      spawner.bonusEvery(ms, { count: 2 });
-      jest.advanceTimersByTime(ms);
-      expect(spawner.spawnBonus).toHaveBeenLastCalledWith({ count: 2 });
-    });
-    it('updates time of next spawn', () => {
-      let now = jest.spyOn(global.Date, 'now');
-      jest.useFakeTimers();
-      let interval = 500;
-      spawner.bonusEvery(interval);
-      for (let i = 1; i < 3; i++) {
-        now.mockReturnValue(10_000 * i);
-        jest.advanceTimersByTime(interval);
-        expect(spawner.nextBonusSpawnAt).toBe(10_000 * i + interval);
-      }
-    });
-  });
 });
