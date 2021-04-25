@@ -31,6 +31,7 @@ class GUI {
     this.ship(snapshot.ship, ship);
     this.timers(snapshot.etas, timers);
     this.bonuses(snapshot.ship, bonuses);
+    this.controls();
   }
 
   private asteroids(asteroids: AsteroidSnapshot[], topLeft: Point): void {
@@ -83,6 +84,58 @@ class GUI {
       p5.text(keys[i], currentX, 0);
       p5.rect(currentX, 0, side, side, 10);
     }
+    p5.pop();
+  }
+
+  private controls(): void {
+    let { p5 } = this;
+    console.log(p5.keyIsDown(p5.DOWN_ARROW));
+    p5.rectMode(p5.CENTER);
+    let side = SPACING * 2;
+
+    // left
+    p5.push();
+    p5.translate(p5.windowWidth - SPACING * 8, p5.windowHeight - SPACING * 2);
+    p5.fill(p5.keyIsDown(p5.LEFT_ARROW) ? this.colors.hud : 'rgba(0,0,0,0)');
+    p5.stroke(this.colors.hud);
+    // p5.text(keys[i], currentX, 0);
+    p5.rect(0, 0, side, side, 10);
+    p5.pop();
+
+    // down
+    p5.push();
+    p5.translate(p5.windowWidth - SPACING * 5, p5.windowHeight - SPACING * 2);
+    p5.fill(p5.keyIsDown(p5.DOWN_ARROW) ? this.colors.hud : 'rgba(0,0,0,0)');
+    p5.stroke(this.colors.hud);
+    // p5.text(keys[i], currentX, 0);
+    p5.rect(0, 0, side, side, 10);
+    p5.pop();
+
+    // right
+    p5.push();
+    p5.translate(p5.windowWidth - SPACING * 2, p5.windowHeight - SPACING * 2);
+    p5.fill(p5.keyIsDown(p5.RIGHT_ARROW) ? this.colors.hud : 'rgba(0,0,0,0)');
+    p5.stroke(this.colors.hud);
+    // p5.text(keys[i], currentX, 0);
+    p5.rect(0, 0, side, side, 10);
+    p5.pop();
+
+    // up
+    p5.push();
+    p5.translate(p5.windowWidth - SPACING * 5, p5.windowHeight - SPACING * 5);
+    p5.fill(p5.keyIsDown(p5.UP_ARROW) ? this.colors.hud : 'rgba(0,0,0,0)');
+    p5.stroke(this.colors.hud);
+    // p5.text(keys[i], currentX, 0);
+    p5.rect(0, 0, side, side, 10);
+    p5.pop();
+
+    // space
+    p5.push();
+    p5.translate(p5.windowWidth / 2, p5.windowHeight - SPACING * 2);
+    p5.fill(p5.keyIsDown(32) ? this.colors.hud : 'rgba(0,0,0,0)');
+    p5.stroke(this.colors.hud);
+    // p5.text(keys[i], currentX, 0);
+    p5.rect(0, 0, side * 6, side, 10);
     p5.pop();
   }
 }

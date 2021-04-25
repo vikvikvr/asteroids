@@ -36,10 +36,8 @@ const Sketch = (p5: P5) => {
   var lastSnapshot: GameSnapshot;
 
   p5.preload = async () => {
-    assets.images = loadImageAssets(p5);
-    // let spriteSheet = p5.loadImage('./assets/explosions.png');
+    assets.images = await loadImageAssets(p5);
     assets.explosionAnimation = await loadExplosionAnimation(p5);
-    // console.log(assets.explosionAnimation);
   };
 
   p5.setup = () => {
@@ -62,6 +60,11 @@ const Sketch = (p5: P5) => {
 
   p5.keyPressed = () => {
     keyController.pressed(p5.keyCode);
+  };
+
+  p5.windowResized = () => {
+    console.log('resized');
+    drawer.resizeScreen(p5.windowWidth, p5.windowHeight);
   };
 
   p5.draw = () => {
@@ -116,21 +119,32 @@ async function loadExplosionAnimation(p5: P5) {
       animation.push(img);
     }
   } catch (error) {
-    console.error(error);
-    throw Error('Could not load explosion animation');
+    throw new Error('Failed to load explosion animation');
   }
   return animation;
 }
 
-function loadImageAssets(p5: P5) {
-  return {
-    asteroid: p5.loadImage('./assets/asteroid.png'),
-    ship: p5.loadImage('./assets/ship1.png'),
-    fix: p5.loadImage('./assets/fix.png'),
-    ammo: p5.loadImage('./assets/ammo.png'),
-    fuel: p5.loadImage('./assets/fuel.png'),
-    bullet: p5.loadImage('./assets/bullet.png')
-  };
+function loadImageAssets(p5: P5): Promise<Record<string, P5.Image>> {
+  let images: Record<string, P5.Image> = {};
+  let names: ImageAsset[] = [
+    'asteroid',
+    'ship',
+    'fix',
+    'ammo',
+    'fuel',
+    'bullet'
+  ];
+  return new Promise((resolve, reject) => {
+    try {
+      names.forEach(async (name) => {
+        let image = await loadImage(p5, `./assets/${name}.png`);
+        images[name] = image;
+      });
+      resolve(images);
+    } catch (error) {
+      reject('Failed to load image assets');
+    }
+  });
 }
 
 export default Sketch;

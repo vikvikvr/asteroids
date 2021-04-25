@@ -60,6 +60,7 @@ class Drawer {
       height: this.p5.windowHeight
     };
     this.gui = new GUI(this.p5, COLORS);
+    console.log('drawer assets', this.assets);
   }
 
   public updateSnapshot(snapshot: GameSnapshot) {
@@ -87,6 +88,10 @@ class Drawer {
           break;
       }
     }
+  }
+
+  public resizeScreen(width: number, heigth: number): void {
+    this.p5.resizeCanvas(width, heigth);
   }
 
   private gameScreen(snapshot: GameSnapshot): void {
