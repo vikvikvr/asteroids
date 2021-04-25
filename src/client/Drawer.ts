@@ -78,10 +78,10 @@ class Drawer {
           this.gameScreen(this.snapshot);
           break;
         case 'lost':
-          this.gameOverScreen();
+          this.gameOverScreen(this.snapshot.score);
           break;
         case 'won':
-          this.gameWonScreen();
+          this.gameWonScreen(this.snapshot.score);
           break;
         case 'idle':
           console.log('idle');
@@ -101,30 +101,32 @@ class Drawer {
     this.gui.draw(snapshot);
   }
 
-  private gameOverScreen(): void {
+  private gameOverScreen(score: number): void {
     let { p5 } = this;
     p5.background(COLORS.space);
     p5.fill('yellow');
     p5.textAlign(p5.CENTER);
     p5.text('GAME OVER', p5.windowWidth / 2, p5.windowHeight / 2);
+    p5.text(score, p5.windowWidth / 2, p5.windowHeight / 2 + 30);
     p5.text(
       'press F5 to try again',
       p5.windowWidth / 2,
-      p5.windowHeight / 2 + 30
+      p5.windowHeight / 2 + 60
     );
     p5.textAlign(p5.LEFT);
   }
 
-  private gameWonScreen(): void {
+  private gameWonScreen(score: number): void {
     let { p5 } = this;
     p5.background(COLORS.space);
     p5.fill('yellow');
     p5.textAlign(p5.CENTER);
     p5.text('GAME WON!', p5.windowWidth / 2, p5.windowHeight / 2);
+    p5.text(score, p5.windowWidth / 2, p5.windowHeight / 2 + 30);
     p5.text(
       'press F5 to try again',
       p5.windowWidth / 2,
-      p5.windowHeight / 2 + 30
+      p5.windowHeight / 2 + 60
     );
     p5.textAlign(p5.LEFT);
   }

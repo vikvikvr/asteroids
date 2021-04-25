@@ -32,6 +32,7 @@ class GUI {
     this.timers(snapshot.etas, timers);
     this.bonuses(snapshot.ship, bonuses);
     this.controls();
+    this.score(snapshot.score);
   }
 
   private asteroids(asteroids: AsteroidSnapshot[], topLeft: Point): void {
@@ -89,7 +90,6 @@ class GUI {
 
   private controls(): void {
     let { p5 } = this;
-    console.log(p5.keyIsDown(p5.DOWN_ARROW));
     p5.rectMode(p5.CENTER);
     let side = SPACING * 2;
 
@@ -137,6 +137,12 @@ class GUI {
     // p5.text(keys[i], currentX, 0);
     p5.rect(0, 0, side * 6, side, 10);
     p5.pop();
+  }
+
+  private score(score: number): void {
+    let { p5 } = this;
+    p5.textAlign(p5.CENTER);
+    p5.text(score, p5.windowWidth / 2, SPACING);
   }
 }
 

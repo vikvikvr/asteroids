@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Point } from '../lib/geometry';
-import Asteroid, { AsteroidDamage } from './Asteroid';
+import Asteroid, { AsteroidDamage, AsteroidSize } from './Asteroid';
 import Bullet from './Bullet';
 import Drop, { DropType } from './Drop';
 
@@ -36,20 +36,24 @@ export class GameEvent {
 export class ShipHit extends GameEvent {
   public asteroidId: string;
   public damage: AsteroidDamage;
+  public size: AsteroidSize;
   constructor(asteroid: Asteroid) {
     super('SHIP_HIT', asteroid.coords);
     this.asteroidId = asteroid.id;
     this.damage = asteroid.damage;
+    this.size = asteroid.size;
   }
 }
 
 export class BulletHit extends GameEvent {
   public bulletId: string;
   public asteroidId: string;
+  public size: AsteroidSize;
   constructor(bullet: Bullet, asteroid: Asteroid) {
     super('BULLET_HIT', bullet.coords);
     this.bulletId = bullet.id;
     this.asteroidId = asteroid.id;
+    this.size = asteroid.size;
   }
 }
 

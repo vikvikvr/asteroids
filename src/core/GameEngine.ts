@@ -9,9 +9,22 @@ import * as ev from './Events';
 import { remove, find, filter } from 'lodash';
 import Drop, { DropSnapshot } from './Drop';
 import Spawner, { SpawnerEtas } from './Spawner';
-import Bullet from './Bullet';
 
 export type GameStatus = 'playing' | 'won' | 'lost' | 'idle';
+export type ScoreEvent =
+  | 'DESTROY_LARGE'
+  | 'DESTROY_MEDIUM'
+  | 'DESTROY_SMALL'
+  | 'HIT_BY_LARGE'
+  | 'HIT_BY_MEDIUM'
+  | 'HIT_BY_SMALL';
+export type ScoreMap = Record<AsteroidSize, number>;
+
+const SCORES: ScoreMap = {
+  large: 50,
+  medium: 100,
+  small: 200
+};
 
 export type LevelOptions = {
   startAsteroids: number;
@@ -25,6 +38,7 @@ export type LevelOptions = {
 };
 
 export interface GameState {
+  score: number;
   ship: Ship;
   asteroids: Asteroid[];
   bonuses: Drop[];
@@ -40,6 +54,7 @@ export interface GameSnapshot {
   asteroids: AsteroidSnapshot[];
   bonuses: DropSnapshot[];
   events: ev.GameEventSnapshot[];
+  score: number;
 }
 
 class GameEngine {
@@ -58,7 +73,8 @@ class GameEngine {
       asteroids: [],
       bonuses: [],
       events: [],
-      ship: new Ship({ world, coords: centerOf(world) })
+      ship: new Ship({ world, coords: centerOf(world) }),
+      score: 0
     };
     this.world = world;
     this.spawner = new Spawner(this.state, this.world);
@@ -115,6 +131,7 @@ class GameEngine {
     let etas = this.spawner.getEtas();
     let { ship, asteroids, bonuses, events } = this.state;
     let snapshot = {
+      score: this.state.score,
       world: this.world,
       createdAt: Date.now(),
       status: this.status,
@@ -172,8 +189,6 @@ class GameEngine {
     });
   }
 
-  
-
   private checkCollisions(): void {
     let { asteroids, ship, events, bonuses } = this.state;
     asteroids.forEach((asteroid) => {
@@ -182,12 +197,14 @@ class GameEngine {
           let event = new ev.BulletHit(bullet, asteroid);
           events.push(event);
           this.processBulletHit(event);
+          this.assignScore(event);
         }
       });
       if (haveCollided(asteroid, ship)) {
         let event = new ev.ShipHit(asteroid);
         events.push(event);
         this.processShipHit(event);
+        this.assignScore(event);
       }
     });
     bonuses.forEach((bonus) => {
@@ -195,6 +212,7 @@ class GameEngine {
         let event = new ev.GotBonus(bonus);
         events.push(event);
         this.processGotBonus(event);
+        this.assignScore(event);
       }
     });
   }
@@ -233,6 +251,14 @@ class GameEngine {
       console.log('ship has collided with asteroid at previous update');
     }
     remove(ship.bullets, { id: event.bulletId });
+  }
+
+  private assignScore(event: ev.GameEvent): void {
+    if (event instanceof ev.BulletHit) {
+      this.state.score += SCORES[event.size];
+    } else if (event instanceof ev.ShipHit) {
+      this.state.score -= SCORES[event.size];
+    }
   }
 
   private processShipHit(event: ev.ShipHit): void {
