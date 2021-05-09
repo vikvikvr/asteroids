@@ -62,11 +62,15 @@ class GameObject extends Entity {
     super.update();
     this.isExpired = Date.now() > this.expiresAt;
     if (this.hasTail) {
-      if (this.tail.length === this.tailLength) {
-        this.tail.shift();
-      }
-      this.tail.push({ ...this.coords });
+      this.updateTail();
     }
+  }
+
+  private updateTail() {
+    if (this.tail.length === this.tailLength) {
+      this.tail.shift();
+    }
+    this.tail.push({ ...this.coords });
   }
 }
 
