@@ -74,21 +74,20 @@ class Drawer {
   }
 
   public drawScreen(): void {
-    if (this.snapshot) {
-      switch (this.snapshot.status) {
-        case 'playing':
-          this.drawGameScreen(this.snapshot);
-          break;
-        case 'lost':
-          this.drawGameOverScreen(this.snapshot.score);
-          break;
-        case 'won':
-          this.drawGameWonScreen(this.snapshot.score);
-          break;
-        case 'idle':
-          console.log('idle');
-          break;
-      }
+    if (!this.snapshot) return;
+    switch (this.snapshot.status) {
+      case 'playing':
+        this.drawGameScreen(this.snapshot);
+        break;
+      case 'lost':
+        this.drawGameOverScreen(this.snapshot.score);
+        break;
+      case 'won':
+        this.drawGameWonScreen(this.snapshot.score);
+        break;
+      case 'idle':
+        console.log('idle');
+        break;
     }
   }
 
