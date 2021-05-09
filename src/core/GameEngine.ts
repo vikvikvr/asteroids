@@ -9,6 +9,7 @@ import * as ev from './Events';
 import { remove, find, filter } from 'lodash';
 import Drop, { DropSnapshot } from './Drop';
 import Spawner, { SpawnerEtas } from './Spawner';
+import { bulletHitScore } from './game-rules';
 
 export type GameStatus = 'playing' | 'won' | 'lost' | 'idle';
 
@@ -189,7 +190,6 @@ class GameEngine {
         let event = new ev.ShipHit(asteroid, ship.shielded);
         events.push(event);
         this.processShipHit(event);
-        this.assignScore(event);
       }
     }
   }
@@ -226,25 +226,9 @@ class GameEngine {
     remove(ship.bullets, { id: event.bulletId });
   }
 
-  private assignScore(event: ev.GameEvent): void {
-    const SCORES: Record<AsteroidSize, number> = {
-      large: 50,
-      medium: 100,
-      small: 200
-    };
-    if (event instanceof ev.BulletHit) {
-      let score = SCORES[event.size];
-      if (this.state.frozen) {
-        if (event.size === 'large') {
-          score = SCORES.large + SCORES.medium * 2 + SCORES.small * 4;
-        } else if (event.size === 'medium') {
-          score = SCORES.medium + SCORES.small * 2;
-        } else {
-          score = SCORES.small;
-        }
-      }
-      this.state.score += score;
-    }
+  private assignScore(event: ev.BulletHit): void {
+    const scoreToAdd = bulletHitScore(event.size, this.state.frozen);
+    this.state.score += scoreToAdd;
   }
 
   private updateLevel() {
