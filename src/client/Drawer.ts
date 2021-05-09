@@ -154,35 +154,42 @@ class Drawer {
   }
 
   private createNewAnimations(snapshot: GameSnapshot): void {
-    // save new animations
     snapshot.events.forEach((event) => {
-      // explosion animation
-      if (event.type !== 'GOT_BONUS') {
-        let frames = this.assets[
-          snapshot.frozen ? 'shatterAnimation' : 'explosionAnimation'
-        ];
-        // TODO: adapt explosion size to event
-        this.animations.push(new ImageAnimation(frames, event.coords, 1));
-        // overlay animation
-        if (event.type === 'SHIP_HIT') {
-          let myEvent = event as ShipHitSnapshot;
-          if (!myEvent.shielded) {
-            this.animations.push(new OverlayAnimation(30, 'red'));
-          }
-        }
+      if (event.type === 'GOT_BONUS') {
+        this.addGotBonusAnimation(event);
       } else {
-        const animation = this.createGotBonusAnimation(event);
-        this.animations.push(animation);
+        this.addExplosionAnimation(event, snapshot.frozen);
+        if (event.type === 'SHIP_HIT') {
+          this.addShipHitAnimation(event);
+        }
       }
     });
   }
 
-  private createGotBonusAnimation(event: GameEventSnapshot): OverlayAnimation {
+  private addExplosionAnimation(
+    event: GameEventSnapshot,
+    frozen: boolean
+  ): void {
+    const assetKey = frozen ? 'shatterAnimation' : 'explosionAnimation';
+    let frames = this.assets[assetKey];
+    // TODO: adapt explosion size to event
+    this.animations.push(new ImageAnimation(frames, event.coords, 1));
+  }
+
+  private addShipHitAnimation(event: GameEventSnapshot): void {
+    let myEvent = event as ShipHitSnapshot;
+    if (!myEvent.shielded) {
+      this.animations.push(new OverlayAnimation(30, 'red'));
+    }
+  }
+
+  private addGotBonusAnimation(event: GameEventSnapshot): void {
     event = event as GotBonusSnapshot;
     let color = 'white';
     if (event.bonusType === 'shield') color = 'green';
     else if (event.bonusType === 'freeze') color = 'blue';
-    return new OverlayAnimation(30, color);
+    const animation = new OverlayAnimation(30, color);
+    this.animations.push(animation);
   }
 
   private drawAnimations(): void {
