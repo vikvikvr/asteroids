@@ -10,7 +10,7 @@ export interface AnimationFrame extends DrawableObject {
 
 class Animation {
   public isExpired: boolean = false;
-  protected currentFrame: number = 0;
+  public currentFrame: number = 0;
   constructor(public frameCount: number) {}
 
   public next(): number | false {
@@ -28,6 +28,31 @@ export class OverlayAnimation extends Animation {
   constructor(length: number, color: string) {
     super(length);
     this.color = color;
+  }
+}
+
+export class TextAnimation extends Animation {
+  // private
+  public text: string;
+  private coords: Point;
+  // constructor
+  constructor(text: string, coords: Point) {
+    super(30);
+    this.coords = coords;
+    this.text = text;
+  }
+
+  public getNextCoords(): Point | false {
+    let next = super.next();
+    if (next) {
+      // const y =
+      return {
+        x: this.coords.x,
+        y: this.coords.y - next
+      };
+    } else {
+      return false;
+    }
   }
 }
 
