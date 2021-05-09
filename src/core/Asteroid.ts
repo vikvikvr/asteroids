@@ -58,7 +58,7 @@ class Asteroid extends GameObject {
       rotationSpeed: options.rotationSpeed || (sign * Math.PI) / 50,
       angularSpeed: Math.PI / 3 / 40,
       hasTail: true,
-      tailLength: 30
+      tailLength: hitBoxes[size]
     });
     this.size = size;
     this.damage = damages[size];
