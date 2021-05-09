@@ -56,7 +56,9 @@ class Asteroid extends GameObject {
       type: 'asteroid',
       direction: options.direction || Math.random() * Math.PI * 2,
       rotationSpeed: options.rotationSpeed || (sign * Math.PI) / 50,
-      angularSpeed: Math.PI / 3 / 40
+      angularSpeed: Math.PI / 3 / 40,
+      hasTail: true,
+      tailLength: 30
     });
     this.size = size;
     this.damage = damages[size];
