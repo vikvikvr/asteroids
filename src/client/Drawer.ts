@@ -260,7 +260,10 @@ class Drawer {
       if (animation instanceof ImageAnimation) {
         let drawable = animation.getNextFrame();
         if (drawable) {
-          this.drawGameObject(drawable, { image: drawable.image });
+          this.drawGameObject(drawable, {
+            image: drawable.image,
+            rotationOffset: animation.rotation
+          });
         }
       }
     }

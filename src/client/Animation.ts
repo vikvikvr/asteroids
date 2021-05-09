@@ -61,12 +61,14 @@ export class ImageAnimation extends Animation {
   private frames: P5.Image[];
   private coords: Point;
   private scale: number;
+  public rotation: number;
   // constructor
   constructor(frames: P5.Image[], coords: Point, scale: number) {
     super(frames.length);
     this.frames = frames;
     this.coords = coords;
     this.scale = scale;
+    this.rotation = Math.random() * Math.PI * 2;
   }
 
   public getNextFrame(): AnimationFrame | false {
