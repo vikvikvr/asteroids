@@ -10,6 +10,7 @@ import COLORS from './colors';
 import Animation, { ImageAnimation, OverlayAnimation } from './Animation';
 import { ShipSnapshot } from '../core/Ship';
 import { GotBonusSnapshot, ShipHitSnapshot } from '../core/Events';
+import { remove } from 'lodash';
 
 interface DrawGameObjectOptions {
   image: P5.Image;
@@ -185,10 +186,7 @@ class Drawer {
         this.drawOverlayAnimation(animation);
       }
     });
-    // remove expired animations
-    this.animations = this.animations.filter((animation) => {
-      return !animation.isExpired;
-    });
+    remove(this.animations, { isExpired: true });
   }
 
   private drawOverlayAnimation(animation: OverlayAnimation) {
