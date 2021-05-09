@@ -182,11 +182,7 @@ class Drawer {
     this.animations.forEach((animation) => {
       // explosion
       if (animation instanceof ImageAnimation) {
-        let drawable = animation.getNextFrame();
-        if (drawable) {
-          // console.log(drawable);
-          this.drawGameObject(drawable, { image: drawable.image });
-        }
+        this.drawExplosionAnimations(animation);
       } else if (animation instanceof OverlayAnimation) {
         // overlay
         let frame = animation.next();
@@ -208,6 +204,13 @@ class Drawer {
     this.animations = this.animations.filter((animation) => {
       return !animation.isExpired;
     });
+  }
+
+  private drawExplosionAnimations(animation: ImageAnimation) {
+    let drawable = animation.getNextFrame();
+    if (drawable) {
+      this.drawGameObject(drawable, { image: drawable.image });
+    }
   }
 
   private createStars(world: Rect, amount: number): void {
