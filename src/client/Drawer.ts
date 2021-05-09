@@ -178,32 +178,32 @@ class Drawer {
   }
 
   private drawAnimations(): void {
-    let { p5 } = this;
     this.animations.forEach((animation) => {
-      // explosion
       if (animation instanceof ImageAnimation) {
         this.drawExplosionAnimations(animation);
       } else if (animation instanceof OverlayAnimation) {
-        // overlay
-        let frame = animation.next();
-        if (frame) {
-          let alpha =
-            ((animation.frameCount - frame) / animation.frameCount) * 128;
-          let color = animation.color;
-          if (color === 'red') p5.fill(128, 0, 0, alpha);
-          else if (color === 'green') p5.fill(0, 128, 0, alpha);
-          else if (color === 'blue') p5.fill(0, 200, 255, alpha);
-          else p5.fill(128, 128, 128, alpha);
-          p5.rectMode(p5.CORNER);
-          p5.noStroke();
-          p5.rect(0, 0, this.screen.width, this.screen.height);
-        }
+        this.drawOverlayAnimation(animation);
       }
     });
     // remove expired animations
     this.animations = this.animations.filter((animation) => {
       return !animation.isExpired;
     });
+  }
+
+  private drawOverlayAnimation(animation: OverlayAnimation) {
+    let { p5 } = this;
+    let frame = animation.next();
+    if (!frame) return;
+    let alpha = ((animation.frameCount - frame) / animation.frameCount) * 128;
+    let color = animation.color;
+    if (color === 'red') p5.fill(128, 0, 0, alpha);
+    else if (color === 'green') p5.fill(0, 128, 0, alpha);
+    else if (color === 'blue') p5.fill(0, 200, 255, alpha);
+    else p5.fill(128, 128, 128, alpha);
+    p5.rectMode(p5.CORNER);
+    p5.noStroke();
+    p5.rect(0, 0, this.screen.width, this.screen.height);
   }
 
   private drawExplosionAnimations(animation: ImageAnimation) {
