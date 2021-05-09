@@ -7,14 +7,20 @@ import { DropSnapshot } from '../core/Drop';
 import { AsteroidSnapshot } from '../core/Asteroid';
 import GUI from './GUI';
 import COLORS from './colors';
-import Animation, { ImageAnimation, OverlayAnimation } from './Animation';
+import Animation, {
+  ImageAnimation,
+  OverlayAnimation,
+  TextAnimation
+} from './Animation';
 import { ShipSnapshot } from '../core/Ship';
 import {
+  BulletHitSnapshot,
   GameEventSnapshot,
   GotBonusSnapshot,
   ShipHitSnapshot
 } from '../core/Events';
 import { remove } from 'lodash';
+import { bulletHitScore } from '../core/game-rules';
 
 interface DrawGameObjectOptions {
   image: P5.Image;
@@ -67,6 +73,7 @@ class Drawer {
       height: this.p5.windowHeight
     };
     this.gui = new GUI(this.p5, COLORS);
+    this.p5.textSize(20);
     // console.log('drawer assets', this.assets);
   }
 
@@ -161,9 +168,19 @@ class Drawer {
         this.addExplosionAnimation(event, snapshot.frozen);
         if (event.type === 'SHIP_HIT') {
           this.addShipHitAnimation(event);
+        } else {
+          this.addScoreAnimation(event, snapshot.frozen);
         }
       }
     }
+  }
+
+  private addScoreAnimation(event: GameEventSnapshot, frozen: boolean) {
+    let myEvent = event as BulletHitSnapshot;
+    const score = bulletHitScore(myEvent.size, frozen);
+    const scoreAnimation = new TextAnimation(score.toString(), myEvent.coords);
+    this.animations.push(scoreAnimation);
+    // console.log('add points', score);
   }
 
   private addExplosionAnimation(
@@ -193,35 +210,59 @@ class Drawer {
   }
 
   private drawAnimations(): void {
-    for (const animation of this.animations) {
-      if (animation instanceof ImageAnimation) {
-        this.drawExplosionAnimations(animation);
-      } else if (animation instanceof OverlayAnimation) {
-        this.drawOverlayAnimation(animation);
-      }
-    }
+    this.drawExplosionAnimations();
+    this.drawTextAnimations();
+    this.drawOverlayAnimations();
     remove(this.animations, { isExpired: true });
   }
 
-  private drawOverlayAnimation(animation: OverlayAnimation) {
-    let { p5 } = this;
-    let frame = animation.next();
-    if (!frame) return;
-    let alpha = ((animation.frameCount - frame) / animation.frameCount) * 128;
-    let color = animation.color;
-    if (color === 'red') p5.fill(128, 0, 0, alpha);
-    else if (color === 'green') p5.fill(0, 128, 0, alpha);
-    else if (color === 'blue') p5.fill(0, 200, 255, alpha);
-    else p5.fill(128, 128, 128, alpha);
-    p5.rectMode(p5.CORNER);
-    p5.noStroke();
-    p5.rect(0, 0, this.screen.width, this.screen.height);
+  private drawTextAnimations() {
+    const { p5 } = this;
+    for (const animation of this.animations) {
+      if (animation instanceof TextAnimation) {
+        const coords = animation.getNextCoords();
+        if (coords) {
+          let drawCoords = this.drawableCoords(coords);
+          if (drawCoords) {
+            const { currentFrame, frameCount, text } = animation;
+            const alpha = (1 - currentFrame / frameCount) * 255;
+            p5.fill(255, 255, 255, alpha);
+            p5.stroke(255, 255, 255, alpha);
+            p5.text(text, drawCoords.x, drawCoords.y);
+          }
+        }
+      }
+    }
   }
 
-  private drawExplosionAnimations(animation: ImageAnimation) {
-    let drawable = animation.getNextFrame();
-    if (drawable) {
-      this.drawGameObject(drawable, { image: drawable.image });
+  private drawOverlayAnimations() {
+    let { p5 } = this;
+    for (const animation of this.animations) {
+      if (animation instanceof OverlayAnimation) {
+        let frame = animation.next();
+        if (!frame) return;
+        let alpha =
+          ((animation.frameCount - frame) / animation.frameCount) * 128;
+        let color = animation.color;
+        if (color === 'red') p5.fill(128, 0, 0, alpha);
+        else if (color === 'green') p5.fill(0, 128, 0, alpha);
+        else if (color === 'blue') p5.fill(0, 200, 255, alpha);
+        else p5.fill(128, 128, 128, alpha);
+        p5.rectMode(p5.CORNER);
+        p5.noStroke();
+        p5.rect(0, 0, this.screen.width, this.screen.height);
+      }
+    }
+  }
+
+  private drawExplosionAnimations() {
+    for (const animation of this.animations) {
+      if (animation instanceof ImageAnimation) {
+        let drawable = animation.getNextFrame();
+        if (drawable) {
+          this.drawGameObject(drawable, { image: drawable.image });
+        }
+      }
     }
   }
 
