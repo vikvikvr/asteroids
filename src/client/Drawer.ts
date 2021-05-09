@@ -9,7 +9,11 @@ import GUI from './GUI';
 import COLORS from './colors';
 import Animation, { ImageAnimation, OverlayAnimation } from './Animation';
 import { ShipSnapshot } from '../core/Ship';
-import { GotBonusSnapshot, ShipHitSnapshot } from '../core/Events';
+import {
+  GameEventSnapshot,
+  GotBonusSnapshot,
+  ShipHitSnapshot
+} from '../core/Events';
 import { remove } from 'lodash';
 
 interface DrawGameObjectOptions {
@@ -167,15 +171,18 @@ class Drawer {
           }
         }
       } else {
-        // got bonus
-        let myEvent = event as GotBonusSnapshot;
-        let color: string;
-        if (myEvent.bonusType === 'shield') color = 'green';
-        else if (myEvent.bonusType === 'freeze') color = 'blue';
-        else color = 'white';
-        this.animations.push(new OverlayAnimation(30, color));
+        const animation = this.createGotBonusAnimation(event);
+        this.animations.push(animation);
       }
     });
+  }
+
+  private createGotBonusAnimation(event: GameEventSnapshot): OverlayAnimation {
+    event = event as GotBonusSnapshot;
+    let color = 'white';
+    if (event.bonusType === 'shield') color = 'green';
+    else if (event.bonusType === 'freeze') color = 'blue';
+    return new OverlayAnimation(30, color);
   }
 
   private drawAnimations(): void {
