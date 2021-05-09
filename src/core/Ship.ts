@@ -46,7 +46,9 @@ class Ship extends GameObject {
     for (let i = 0; i < times; i++) {
       super.update();
       remove(this.bullets, { isExpired: true });
-      this.bullets.forEach((bullet) => bullet.update());
+      for (const bullet of this.bullets) {
+        bullet.update();
+      }
       this.modifySpeed();
     }
   }

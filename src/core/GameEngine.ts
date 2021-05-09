@@ -151,15 +151,15 @@ class GameEngine {
 
   private updateAsteroids(skip: boolean): void {
     if (skip) return;
-    this.state.asteroids.forEach((asteroid) => {
+    for (const asteroid of this.state.asteroids) {
       asteroid.update();
-    });
+    }
   }
 
   private updateBonuses(): void {
-    this.state.bonuses.forEach((bonus) => {
+    for (const bonus of this.state.bonuses) {
       bonus.update();
-    });
+    }
   }
 
   private checkCollisions(): void {
@@ -170,39 +170,39 @@ class GameEngine {
 
   private checkAsteroidBulletCollisions(): void {
     let { asteroids, ship, events } = this.state;
-    asteroids.forEach((asteroid) => {
-      ship.bullets.forEach((bullet) => {
+    for (const asteroid of asteroids) {
+      for (const bullet of ship.bullets) {
         if (haveCollided(asteroid, bullet)) {
           let event = new ev.BulletHit(bullet, asteroid, this.state.frozen);
           events.push(event);
           this.processBulletHit(event);
           this.assignScore(event);
         }
-      });
-    });
+      }
+    }
   }
 
   private checkAsteroidShipCollisions(): void {
     let { asteroids, ship, events } = this.state;
-    asteroids.forEach((asteroid) => {
+    for (const asteroid of asteroids) {
       if (haveCollided(asteroid, ship)) {
         let event = new ev.ShipHit(asteroid, ship.shielded);
         events.push(event);
         this.processShipHit(event);
         this.assignScore(event);
       }
-    });
+    }
   }
 
   private checkBonusShipCollisions(): void {
     let { bonuses, ship, events } = this.state;
-    bonuses.forEach((bonus) => {
+    for (const bonus of bonuses) {
       if (haveCollided(bonus, ship)) {
         let event = new ev.GotBonus(bonus);
         events.push(event);
         this.processGotBonus(event);
       }
-    });
+    }
   }
 
   private processBulletHit(event: ev.BulletHit): void {

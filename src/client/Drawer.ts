@@ -154,7 +154,7 @@ class Drawer {
   }
 
   private createNewAnimations(snapshot: GameSnapshot): void {
-    snapshot.events.forEach((event) => {
+    for (const event of snapshot.events) {
       if (event.type === 'GOT_BONUS') {
         this.addGotBonusAnimation(event);
       } else {
@@ -163,7 +163,7 @@ class Drawer {
           this.addShipHitAnimation(event);
         }
       }
-    });
+    }
   }
 
   private addExplosionAnimation(
@@ -193,13 +193,13 @@ class Drawer {
   }
 
   private drawAnimations(): void {
-    this.animations.forEach((animation) => {
+    for (const animation of this.animations) {
       if (animation instanceof ImageAnimation) {
         this.drawExplosionAnimations(animation);
       } else if (animation instanceof OverlayAnimation) {
         this.drawOverlayAnimation(animation);
       }
-    });
+    }
     remove(this.animations, { isExpired: true });
   }
 
@@ -248,24 +248,24 @@ class Drawer {
     let { p5 } = this;
     p5.noStroke();
     p5.fill('white');
-    stars.forEach((star) => {
+    for (const star of stars) {
       let coords = this.drawableCoords(star);
       coords && p5.circle(coords.x, coords.y, star.radius);
-    });
+    }
   }
 
   private drawBonuses(bonuses: DropSnapshot[]): void {
-    bonuses.forEach((bonus) => {
+    for (const bonus of bonuses) {
       this.drawGameObject(bonus, { image: this.assets.images[bonus.dropType] });
-    });
+    }
   }
 
   private drawAsteroids(asteroids: AsteroidSnapshot[], frozen: boolean): void {
-    asteroids.forEach((asteroid) => {
+    for (const asteroid of asteroids) {
       this.drawGameObject(asteroid, {
         image: this.assets.images[`${frozen ? 'frozen-' : ''}asteroid`]
       });
-    });
+    }
   }
 
   private drawGameObject(
@@ -311,7 +311,8 @@ class Drawer {
 
   private drawShipTail(tail: Point[]) {
     let { p5 } = this;
-    tail.forEach((point, i) => {
+    for (let i = 0; i < tail.length; i++) {
+      const point = tail[i];
       let coords = this.drawableCoords(point);
       if (coords) {
         let size = (1 - (tail.length - i) / tail.length + 1) * 10;
@@ -320,15 +321,15 @@ class Drawer {
         p5.fill(50, 50, 50, alpha);
         p5.circle(coords.x, coords.y, size);
       }
-    });
+    }
   }
 
   private drawBullets(bullets: GameObjectSnapshot[]): void {
-    bullets.forEach((bullet) => {
+    for (const bullet of bullets) {
       this.drawGameObject(bullet, {
         image: this.assets.images.bullet
       });
-    });
+    }
   }
 }
 
