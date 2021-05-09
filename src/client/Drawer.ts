@@ -280,15 +280,7 @@ class Drawer {
 
   private drawShip(ship: ShipSnapshot): void {
     let { p5 } = this;
-    // tail
-    ship.tail.forEach((point, i) => {
-      let size = (1 - (ship.tail.length - i) / ship.tail.length + 1) * 10;
-      let alpha = (1 - (ship.tail.length - i) / ship.tail.length) * 255;
-      p5.noStroke();
-      p5.fill(50, 50, 50, alpha);
-      let coords = this.drawableCoords(point);
-      coords && p5.circle(coords.x, coords.y, size);
-    });
+    this.drawShipTail(ship.tail);
     // shield
     if (ship.shielded) {
       p5.stroke(0, 255, 0, 128);
@@ -300,6 +292,20 @@ class Drawer {
       image: this.assets.images.ship,
       rotateDirection: true,
       rotationOffset: Math.PI / 2
+    });
+  }
+
+  private drawShipTail(tail: Point[]) {
+    let { p5 } = this;
+    tail.forEach((point, i) => {
+      let coords = this.drawableCoords(point);
+      if (coords) {
+        let size = (1 - (tail.length - i) / tail.length + 1) * 10;
+        let alpha = (1 - (tail.length - i) / tail.length) * 255;
+        p5.noStroke();
+        p5.fill(50, 50, 50, alpha);
+        p5.circle(coords.x, coords.y, size);
+      }
     });
   }
 
