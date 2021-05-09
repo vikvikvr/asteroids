@@ -38,6 +38,10 @@ class Drop extends GameObject {
 
   public update() {
     super.update();
+    this.oscillate();
+  }
+
+  private oscillate() {
     if (this.rotatingRight) {
       if (this.orientation > this.rotationCone) {
         this.changeRotationDirection();
