@@ -140,7 +140,7 @@ class GameEngine {
   }
 
   private checkGameWon(): void {
-    if (this.state.asteroids.length === 0) {
+    if (!this.state.asteroids.length) {
       this.status = 'won';
       if (this.snapshotTimeout) {
         clearInterval(this.snapshotTimeout);
@@ -233,19 +233,17 @@ class GameEngine {
       small: 200
     };
     if (event instanceof ev.BulletHit) {
+      let score = SCORES[event.size];
       if (this.state.frozen) {
-        // also assign score for non-split asteroid
         if (event.size === 'large') {
-          this.state.score +=
-            SCORES.large + SCORES.medium * 2 + SCORES.small * 4;
+          score = SCORES.large + SCORES.medium * 2 + SCORES.small * 4;
         } else if (event.size === 'medium') {
-          this.state.score += SCORES.medium + SCORES.small * 2;
+          score = SCORES.medium + SCORES.small * 2;
         } else {
-          this.state.score += SCORES.small;
+          score = SCORES.small;
         }
-      } else {
-        this.state.score += SCORES[event.size];
       }
+      this.state.score += score;
     }
   }
 
