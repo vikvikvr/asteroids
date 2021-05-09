@@ -24,7 +24,6 @@ class Ship extends GameObject {
   private leftRotations = 0;
   private ACC_SPRINTS = 30;
   private DEC_SPRINTS = 15;
-  private FUEL_CONSUMPTION = 1 / 3_000;
   private sprints = 0;
   // readonly
   readonly MAX_SPEED = 4;
