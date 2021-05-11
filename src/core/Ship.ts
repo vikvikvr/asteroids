@@ -1,5 +1,5 @@
 import GameObject, { GameObjectSnapshot } from './GameObject';
-import { find, remove } from 'lodash';
+import { remove } from 'lodash';
 import { EntityOptions } from './Entity';
 import Bullet, { BulletSnapshot } from './Bullet';
 
@@ -90,10 +90,6 @@ class Ship extends GameObject {
   private changeDirection(direction: 1 | -1) {
     const targetDirection = this.direction + this.rotationStep * direction;
     this.setTargetDirection(targetDirection);
-  }
-
-  private hasBullet(id: string): boolean {
-    return Boolean(find(this.bullets, { id }));
   }
 
   private makeBullet(): Bullet {
