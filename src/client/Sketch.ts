@@ -71,9 +71,7 @@ const Sketch = (p5: P5) => {
     }, 500);
   };
 
-  p5.keyPressed = () => {
-    keyController.pressed(p5.keyCode);
-  };
+  // p5.keyPressed = () => {};
 
   p5.windowResized = () => {
     console.log('resized');
@@ -82,6 +80,7 @@ const Sketch = (p5: P5) => {
 
   p5.draw = () => {
     if (loaded) {
+      keyController.pressed(p5);
       drawer.updateSnapshot(lastSnapshot);
       drawer.drawScreen();
     }

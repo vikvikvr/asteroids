@@ -18,15 +18,18 @@ class Ship extends GameObject {
   public bullets: Bullet[] = [];
   public shielded: boolean = false;
   // private
-  private rotationStep = Math.PI / 6;
+  private rotationStep = Math.PI / 24;
+  private accelerationStep = 1 / 5;
   private startingDirection = startingDirection;
   private rightRotations = 0;
   private leftRotations = 0;
   private ACC_SPRINTS = 30;
   private DEC_SPRINTS = 15;
   private sprints = 0;
+  private minTimeToFire = 200;
+  private firedAt = -Infinity;
   // readonly
-  readonly MAX_SPEED = 4;
+  readonly MAX_SPEED = 6;
   readonly SHIELD_DURATION = 7000;
   // constructor
   constructor(options: Partial<EntityOptions> = {}) {
@@ -48,44 +51,49 @@ class Ship extends GameObject {
       for (const bullet of this.bullets) {
         bullet.update();
       }
-      this.modifySpeed();
+      // this.modifySpeed();
     }
   }
 
   public turnLeft(): void {
-    this.setTargetDirection(this.getComputedDirection() - this.rotationStep);
-    this.leftRotations++;
+    this.changeDirection(-1);
   }
 
   public turnRight(): void {
-    this.setTargetDirection(this.getComputedDirection() + this.rotationStep);
-    this.rightRotations++;
+    this.changeDirection(1);
   }
 
   public accelerate(times = 1): void {
-    for (let i = 0; i < times; i++) {
-      if (this.sprints > 0) {
-        this.sprints += this.ACC_SPRINTS;
-      } else {
-        this.sprints = this.ACC_SPRINTS;
-      }
-    }
+    const newSpeed = this.speed + this.accelerationStep;
+    this.speed = Math.min(this.MAX_SPEED, newSpeed);
+    // for (let i = 0; i < times; i++) {
+    //   if (this.sprints > 0) {
+    //     this.sprints += this.ACC_SPRINTS;
+    //   } else {
+    //     this.sprints = this.ACC_SPRINTS;
+    //   }
+    // }
   }
 
   public decelerate(times = 1): void {
-    for (let i = 0; i < times; i++) {
-      if (this.sprints < 0) {
-        this.sprints += -this.DEC_SPRINTS;
-      } else {
-        this.sprints = -this.DEC_SPRINTS;
-      }
-    }
+    const newSpeed = this.speed - this.accelerationStep;
+    this.speed = Math.max(-this.MAX_SPEED, newSpeed);
+    // for (let i = 0; i < times; i++) {
+    //   if (this.sprints < 0) {
+    //     this.sprints += -this.DEC_SPRINTS;
+    //   } else {
+    //     this.sprints = -this.DEC_SPRINTS;
+    //   }
+    // }
   }
 
-  public fire(): Bullet {
-    let bullet = this.makeBullet();
-    this.bullets.push(bullet);
-    return bullet;
+  public fire(): void {
+    const canFire = Date.now() - this.firedAt > this.minTimeToFire;
+    if (canFire) {
+      this.firedAt = Date.now();
+      const bullet = this.makeBullet();
+      this.bullets.push(bullet);
+    }
   }
 
   public restoreLife() {
@@ -105,6 +113,11 @@ class Ship extends GameObject {
       bullets: this.bullets.map((b) => b.serialize()),
       shielded: this.shielded
     };
+  }
+
+  private changeDirection(direction: 1 | -1) {
+    const targetDirection = this.direction + this.rotationStep * direction;
+    this.setTargetDirection(targetDirection);
   }
 
   private modifySpeed() {
