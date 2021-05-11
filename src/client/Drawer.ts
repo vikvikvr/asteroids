@@ -307,9 +307,11 @@ class Drawer {
   private drawAsteroids(asteroids: AsteroidSnapshot[], frozen: boolean): void {
     for (const asteroid of asteroids) {
       this.drawTail(asteroid.tail, 'asteroid', frozen);
-      this.drawGameObject(asteroid, {
-        image: this.assets.images[`${frozen ? 'frozen-' : ''}asteroid`]
-      });
+      const assetPrefix = frozen ? 'frozen-' : '';
+      const assetSuffix = '-' + asteroid.size;
+      const assetName = `${assetPrefix}asteroid${assetSuffix}`;
+      const options = { image: this.assets.images[assetName] };
+      this.drawGameObject(asteroid, options);
     }
   }
 
@@ -366,6 +368,7 @@ class Drawer {
         if (type === 'ship') {
           p5.fill(50, 50, 50, alpha);
         } else {
+          size *= 1.5;
           if (frozen) {
             p5.fill(75, 174, 219, alpha);
           } else {

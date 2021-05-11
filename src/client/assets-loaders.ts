@@ -40,13 +40,17 @@ function loadShatterAnimation(p5: P5): Promise<P5.Image[]> {
 function loadImageAssets(p5: P5): Promise<Record<string, P5.Image>> {
   let images: Record<string, P5.Image> = {};
   let names: ImageAsset[] = [
-    'asteroid',
+    'asteroid-large',
+    'asteroid-medium',
+    'asteroid-small',
+    'frozen-asteroid-large',
+    'frozen-asteroid-medium',
+    'frozen-asteroid-small',
     'ship',
     'fix',
     'shield',
     'freeze',
-    'bullet',
-    'frozen-asteroid'
+    'bullet'
   ];
   return new Promise(async (resolve, reject) => {
     try {

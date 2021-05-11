@@ -5,12 +5,16 @@ import Drawer from './Drawer';
 import { loadAssets } from './assets-loaders';
 
 export type ImageAsset =
-  | 'asteroid'
+  | 'asteroid-large'
+  | 'asteroid-medium'
+  | 'asteroid-small'
+  | 'frozen-asteroid-large'
+  | 'frozen-asteroid-medium'
+  | 'frozen-asteroid-small'
   | 'ship'
   | 'fix'
   | 'shield'
   | 'freeze'
-  | 'frozen-asteroid'
   | 'bullet';
 
 export type AnimationType = 'explosion';
