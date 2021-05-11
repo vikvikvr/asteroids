@@ -10,6 +10,7 @@ import COLORS from './colors';
 import Animation, {
   ImageAnimation,
   OverlayAnimation,
+  OverlayAnimationColor,
   TextAnimation
 } from './Animation';
 import { ShipSnapshot } from '../core/Ship';
@@ -213,7 +214,7 @@ class Drawer {
     let color = 'white';
     if (event.bonusType === 'shield') color = 'green';
     else if (event.bonusType === 'freeze') color = 'blue';
-    const animation = new OverlayAnimation(30, color);
+    const animation = new OverlayAnimation(30, color as OverlayAnimationColor);
     this.animations.push(animation);
   }
 
@@ -247,18 +248,21 @@ class Drawer {
     let { p5 } = this;
     for (const animation of this.animations) {
       if (animation instanceof OverlayAnimation) {
-        let frame = animation.next();
-        if (!frame) return;
-        let alpha =
-          ((animation.frameCount - frame) / animation.frameCount) * 128;
-        let color = animation.color;
-        if (color === 'red') p5.fill(128, 0, 0, alpha);
-        else if (color === 'green') p5.fill(0, 128, 0, alpha);
-        else if (color === 'blue') p5.fill(0, 200, 255, alpha);
-        else p5.fill(128, 128, 128, alpha);
-        p5.rectMode(p5.CORNER);
-        p5.noStroke();
-        p5.rect(0, 0, this.screen.width, this.screen.height);
+        let nextFrame = animation.next();
+        if (nextFrame) {
+          let alpha =
+            (animation.frameCount - nextFrame) / animation.frameCount / 2;
+          const colorMap = {
+            red: `rgba(128, 0, 0, ${alpha})`,
+            green: `rgba(0, 128, 0, ${alpha})`,
+            blue: `rgba(0, 200, 255, ${alpha})`,
+            white: `rgba(128, 128, 128, ${alpha})`
+          };
+          p5.fill(colorMap[animation.color]);
+          p5.rectMode(p5.CORNER);
+          p5.noStroke();
+          p5.rect(0, 0, this.screen.width, this.screen.height);
+        }
       }
     }
   }
