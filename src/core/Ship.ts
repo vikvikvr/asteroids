@@ -2,9 +2,6 @@ import GameObject, { GameObjectSnapshot } from './GameObject';
 import { find, remove } from 'lodash';
 import { EntityOptions } from './Entity';
 import Bullet, { BulletSnapshot } from './Bullet';
-import { DropType } from './Drop';
-
-export type CargoMap = Record<DropType, number>;
 
 export interface ShipSnapshot extends GameObjectSnapshot {
   bullets: BulletSnapshot[];
