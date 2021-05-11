@@ -259,7 +259,6 @@ class Drawer {
             white: `rgba(128, 128, 128, ${alpha})`
           };
           p5.fill(colorMap[animation.color]);
-          p5.rectMode(p5.CORNER);
           p5.noStroke();
           p5.rect(0, 0, this.screen.width, this.screen.height);
         }

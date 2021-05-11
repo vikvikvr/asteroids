@@ -49,6 +49,7 @@ const Sketch = (p5: P5) => {
     assets = await loadAssets(p5);
     p5.pixelDensity(2);
     p5.imageMode(p5.CENTER);
+    p5.rectMode(p5.CORNER);
     // listenForSnapshots
     let container = document.getElementById(rootElementId)!;
     container.addEventListener('snapshot', ((event: SnapshotEvent) => {
