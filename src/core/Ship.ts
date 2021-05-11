@@ -27,7 +27,6 @@ class Ship extends GameObject {
       type: 'ship',
       hitBoxRadius: 30,
       direction: -Math.PI / 2,
-      acceleration: 1 / 10,
       angularSpeed: Math.PI / 3 / 20,
       hasTail: true
     });
