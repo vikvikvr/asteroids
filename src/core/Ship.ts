@@ -6,8 +6,6 @@ import { DropType } from './Drop';
 
 export type CargoMap = Record<DropType, number>;
 
-const startingDirection = -Math.PI / 2;
-
 export interface ShipSnapshot extends GameObjectSnapshot {
   bullets: BulletSnapshot[];
   shielded: boolean;
@@ -20,9 +18,6 @@ class Ship extends GameObject {
   // private
   private rotationStep = Math.PI / 24;
   private accelerationStep = 1 / 5;
-  private startingDirection = startingDirection;
-  private rightRotations = 0;
-  private leftRotations = 0;
   private minTimeToFire = 200;
   private firedAt = -Infinity;
   // readonly
@@ -34,7 +29,7 @@ class Ship extends GameObject {
       ...options,
       type: 'ship',
       hitBoxRadius: 30,
-      direction: startingDirection,
+      direction: -Math.PI / 2,
       acceleration: 1 / 10,
       angularSpeed: Math.PI / 3 / 20,
       hasTail: true
@@ -102,11 +97,6 @@ class Ship extends GameObject {
 
   private hasBullet(id: string): boolean {
     return Boolean(find(this.bullets, { id }));
-  }
-
-  private getComputedDirection(): number {
-    let steps = (-this.leftRotations + this.rightRotations) * this.rotationStep;
-    return this.startingDirection + steps;
   }
 
   private makeBullet(): Bullet {
