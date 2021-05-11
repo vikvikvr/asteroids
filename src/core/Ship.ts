@@ -23,9 +23,6 @@ class Ship extends GameObject {
   private startingDirection = startingDirection;
   private rightRotations = 0;
   private leftRotations = 0;
-  private ACC_SPRINTS = 30;
-  private DEC_SPRINTS = 15;
-  private sprints = 0;
   private minTimeToFire = 200;
   private firedAt = -Infinity;
   // readonly
@@ -50,7 +47,6 @@ class Ship extends GameObject {
     for (const bullet of this.bullets) {
       bullet.update();
     }
-    // this.modifySpeed();
   }
 
   public turnLeft(): void {
@@ -104,41 +100,8 @@ class Ship extends GameObject {
     this.setTargetDirection(targetDirection);
   }
 
-  private modifySpeed() {
-    if (this.sprints > 0) {
-      this.useSprintsToAccelerateForward();
-    } else if (this.sprints < 0) {
-      this.useSprintsToAccelerateBackwards();
-    } else {
-      this.decelerateBackToZero();
-    }
-  }
-
   private hasBullet(id: string): boolean {
     return Boolean(find(this.bullets, { id }));
-  }
-
-  private decelerateBackToZero(): void {
-    let mult: number;
-    if (this.speed > 0) {
-      mult = Math.abs(this.MAX_SPEED - this.speed) / 2;
-      this.speed = Math.max(this.speed - this.acceleration * mult, 0);
-    } else if (this.speed < 0) {
-      mult = Math.abs(-this.MAX_SPEED - this.speed) / 2;
-      this.speed = Math.min(this.speed + this.acceleration * mult, 0);
-    }
-  }
-
-  private useSprintsToAccelerateForward(): void {
-    let mult = (Math.abs(this.MAX_SPEED - this.speed) / 2) ** 2;
-    this.speed += this.acceleration * mult;
-    this.sprints--;
-  }
-
-  private useSprintsToAccelerateBackwards(): void {
-    let mult = Math.abs(-this.MAX_SPEED - this.speed) / 2;
-    this.speed -= this.acceleration * mult;
-    this.sprints++;
   }
 
   private getComputedDirection(): number {
