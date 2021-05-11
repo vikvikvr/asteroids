@@ -35,10 +35,7 @@ class Ship extends GameObject {
 
   public update(): void {
     super.update();
-    remove(this.bullets, { isExpired: true });
-    for (const bullet of this.bullets) {
-      bullet.update();
-    }
+    this.updateBullets();
   }
 
   public turnLeft(): void {
@@ -85,6 +82,13 @@ class Ship extends GameObject {
       bullets: this.bullets.map((b) => b.serialize()),
       shielded: this.shielded
     };
+  }
+
+  private updateBullets() {
+    for (const bullet of this.bullets) {
+      bullet.update();
+    }
+    remove(this.bullets, { isExpired: true });
   }
 
   private changeDirection(direction: 1 | -1) {
