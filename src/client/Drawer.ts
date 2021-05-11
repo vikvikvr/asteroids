@@ -111,7 +111,7 @@ class Drawer {
   private drawGameScreen(snapshot: GameSnapshot): void {
     this.drawEnvironment();
     this.drawGameObjects(snapshot);
-    this.createNewAnimations(snapshot);
+    this.addNewAnimations(snapshot);
     this.drawAnimations();
     this.gui.draw(snapshot);
   }
@@ -160,7 +160,7 @@ class Drawer {
     this.drawAsteroids(asteroids, snapshot.frozen);
   }
 
-  private createNewAnimations(snapshot: GameSnapshot): void {
+  private addNewAnimations(snapshot: GameSnapshot): void {
     for (const event of snapshot.events) {
       if (event.type === 'GOT_BONUS') {
         this.addGotBonusAnimation(event);
