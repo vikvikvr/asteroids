@@ -26,6 +26,7 @@ interface DrawGameObjectOptions {
   image: P5.Image;
   rotateDirection?: boolean;
   rotationOffset?: number;
+  scale?: number;
 }
 
 interface DrawerOptions {
@@ -187,10 +188,17 @@ class Drawer {
     event: GameEventSnapshot,
     frozen: boolean
   ): void {
+    const explosionScaleMap = {
+      large: 1,
+      medium: 0.75,
+      small: 0.5
+    };
+    event = event as BulletHitSnapshot;
     const assetKey = frozen ? 'shatterAnimation' : 'explosionAnimation';
-    let frames = this.assets[assetKey];
-    // TODO: adapt explosion size to event
-    this.animations.push(new ImageAnimation(frames, event.coords, 1));
+    const frames = this.assets[assetKey];
+    const scale = explosionScaleMap[event.size];
+    const animation = new ImageAnimation(frames, event.coords, scale);
+    this.animations.push(animation);
   }
 
   private addShipHitAnimation(event: GameEventSnapshot): void {
@@ -262,7 +270,8 @@ class Drawer {
         if (drawable) {
           this.drawGameObject(drawable, {
             image: drawable.image,
-            rotationOffset: animation.rotation
+            rotationOffset: animation.rotation,
+            scale: drawable.scale
           });
         }
       }
@@ -329,6 +338,7 @@ class Drawer {
     p5.rotate(object.orientation);
     p5.rotate(options.rotateDirection ? object.direction : 0);
     p5.rotate(options.rotationOffset || 0);
+    p5.scale(options.scale || 1);
     p5.image(options.image, 0, 0, side, side);
     if (this.showHitBoxes) {
       p5.noFill();
