@@ -43,6 +43,7 @@ const Sketch = (p5: P5) => {
 
   p5.setup = async () => {
     assets = await loadAssets(p5);
+    p5.pixelDensity(2);
     // listenForSnapshots
     let container = document.getElementById(rootElementId)!;
     container.addEventListener('snapshot', ((event: SnapshotEvent) => {
@@ -59,9 +60,11 @@ const Sketch = (p5: P5) => {
       rootElementId,
       showHitBoxes: false
     });
-    let $loading = document.getElementById('loading')!;
-    document.body.removeChild($loading);
-    loaded = true;
+    setTimeout(() => {
+      let $loading = document.getElementById('loading')!;
+      document.body.removeChild($loading);
+      loaded = true;
+    }, 500);
   };
 
   p5.keyPressed = () => {
