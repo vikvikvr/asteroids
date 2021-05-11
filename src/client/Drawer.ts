@@ -348,20 +348,22 @@ class Drawer {
   }
 
   private drawShip(ship: ShipSnapshot): void {
-    let { p5 } = this;
     this.drawTail(ship.tail, 'ship');
-    // shield
-    if (ship.shielded) {
-      p5.stroke(0, 255, 0, 128);
-      p5.fill(0, 55, 0, 128);
-      p5.circle(p5.windowWidth / 2, p5.windowHeight / 2, 80);
-    }
-    // ship
+    this.drawShipShield(ship.shielded);
     this.drawGameObject(ship, {
       image: this.assets.images.ship,
       rotateDirection: true,
       rotationOffset: Math.PI / 2
     });
+  }
+
+  private drawShipShield(isShielded: boolean) {
+    if (isShielded) {
+      const { p5 } = this;
+      p5.stroke(0, 255, 0, 128);
+      p5.fill(0, 55, 0, 128);
+      p5.circle(p5.windowWidth / 2, p5.windowHeight / 2, 80);
+    }
   }
 
   private drawTail(tail: Point[], type: 'ship' | 'asteroid', frozen = false) {
