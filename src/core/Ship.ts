@@ -44,15 +44,13 @@ class Ship extends GameObject {
     });
   }
 
-  public update(times = 1): void {
-    for (let i = 0; i < times; i++) {
-      super.update();
-      remove(this.bullets, { isExpired: true });
-      for (const bullet of this.bullets) {
-        bullet.update();
-      }
-      // this.modifySpeed();
+  public update(): void {
+    super.update();
+    remove(this.bullets, { isExpired: true });
+    for (const bullet of this.bullets) {
+      bullet.update();
     }
+    // this.modifySpeed();
   }
 
   public turnLeft(): void {
@@ -63,28 +61,14 @@ class Ship extends GameObject {
     this.changeDirection(1);
   }
 
-  public accelerate(times = 1): void {
+  public accelerate(): void {
     const newSpeed = this.speed + this.accelerationStep;
     this.speed = Math.min(this.MAX_SPEED, newSpeed);
-    // for (let i = 0; i < times; i++) {
-    //   if (this.sprints > 0) {
-    //     this.sprints += this.ACC_SPRINTS;
-    //   } else {
-    //     this.sprints = this.ACC_SPRINTS;
-    //   }
-    // }
   }
 
-  public decelerate(times = 1): void {
+  public decelerate(): void {
     const newSpeed = this.speed - this.accelerationStep;
     this.speed = Math.max(-this.MAX_SPEED, newSpeed);
-    // for (let i = 0; i < times; i++) {
-    //   if (this.sprints < 0) {
-    //     this.sprints += -this.DEC_SPRINTS;
-    //   } else {
-    //     this.sprints = -this.DEC_SPRINTS;
-    //   }
-    // }
   }
 
   public fire(): void {

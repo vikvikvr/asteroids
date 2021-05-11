@@ -49,7 +49,7 @@ class Entity {
 
   protected serialize(): EntitySnapshot {
     return {
-      coords: {...this.coords},
+      coords: { ...this.coords },
       speed: this.speed,
       acceleration: this.acceleration,
       orientation: this.orientation,
@@ -63,12 +63,10 @@ class Entity {
     this.rotationSpeed *= -1;
   }
 
-  protected update(times: number = 1): void {
-    for (let i = 0; i < times; i++) {
-      this.updatePosition();
-      this.approachTargetDirection();
-      this.orientation += this.rotationSpeed;
-    }
+  protected update(): void {
+    this.updatePosition();
+    this.approachTargetDirection();
+    this.orientation += this.rotationSpeed;
   }
 
   protected setTargetDirection(direction: number): void {
