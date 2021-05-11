@@ -327,26 +327,24 @@ class Drawer {
   private drawGameObject(
     object: DrawableObject,
     options: DrawGameObjectOptions
-  ): boolean {
-    let { p5 } = this;
-    let coords = this.drawableCoords(object.coords);
-    if (!coords) return false;
-    let side = object.hitBoxRadius * 2;
-    p5.imageMode(p5.CENTER);
-    p5.push();
-    p5.translate(coords.x, coords.y);
-    p5.rotate(object.orientation);
-    p5.rotate(options.rotateDirection ? object.direction : 0);
-    p5.rotate(options.rotationOffset || 0);
-    p5.scale(options.scale || 1);
-    p5.image(options.image, 0, 0, side, side);
-    if (this.showHitBoxes) {
-      p5.noFill();
-      p5.stroke('red');
-      p5.circle(0, 0, side);
+  ): void {
+    const { p5 } = this;
+    const coords = this.drawableCoords(object.coords);
+    if (coords) {
+      const side = object.hitBoxRadius * 2;
+      const rotation = object.orientation + (options.rotationOffset || 0);
+      p5.push();
+      p5.translate(coords.x, coords.y);
+      p5.rotate(rotation + (options.rotateDirection ? object.direction : 0));
+      p5.scale(options.scale || 1);
+      p5.image(options.image, 0, 0, side, side);
+      if (this.showHitBoxes) {
+        p5.noFill();
+        p5.stroke('red');
+        p5.circle(0, 0, side);
+      }
+      p5.pop();
     }
-    p5.pop();
-    return true;
   }
 
   private drawShip(ship: ShipSnapshot): void {
