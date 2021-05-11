@@ -177,9 +177,9 @@ class Drawer {
   }
 
   private addScoreAnimation(event: GameEventSnapshot, frozen: boolean) {
-    let myEvent = event as BulletHitSnapshot;
-    const score = bulletHitScore(myEvent.size, frozen);
-    const scoreAnimation = new TextAnimation(score.toString(), myEvent.coords);
+    event = event as BulletHitSnapshot;
+    const score = bulletHitScore(event.size, frozen);
+    const scoreAnimation = new TextAnimation(score.toString(), event.coords);
     this.animations.push(scoreAnimation);
     // console.log('add points', score);
   }
@@ -202,8 +202,8 @@ class Drawer {
   }
 
   private addShipHitAnimation(event: GameEventSnapshot): void {
-    let myEvent = event as ShipHitSnapshot;
-    if (!myEvent.shielded) {
+    event = event as ShipHitSnapshot;
+    if (!event.shielded) {
       this.animations.push(new OverlayAnimation(30, 'red'));
     }
   }
