@@ -26,6 +26,7 @@ import { bulletHitScore } from '../core/game-rules';
 interface DrawGameObjectOptions {
   image: P5.Image;
   rotateDirection?: boolean;
+  ignoreOrientation?: boolean;
   rotationOffset?: number;
   scale?: number;
 }
@@ -335,10 +336,12 @@ class Drawer {
     const coords = this.drawableCoords(object.coords);
     if (coords) {
       const side = object.hitBoxRadius * 2;
-      const rotation = object.orientation + (options.rotationOffset || 0);
+      const orientation = options.ignoreOrientation ? 0 : object.orientation;
+      const offset = options.rotationOffset || 0;
+      const direction = options.rotateDirection ? object.direction : 0;
       p5.push();
       p5.translate(coords.x, coords.y);
-      p5.rotate(rotation + (options.rotateDirection ? object.direction : 0));
+      p5.rotate(orientation + offset + direction);
       p5.scale(options.scale || 1);
       p5.image(options.image, 0, 0, side, side);
       if (this.showHitBoxes) {
