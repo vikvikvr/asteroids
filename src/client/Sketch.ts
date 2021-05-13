@@ -11,6 +11,7 @@ export type ImageAsset =
   | 'frozen-asteroid-large'
   | 'frozen-asteroid-medium'
   | 'frozen-asteroid-small'
+  | 'asteroid-tail'
   | 'ship'
   | 'fix'
   | 'shield'

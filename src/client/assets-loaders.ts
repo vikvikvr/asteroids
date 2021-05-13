@@ -46,6 +46,7 @@ function loadImageAssets(p5: P5): Promise<Record<string, P5.Image>> {
     'frozen-asteroid-large',
     'frozen-asteroid-medium',
     'frozen-asteroid-small',
+    'asteroid-tail',
     'ship',
     'fix',
     'shield',
