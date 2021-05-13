@@ -319,7 +319,7 @@ class Drawer {
 
   private drawAsteroids(asteroids: AsteroidSnapshot[], frozen: boolean): void {
     for (const asteroid of asteroids) {
-      this.drawTail(asteroid.tail, 'asteroid', frozen);
+      this.drawAsteroidTail(asteroid, frozen);
       const assetPrefix = frozen ? 'frozen-' : '';
       const assetSuffix = '-' + asteroid.size;
       const assetName = `${assetPrefix}asteroid${assetSuffix}`;
@@ -370,6 +370,16 @@ class Drawer {
       p5.fill(0, 55, 0, 128);
       p5.circle(p5.windowWidth / 2, p5.windowHeight / 2, 80);
     }
+  }
+
+  private drawAsteroidTail(asteroid: AsteroidSnapshot, frozen: boolean): void {
+    this.drawGameObject(asteroid, {
+      image: this.assets.images['asteroid-tail'],
+      ignoreOrientation: true,
+      rotateDirection: true,
+      rotationOffset: Math.PI,
+      scale: 3
+    });
   }
 
   private drawTail(tail: Point[], type: 'ship' | 'asteroid', frozen = false) {
