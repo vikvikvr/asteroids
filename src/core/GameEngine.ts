@@ -26,7 +26,7 @@ class GameEngine {
   public status: GameStatus = 'idle';
   public world: Rect;
   public spawner: Spawner;
-  public levelDuration = 40_000;
+  public levelDuration = 20_000;
   // private
   private gameOverCallback?: () => void;
   private gameWonCallback?: () => void;
@@ -204,17 +204,39 @@ class GameEngine {
   }
 
   private assignScore(event: ev.BulletHit): void {
-    const scoreToAdd = bulletHitScore(event.size, this.state.frozen);
+    const scoreToAdd = bulletHitScore(event.size, this.state.temperature);
     this.state.score += scoreToAdd;
   }
 
   private updateLevel() {
     const { spawner, levelDuration } = this;
+    const { ship } = this.state;
     const spawnTime = levelDuration / 4;
-    setTimeout(() => spawner.spawnBonus({ type: 'shield' }), spawnTime);
+    // const bonusTypes: DropType[] = ['shield', 'freeze', 'fix'];
+    setTimeout(() => {
+      this.state.temperature = 'low';
+      console.log('low temp');
+      setTimeout(() => {
+        this.state.temperature = 'normal';
+        console.log('normal temp');
+      }, spawnTime);
+    }, spawnTime);
+    setTimeout(() => {
+      this.state.temperature = 'high';
+      console.log('high temp');
+      setTimeout(() => {
+        this.state.temperature = 'normal';
+        console.log('normal temp');
+      }, spawnTime);
+    }, spawnTime * 3);
     spawner.spawnAsteroid({ count: 30 });
-    setTimeout(() => spawner.spawnBonus({ type: 'freeze' }), spawnTime * 2);
-    setTimeout(() => spawner.spawnBonus({ type: 'fix' }), spawnTime * 3);
+    if (this.state.level) {
+      spawner.spawnBonus({ type: 'fix', coords: ship.coords });
+    }
+    // for (let i = 1; i <= bonusTypes.length; i++) {
+    //   const options = { type: bonusTypes[i], coords: ship.coords };
+    //   setTimeout(() => spawner.spawnBonus(options), spawnTime * i);
+    // }
     this.state.level++;
   }
 
@@ -245,11 +267,11 @@ class GameEngine {
   }
 
   private createLoot(coords: Point): void {
-    let dropRate = 1 / 20;
-    let canDrop = Math.random() > 1 - dropRate;
-    if (canDrop) {
-      this.spawner.spawnBonus({ coords });
-    }
+    // let dropRate = 1 / 20;
+    // let canDrop = Math.random() > 1 - dropRate;
+    // if (canDrop) {
+    //   this.spawner.spawnBonus({ coords });
+    // }
   }
 }
 
