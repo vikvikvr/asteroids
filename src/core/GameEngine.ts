@@ -8,6 +8,7 @@ import Spawner from './Spawner';
 import { bulletHitScore } from './game-rules';
 
 export type GameStatus = 'playing' | 'won' | 'lost' | 'idle';
+export type GameTemperature = 'low' | 'high' | 'normal';
 
 export interface GameState {
   score: number;
@@ -16,7 +17,7 @@ export interface GameState {
   asteroids: Asteroid[];
   bonuses: Drop[];
   events: ev.TGameEvent[];
-  frozen: boolean;
+  temperature: GameTemperature;
 }
 
 class GameEngine {
@@ -39,7 +40,7 @@ class GameEngine {
       ship: new Ship({ world, coords: centerOf(world) }),
       score: 0,
       level: 0,
-      frozen: false
+      temperature: 'normal'
     };
     this.world = world;
     this.spawner = new Spawner(this.state, this.world);
@@ -66,7 +67,7 @@ class GameEngine {
 
   private update(): void {
     this.state.ship.update();
-    this.updateAsteroids(this.state.frozen);
+    this.updateAsteroids();
     this.updateBonuses();
     this.checkCollisions();
     this.checkGameWon();
@@ -116,10 +117,15 @@ class GameEngine {
     }
   }
 
-  private updateAsteroids(skip: boolean): void {
-    if (skip) return;
-    for (const asteroid of this.state.asteroids) {
-      asteroid.update();
+  private updateAsteroids(): void {
+    const { temperature, asteroids } = this.state;
+    const speedMultiplierMap: Record<GameTemperature, number> = {
+      normal: 1,
+      low: 0.05,
+      high: 2
+    };
+    for (const asteroid of asteroids) {
+      asteroid.update(speedMultiplierMap[temperature]);
     }
   }
 
@@ -140,7 +146,11 @@ class GameEngine {
     for (const asteroid of asteroids) {
       for (const bullet of ship.bullets) {
         if (haveCollided(asteroid, bullet)) {
-          let event = new ev.BulletHit(bullet, asteroid, this.state.frozen);
+          let event = new ev.BulletHit(
+            bullet,
+            asteroid,
+            this.state.temperature === 'low'
+          );
           events.push(event);
           this.processBulletHit(event);
           this.assignScore(event);
@@ -177,7 +187,8 @@ class GameEngine {
     if (asteroid) {
       this.createLoot(asteroid.coords);
       let nextSize = asteroid.splitSize();
-      if (nextSize && !this.state.frozen) {
+      const shouldSplit = this.state.temperature !== 'low';
+      if (shouldSplit && nextSize) {
         this.spawner.spawnAsteroid({
           count: 2,
           size: nextSize,
@@ -223,10 +234,10 @@ class GameEngine {
         ship.activateShield();
         break;
       case 'freeze':
-        this.state.frozen = true;
+        this.state.temperature = 'low';
         // TODO: case when freeze is already active
         setTimeout(() => {
-          this.state.frozen = false;
+          this.state.temperature = 'normal';
         }, 5000);
         break;
     }

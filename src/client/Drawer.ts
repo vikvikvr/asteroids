@@ -1,4 +1,4 @@
-import GameEngine from '../core/GameEngine';
+import GameEngine, { GameTemperature } from '../core/GameEngine';
 import P5 from 'p5';
 import { drawableCoords, Point, Rect } from '../lib/geometry';
 import { DrawerAssets } from './Sketch';
@@ -148,7 +148,7 @@ class Drawer {
     this.drawBullets(ship.bullets);
     this.drawShip(ship);
     this.drawBonuses(bonuses);
-    this.drawAsteroids(asteroids, engine.state.frozen);
+    this.drawAsteroids(asteroids, engine.state.temperature);
   }
 
   private addNewAnimations(engine: GameEngine): void {
@@ -156,33 +156,37 @@ class Drawer {
       if (event.type === 'GOT_BONUS') {
         this.addGotBonusAnimation(event);
       } else {
-        this.addExplosionAnimation(event, engine.state.frozen);
+        this.addExplosionAnimation(event, engine.state.temperature);
         if (event.type === 'SHIP_HIT') {
           this.addShipHitAnimation(event);
         } else {
-          this.addScoreAnimation(event, engine.state.frozen);
+          this.addScoreAnimation(event, engine.state.temperature);
         }
       }
     }
     engine.state.events = [];
   }
 
-  private addScoreAnimation(event: GameEvent, frozen: boolean) {
+  private addScoreAnimation(event: GameEvent, temperature: GameTemperature) {
     const myEvent = event as BulletHit;
-    const score = bulletHitScore(myEvent.size, frozen);
+    const score = bulletHitScore(myEvent.size, temperature);
     const scoreAnimation = new TextAnimation(score.toString(), myEvent.coords);
     this.animations.push(scoreAnimation);
     // console.log('add points', score);
   }
 
-  private addExplosionAnimation(event: GameEvent, frozen: boolean): void {
+  private addExplosionAnimation(
+    event: GameEvent,
+    temperature: GameTemperature
+  ): void {
     const explosionScaleMap = {
       large: 1,
       medium: 0.75,
       small: 0.5
     };
     const myEvent = event as BulletHit;
-    const assetKey = frozen ? 'shatterAnimation' : 'explosionAnimation';
+    const assetKey =
+      temperature === 'low' ? 'shatterAnimation' : 'explosionAnimation';
     const frames = this.assets[assetKey];
     const scale = explosionScaleMap[myEvent.size];
     const animation = new ImageAnimation(frames, myEvent.coords, scale);
@@ -305,10 +309,14 @@ class Drawer {
     }
   }
 
-  private drawAsteroids(asteroids: Asteroid[], frozen: boolean): void {
+  private drawAsteroids(
+    asteroids: Asteroid[],
+    temperature: GameTemperature
+  ): void {
     for (const asteroid of asteroids) {
-      this.drawAsteroidTail(asteroid, frozen);
-      const assetPrefix = frozen ? 'frozen-' : '';
+      this.drawAsteroidTail(asteroid, temperature);
+      let assetPrefix = '';
+      if (temperature === 'low') assetPrefix = 'frozen-';
       const assetSuffix = '-' + asteroid.size;
       const assetName = `${assetPrefix}asteroid${assetSuffix}`;
       const options = { image: this.assets.images[assetName] };
@@ -342,7 +350,7 @@ class Drawer {
   }
 
   private drawShip(ship: Ship): void {
-    this.drawTail(ship.tail, 'ship');
+    // this.drawTail(ship.tail, 'ship');
     this.drawShipShield(ship.shielded);
     this.drawGameObject(ship, {
       image: this.assets.images.ship,
@@ -360,7 +368,10 @@ class Drawer {
     }
   }
 
-  private drawAsteroidTail(asteroid: Asteroid, frozen: boolean): void {
+  private drawAsteroidTail(
+    asteroid: Asteroid,
+    temperature: GameTemperature
+  ): void {
     this.drawGameObject(asteroid, {
       image: this.assets.images['asteroid-tail'],
       ignoreOrientation: true,
@@ -370,7 +381,7 @@ class Drawer {
     });
   }
 
-  private drawTail(tail: Point[], type: 'ship' | 'asteroid', frozen = false) {
+  private drawTail(tail: Point[], type: 'ship' | 'asteroid') {
     let { p5 } = this;
     for (let i = 0; i < tail.length; i++) {
       const point = tail[i];
@@ -383,11 +394,7 @@ class Drawer {
           p5.fill(50, 50, 50, alpha);
         } else {
           size *= 1.5;
-          if (frozen) {
-            p5.fill(75, 174, 219, alpha);
-          } else {
-            p5.fill(240, 125, 10, alpha);
-          }
+          p5.fill(240, 125, 10, alpha);
         }
         p5.circle(coords.x, coords.y, size);
       }
