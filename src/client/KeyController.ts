@@ -1,12 +1,8 @@
 import { forIn } from 'lodash';
 import p5 from 'p5';
+import Ship from '../core/Ship';
 
-export type Command =
-  | 'turnLeft'
-  | 'turnRight'
-  | 'accelerate'
-  | 'decelerate'
-  | 'fire';
+type Func = () => void;
 
 enum Keys {
   ARROW_LEFT = 37,
@@ -19,24 +15,25 @@ enum Keys {
 }
 
 class KeyController {
-  private rootElementId: string;
-  private commandsMap: Record<Keys, Command>;
-  constructor(rootElementId: string) {
-    this.rootElementId = rootElementId;
+  private ship: Ship;
+  private commandsMap: Record<Keys, Func>;
+  constructor(ship: Ship) {
+    this.ship = ship;
     this.commandsMap = {
-      [Keys.ARROW_LEFT]: 'turnLeft',
-      [Keys.ARROW_RIGHT]: 'turnRight',
-      [Keys.ARROW_UP]: 'accelerate',
-      [Keys.ARROW_DOWN]: 'decelerate',
-      [Keys.SPACE_BAR]: 'fire'
+      [Keys.ARROW_LEFT]: ship.turnLeft,
+      [Keys.ARROW_RIGHT]: ship.turnRight,
+      [Keys.ARROW_UP]: ship.accelerate,
+      [Keys.ARROW_DOWN]: ship.decelerate,
+      [Keys.SPACE_BAR]: ship.fire
     };
   }
 
   public pressed(p5: p5) {
     forIn(this.commandsMap, (command, key) => {
-      const keyCode = parseInt(key);
+      const keyCode = parseInt(key) as Keys;
       if (p5.keyIsDown(keyCode)) {
-        this.sendCommand(command as Command);
+        this.commandsMap[keyCode].call(this.ship);
+        // this.sendCommand(command as Command);
       }
     });
     // if (p5.keyIsDown())
@@ -54,10 +51,10 @@ class KeyController {
     // }
   }
 
-  private sendCommand(type: Command): void {
-    let container = document.getElementById(this.rootElementId)!;
-    container.dispatchEvent(new CustomEvent('command', { detail: type }));
-  }
+  // private sendCommand(type: Command): void {
+  //   let container = document.getElementById(this.rootElementId)!;
+  //   container.dispatchEvent(new CustomEvent('command', { detail: type }));
+  // }
 }
 
 export default KeyController;

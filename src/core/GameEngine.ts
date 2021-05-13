@@ -62,13 +62,14 @@ class GameEngine {
     this.spawner = new Spawner(this.state, this.world);
   }
 
-  public startLevel(callback: (snapshot: any) => void): void {
+  public startLevel(): void {
     let { spawner } = this;
     this.status = 'playing';
     spawner.spawnAsteroid({ count: 30 });
     spawner.asteroidEvery(5_000, { count: 5 });
     this.snapshotTimeout = setInterval(() => {
-      callback(this.createSnapshot());
+      this.update();
+      // callback(this.createSnapshot());
     }, 16);
   }
 
@@ -264,8 +265,9 @@ class GameEngine {
   private createLoot(coords: Point): void {
     let dropRate = 1 / 20;
     let canDrop = Math.random() > 1 - dropRate;
-    canDrop && this.spawner.spawnBonus({ coords });
-    // console.log('create loot not implemented');
+    if (canDrop) {
+      this.spawner.spawnBonus({ coords });
+    }
   }
 }
 

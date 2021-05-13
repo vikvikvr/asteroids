@@ -1,5 +1,5 @@
 import P5 from 'p5';
-import { GameSnapshot } from '../core/GameEngine';
+import GameEngine, { GameSnapshot } from '../core/GameEngine';
 import KeyController from './KeyController';
 import Drawer from './Drawer';
 import { loadAssets } from './assets-loaders';
@@ -34,9 +34,10 @@ interface SnapshotEvent extends CustomEvent {
 const rootElementId = 'root';
 
 const Sketch = (p5: P5) => {
-  var keyController = new KeyController(rootElementId);
+  var keyController: KeyController;
   var drawer: Drawer;
   let loaded = false;
+  let engine: GameEngine;
   var assets: DrawerAssets = {
     images: {},
     explosionAnimation: [],
@@ -52,25 +53,31 @@ const Sketch = (p5: P5) => {
     p5.imageMode(p5.CENTER);
     p5.rectMode(p5.CORNER);
     // listenForSnapshots
-    let container = document.getElementById(rootElementId)!;
-    container.addEventListener('snapshot', ((event: SnapshotEvent) => {
-      lastSnapshot = event.detail;
-    }) as EventListener);
+    // let container = document.getElementById(rootElementId)!;
+    // container.addEventListener('snapshot', ((event: SnapshotEvent) => {
+    //   lastSnapshot = event.detail;
+    // }) as EventListener);
     // askToStartGame
-    setTimeout(() => {
-      container.dispatchEvent(new Event('start'));
-    }, 1000);
+    // setTimeout(() => {
+    //   container.dispatchEvent(new Event('start'));
+    // }, 1000);
     p5.frameRate(60);
-    drawer = new Drawer({
-      p5,
-      assets,
-      rootElementId,
-      showHitBoxes: false
-    });
     setTimeout(() => {
       let $loading = document.getElementById('loading')!;
       document.body.removeChild($loading);
       loaded = true;
+      engine = new GameEngine({ width: 4000, height: 2000 });
+      drawer = new Drawer({
+        p5,
+        engine,
+        assets,
+        rootElementId,
+        showHitBoxes: false
+      });
+      engine.startLevel();
+      keyController = new KeyController(engine.state.ship);
+
+      drawer.createStars(engine.world, 200);
     }, 500);
   };
 
@@ -82,10 +89,11 @@ const Sketch = (p5: P5) => {
   };
 
   p5.draw = () => {
-    if (loaded) {
+    const canDraw = loaded && engine.status === 'playing';
+    if (canDraw) {
       keyController.pressed(p5);
-      drawer.updateSnapshot(lastSnapshot);
-      drawer.drawScreen();
+      // drawer.updateSnapshot(lastSnapshot);
+      drawer.drawScreen(engine);
     }
   };
 };

@@ -1,4 +1,4 @@
-import { GameSnapshot } from '../core/GameEngine';
+import GameEngine, { GameSnapshot } from '../core/GameEngine';
 import P5 from 'p5';
 import { drawableCoords, Point, Rect } from '../lib/geometry';
 import { DrawerAssets } from './Sketch';
@@ -13,7 +13,7 @@ import Animation, {
   OverlayAnimationColor,
   TextAnimation
 } from './Animation';
-import { ShipSnapshot } from '../core/Ship';
+import Ship, { ShipSnapshot } from '../core/Ship';
 import {
   BulletHitSnapshot,
   GameEventSnapshot,
@@ -33,6 +33,7 @@ interface DrawGameObjectOptions {
 
 interface DrawerOptions {
   p5: P5;
+  engine: GameEngine;
   assets: DrawerAssets;
   rootElementId: string;
   showHitBoxes?: boolean;
@@ -58,6 +59,7 @@ class Drawer {
   private assets: DrawerAssets;
   private showHitBoxes: boolean;
   private screen: Rect;
+  private engine: GameEngine;
   private gui: GUI;
   private snapshot?: GameSnapshot;
   private animations: Animation[] = [];
@@ -68,6 +70,7 @@ class Drawer {
       this.p5.windowWidth,
       this.p5.windowHeight
     );
+    this.engine = options.engine;
     canvas.parent(options.rootElementId);
     this.assets = options.assets;
     this.showHitBoxes = options.showHitBoxes || false;
@@ -88,17 +91,17 @@ class Drawer {
     this.snapshot = snapshot;
   }
 
-  public drawScreen(): void {
-    if (!this.snapshot) return;
-    switch (this.snapshot.status) {
+  public drawScreen(engine: GameEngine): void {
+    // if (!this.snapshot) return;
+    switch (engine.status) {
       case 'playing':
-        this.drawGameScreen(this.snapshot);
+        this.drawGameScreen(engine);
         break;
       case 'lost':
-        this.drawGameOverScreen(this.snapshot.score);
+        this.drawGameOverScreen(engine.state.score);
         break;
       case 'won':
-        this.drawGameWonScreen(this.snapshot.score);
+        this.drawGameWonScreen(engine.state.score);
         break;
       case 'idle':
         console.log('idle');
@@ -111,12 +114,12 @@ class Drawer {
     this.screen = { width, height };
   }
 
-  private drawGameScreen(snapshot: GameSnapshot): void {
+  private drawGameScreen(engine: GameEngine): void {
     this.drawEnvironment();
-    this.drawGameObjects(snapshot);
-    this.addNewAnimations(snapshot);
+    this.drawGameObjects(engine);
+    this.addNewAnimations(engine);
     this.drawAnimations();
-    this.gui.draw(snapshot);
+    this.gui.draw(engine);
   }
 
   private drawGameOverScreen(score: number): void {
@@ -155,27 +158,28 @@ class Drawer {
     this.drawStars(stars);
   }
 
-  private drawGameObjects(snapshot: GameSnapshot): void {
-    let { ship, bonuses, asteroids } = snapshot;
+  private drawGameObjects(engine: GameEngine): void {
+    let { ship, bonuses, asteroids } = engine.state;
     this.drawBullets(ship.bullets);
     this.drawShip(ship);
     this.drawBonuses(bonuses);
-    this.drawAsteroids(asteroids, snapshot.frozen);
+    this.drawAsteroids(asteroids, engine.state.frozen);
   }
 
-  private addNewAnimations(snapshot: GameSnapshot): void {
-    for (const event of snapshot.events) {
+  private addNewAnimations(engine: GameEngine): void {
+    for (const event of engine.state.events) {
       if (event.type === 'GOT_BONUS') {
         this.addGotBonusAnimation(event);
       } else {
-        this.addExplosionAnimation(event, snapshot.frozen);
+        this.addExplosionAnimation(event, engine.state.frozen);
         if (event.type === 'SHIP_HIT') {
           this.addShipHitAnimation(event);
         } else {
-          this.addScoreAnimation(event, snapshot.frozen);
+          this.addScoreAnimation(event, engine.state.frozen);
         }
       }
     }
+    engine.state.events = [];
   }
 
   private addScoreAnimation(event: GameEventSnapshot, frozen: boolean) {
@@ -282,7 +286,7 @@ class Drawer {
     }
   }
 
-  private createStars(world: Rect, amount: number): void {
+  public createStars(world: Rect, amount: number): void {
     for (let i = 0; i < amount; i++) {
       this.stars.push({
         x: Math.random() * world.width,
@@ -295,9 +299,9 @@ class Drawer {
   private drawableCoords(object: Point): Point | undefined {
     return drawableCoords(
       object,
-      this.snapshot?.ship.coords || { x: 0, y: 0 },
+      this.engine.state.ship.coords,
       this.screen,
-      this.snapshot?.world || { width: 1000, height: 1000 }
+      this.engine.world
     );
   }
 
@@ -353,7 +357,7 @@ class Drawer {
     }
   }
 
-  private drawShip(ship: ShipSnapshot): void {
+  private drawShip(ship: Ship): void {
     this.drawTail(ship.tail, 'ship');
     this.drawShipShield(ship.shielded);
     this.drawGameObject(ship, {

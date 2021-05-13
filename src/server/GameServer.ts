@@ -1,5 +1,5 @@
 import GameEngine, { GameSnapshot } from '../core/GameEngine';
-import { Command } from '../client/KeyController';
+// import { Command } from '../client/KeyController';
 
 type ClientEvent = 'start' | 'command';
 
@@ -13,7 +13,7 @@ class GameServer {
 
   public start() {
     this.on('start', this.handleStartRequest);
-    this.on('command', this.handleCommand);
+    // this.on('command', this.handleCommand);
   }
 
   private on(type: ClientEvent, handler: (event: CustomEvent) => any) {
@@ -25,7 +25,7 @@ class GameServer {
     // add engine to engines array
     // send client id back to client
     // start sending updates to the client
-    this.engine.startLevel(this.sendSnapshotToClient.bind(this));
+    this.engine.startLevel();
     this.container.dispatchEvent(new Event('started'));
   }
 
@@ -35,10 +35,10 @@ class GameServer {
     );
   }
 
-  private handleCommand(event: CustomEvent) {
-    let command = event.detail as Command;
-    this.engine.state.ship[command]?.();
-  }
+  // private handleCommand(event: CustomEvent) {
+  //   let command = event.detail as Command;
+  //   this.engine.state.ship[command]?.();
+  // }
 }
 
 export default GameServer;

@@ -3,7 +3,7 @@ import { ShipSnapshot } from '../core/Ship';
 import { SpawnerEtas } from '../core/Spawner';
 import { AsteroidSnapshot } from '../core/Asteroid';
 import { ColorsMap } from './colors';
-import { GameSnapshot } from '../core/GameEngine';
+import GameEngine, { GameSnapshot, GameState } from '../core/GameEngine';
 import { filter } from 'lodash';
 
 const SPACING = 20;
@@ -18,11 +18,11 @@ class GUI {
     this.colors = colors;
   }
 
-  public draw(snapshot: GameSnapshot) {
+  public draw(engine: GameEngine) {
     // this.drawAsteroidsInfo(snapshot.asteroids);
-    this.drawShipInfo(snapshot.ship);
+    this.drawShipInfo(engine.state.ship);
     // this.drawTimersInfo(snapshot.etas);
-    this.drawScore(snapshot);
+    this.drawScore(engine.state);
   }
 
   private drawAsteroidsInfo(asteroids: AsteroidSnapshot[]): void {
@@ -51,11 +51,11 @@ class GUI {
     p5.text(`Asteroids in: ${(etas.asteroids / 1000).toFixed(0)}s`, x, y);
   }
 
-  private drawScore(snapshot: GameSnapshot): void {
+  private drawScore(state: GameState): void {
     let { p5 } = this;
     p5.textAlign(p5.CENTER);
-    p5.text(snapshot.score, p5.windowWidth / 2, SPACING);
-    p5.text(`Level ${snapshot.level}`, p5.windowWidth / 2, SPACING * 2);
+    p5.text(state.score, p5.windowWidth / 2, SPACING);
+    p5.text(`Level ${state.level}`, p5.windowWidth / 2, SPACING * 2);
   }
 }
 
