@@ -210,9 +210,29 @@ class GameEngine {
 
   private updateLevel() {
     const { spawner, levelDuration } = this;
-    const { ship } = this.state;
+    const { ship, level } = this.state;
     const spawnTime = levelDuration / 4;
-    // const bonusTypes: DropType[] = ['shield', 'freeze', 'fix'];
+    this.planLowTemperaturePeriod(spawnTime);
+    this.planHighTemperaturePeriod(spawnTime);
+    spawner.spawnAsteroid({ count: 30 });
+    if (level > 0) {
+      spawner.spawnBonus({ type: 'fix', coords: ship.coords });
+    }
+    this.state.level++;
+  }
+
+  private planHighTemperaturePeriod(spawnTime: number): void {
+    setTimeout(() => {
+      this.state.temperature = 'high';
+      console.log('high temp');
+      setTimeout(() => {
+        this.state.temperature = 'normal';
+        console.log('normal temp');
+      }, spawnTime);
+    }, spawnTime);
+  }
+
+  private planLowTemperaturePeriod(spawnTime: number): void {
     setTimeout(() => {
       this.state.temperature = 'low';
       console.log('low temp');
@@ -221,23 +241,6 @@ class GameEngine {
         console.log('normal temp');
       }, spawnTime);
     }, spawnTime);
-    setTimeout(() => {
-      this.state.temperature = 'high';
-      console.log('high temp');
-      setTimeout(() => {
-        this.state.temperature = 'normal';
-        console.log('normal temp');
-      }, spawnTime);
-    }, spawnTime * 3);
-    spawner.spawnAsteroid({ count: 30 });
-    if (this.state.level) {
-      spawner.spawnBonus({ type: 'fix', coords: ship.coords });
-    }
-    // for (let i = 1; i <= bonusTypes.length; i++) {
-    //   const options = { type: bonusTypes[i], coords: ship.coords };
-    //   setTimeout(() => spawner.spawnBonus(options), spawnTime * i);
-    // }
-    this.state.level++;
   }
 
   private processShipHit(event: ev.ShipHit): void {
