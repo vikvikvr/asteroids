@@ -25,11 +25,12 @@ class GameEngine {
   public status: GameStatus = 'idle';
   public world: Rect;
   public spawner: Spawner;
+  public levelDuration = 40_000;
   // private
   private gameOverCallback?: () => void;
   private gameWonCallback?: () => void;
   private updateTimeout?: NodeJS.Timeout;
-
+  private levelTimeout?: NodeJS.Timeout;
   constructor(world: Rect) {
     this.state = {
       asteroids: [],
@@ -37,21 +38,22 @@ class GameEngine {
       events: [],
       ship: new Ship({ world, coords: centerOf(world) }),
       score: 0,
-      level: 1,
+      level: 0,
       frozen: false
     };
     this.world = world;
     this.spawner = new Spawner(this.state, this.world);
+    this.update = this.update.bind(this);
+    this.updateLevel = this.updateLevel.bind(this);
   }
 
   public startLevel(): void {
-    let { spawner } = this;
     this.status = 'playing';
-    spawner.spawnAsteroid({ count: 30 });
-    spawner.asteroidEvery(5_000, { count: 5 });
-    this.updateTimeout = setInterval(() => {
-      this.update();
-    }, 16);
+    this.updateLevel();
+    // this.spawner.spawnAsteroid({ count: 30 });
+    // spawner.asteroidEvery(5_000, { count: 5 });
+    this.updateTimeout = setInterval(this.update, 16);
+    this.levelTimeout = setInterval(this.updateLevel, this.levelDuration);
   }
 
   public onGameOver(callback: () => void) {
@@ -67,7 +69,6 @@ class GameEngine {
     this.updateAsteroids(this.state.frozen);
     this.updateBonuses();
     this.checkCollisions();
-    this.updateLevel();
     this.checkGameWon();
     this.checkGameLost();
   }
@@ -95,6 +96,9 @@ class GameEngine {
       if (this.updateTimeout) {
         clearInterval(this.updateTimeout);
       }
+      if (this.levelTimeout) {
+        clearInterval(this.levelTimeout);
+      }
       this.gameOverCallback?.();
     }
   }
@@ -104,6 +108,9 @@ class GameEngine {
       this.status = 'won';
       if (this.updateTimeout) {
         clearInterval(this.updateTimeout);
+      }
+      if (this.levelTimeout) {
+        clearInterval(this.levelTimeout);
       }
       this.gameWonCallback?.();
     }
@@ -191,7 +198,13 @@ class GameEngine {
   }
 
   private updateLevel() {
-    this.state.level = Math.floor(this.state.score / 2600) + 1;
+    const { spawner, levelDuration } = this;
+    const spawnTime = levelDuration / 4;
+    setTimeout(() => spawner.spawnBonus({ type: 'shield' }), spawnTime);
+    spawner.spawnAsteroid({ count: 30 });
+    setTimeout(() => spawner.spawnBonus({ type: 'freeze' }), spawnTime * 2);
+    setTimeout(() => spawner.spawnBonus({ type: 'fix' }), spawnTime * 3);
+    this.state.level++;
   }
 
   private processShipHit(event: ev.ShipHit): void {
