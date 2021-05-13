@@ -41,33 +41,35 @@ class Entity {
     this.rotationSpeed *= -1;
   }
 
-  protected update(): void {
-    this.updatePosition();
-    this.approachTargetDirection();
-    this.orientation += this.rotationSpeed;
+  protected update(speedMultiplier = 1): void {
+    this.updatePosition(speedMultiplier);
+    this.approachTargetDirection(speedMultiplier);
+    this.orientation += this.rotationSpeed * speedMultiplier;
   }
 
   protected setTargetDirection(direction: number): void {
     this.targetDirection = direction;
   }
 
-  private approachTargetDirection(): void {
+  private approachTargetDirection(speedMultiplier = 1): void {
+    const angularSpeed = this.angularSpeed * speedMultiplier;
     if (this.targetDirection > this.direction) {
       this.direction = Math.min(
         this.targetDirection,
-        this.direction + this.angularSpeed
+        this.direction + angularSpeed
       );
     } else if (this.targetDirection < this.direction) {
       this.direction = Math.max(
         this.targetDirection,
-        this.direction - this.angularSpeed
+        this.direction - angularSpeed
       );
     }
   }
 
-  private updatePosition(): void {
-    this.coords.x += Math.cos(this.direction) * this.speed;
-    this.coords.y += Math.sin(this.direction) * this.speed;
+  private updatePosition(speedMultiplier = 1): void {
+    const speed = this.speed * speedMultiplier;
+    this.coords.x += Math.cos(this.direction) * speed;
+    this.coords.y += Math.sin(this.direction) * speed;
     this.teleportOffEdges();
   }
 

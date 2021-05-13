@@ -37,8 +37,8 @@ class GameObject extends Entity {
     this.tailLength = options.tailLength || 20;
   }
 
-  protected update(): void {
-    super.update();
+  protected update(speedMultiplier = 1): void {
+    super.update(speedMultiplier);
     this.isExpired = Date.now() > this.expiresAt;
     if (this.hasTail) {
       this.updateTail();
