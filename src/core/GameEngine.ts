@@ -4,7 +4,7 @@ import { haveCollided, Rect, Point, centerOf } from '../lib/geometry';
 import * as ev from './Events';
 import { remove, find, filter } from 'lodash';
 import Drop from './Drop';
-import Spawner, { SpawnerEtas } from './Spawner';
+import Spawner from './Spawner';
 import { bulletHitScore } from './game-rules';
 
 export type GameStatus = 'playing' | 'won' | 'lost' | 'idle';
