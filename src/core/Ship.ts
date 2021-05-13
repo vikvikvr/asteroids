@@ -1,12 +1,7 @@
-import GameObject, { GameObjectSnapshot } from './GameObject';
+import GameObject from './GameObject';
 import { remove } from 'lodash';
 import { EntityOptions } from './Entity';
-import Bullet, { BulletSnapshot } from './Bullet';
-
-export interface ShipSnapshot extends GameObjectSnapshot {
-  bullets: BulletSnapshot[];
-  shielded: boolean;
-}
+import Bullet from './Bullet';
 
 class Ship extends GameObject {
   // public
@@ -73,14 +68,6 @@ class Ship extends GameObject {
     setTimeout(() => {
       this.shielded = false;
     }, this.SHIELD_DURATION);
-  }
-
-  public serialize(): ShipSnapshot {
-    return {
-      ...super.serialize(),
-      bullets: this.bullets.map((b) => b.serialize()),
-      shielded: this.shielded
-    };
   }
 
   private updateBullets() {

@@ -1,7 +1,4 @@
-import GameObject, {
-  GameObjectOptions,
-  GameObjectSnapshot
-} from './GameObject';
+import GameObject, { GameObjectOptions } from './GameObject';
 
 // aliases
 export type DropType = 'fix' | 'freeze' | 'shield';
@@ -13,10 +10,6 @@ export const droppable: DropType[] = ['fix', 'freeze', 'shield'];
 export interface DropOptions
   extends Omit<GameObjectOptions, 'hitBoxRadius' | 'type'> {
   type: DropType;
-}
-
-export interface DropSnapshot extends GameObjectSnapshot {
-  dropType: DropType;
 }
 
 class Drop extends GameObject {
@@ -53,13 +46,6 @@ class Drop extends GameObject {
         this.rotatingRight = true;
       }
     }
-  }
-
-  public serialize(): DropSnapshot {
-    return {
-      ...super.serialize(),
-      dropType: this.dropType
-    };
   }
 }
 

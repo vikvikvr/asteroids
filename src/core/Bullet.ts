@@ -1,14 +1,9 @@
-import GameObject, {
-  GameObjectOptions,
-  GameObjectSnapshot
-} from './GameObject';
+import GameObject, { GameObjectOptions } from './GameObject';
 
 type BulletOptions = Omit<
   GameObjectOptions,
   'type' | 'hitBoxRadius' | 'duration'
 >;
-
-export type BulletSnapshot = GameObjectSnapshot;
 
 class Bullet extends GameObject {
   constructor(options: BulletOptions = {}) {
@@ -22,10 +17,6 @@ class Bullet extends GameObject {
 
   public update() {
     super.update();
-  }
-
-  public serialize(): BulletSnapshot {
-    return super.serialize();
   }
 }
 

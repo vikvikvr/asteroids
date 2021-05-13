@@ -1,10 +1,8 @@
 import P5 from 'p5';
-import { ShipSnapshot } from '../core/Ship';
 import { SpawnerEtas } from '../core/Spawner';
-import { AsteroidSnapshot } from '../core/Asteroid';
 import { ColorsMap } from './colors';
-import GameEngine, { GameSnapshot, GameState } from '../core/GameEngine';
-import { filter } from 'lodash';
+import GameEngine, { GameState } from '../core/GameEngine';
+import Ship from '../core/Ship';
 
 const SPACING = 20;
 
@@ -19,22 +17,12 @@ class GUI {
   }
 
   public draw(engine: GameEngine) {
-    // this.drawAsteroidsInfo(snapshot.asteroids);
     this.drawShipInfo(engine.state.ship);
-    // this.drawTimersInfo(snapshot.etas);
+    // this.drawTimersInfo(etas);
     this.drawScore(engine.state);
   }
 
-  private drawAsteroidsInfo(asteroids: AsteroidSnapshot[]): void {
-    let { p5 } = this;
-    let topLeft = { x: SPACING, y: SPACING * 4 };
-    let large = filter(asteroids, { size: 'large' }).length;
-    let medium = filter(asteroids, { size: 'medium' }).length;
-    let small = filter(asteroids, { size: 'small' }).length;
-    p5.text(`asteroids: ${large} | ${medium} | ${small}`, topLeft.x, topLeft.y);
-  }
-
-  private drawShipInfo(ship: ShipSnapshot) {
+  private drawShipInfo(ship: Ship) {
     let { life } = ship;
     let { p5 } = this;
     let [x, y] = [SPACING, SPACING];

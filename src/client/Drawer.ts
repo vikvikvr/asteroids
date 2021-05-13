@@ -1,10 +1,7 @@
-import GameEngine, { GameSnapshot } from '../core/GameEngine';
+import GameEngine from '../core/GameEngine';
 import P5 from 'p5';
 import { drawableCoords, Point, Rect } from '../lib/geometry';
 import { DrawerAssets } from './Sketch';
-import { GameObjectSnapshot } from '../core/GameObject';
-import { DropSnapshot } from '../core/Drop';
-import { AsteroidSnapshot } from '../core/Asteroid';
 import GUI from './GUI';
 import COLORS from './colors';
 import Animation, {
@@ -13,15 +10,13 @@ import Animation, {
   OverlayAnimationColor,
   TextAnimation
 } from './Animation';
-import Ship, { ShipSnapshot } from '../core/Ship';
-import {
-  BulletHitSnapshot,
-  GameEventSnapshot,
-  GotBonusSnapshot,
-  ShipHitSnapshot
-} from '../core/Events';
+import Ship from '../core/Ship';
 import { remove } from 'lodash';
 import { bulletHitScore } from '../core/game-rules';
+import { BulletHit, GameEvent, GotBonus, ShipHit } from '../core/Events';
+import Drop from '../core/Drop';
+import Asteroid from '../core/Asteroid';
+import Bullet from '../core/Bullet';
 
 interface DrawGameObjectOptions {
   image: P5.Image;
@@ -61,7 +56,6 @@ class Drawer {
   private screen: Rect;
   private engine: GameEngine;
   private gui: GUI;
-  private snapshot?: GameSnapshot;
   private animations: Animation[] = [];
   // constructor
   constructor(options: DrawerOptions) {
@@ -83,16 +77,7 @@ class Drawer {
     // console.log('drawer assets', this.assets);
   }
 
-  public updateSnapshot(snapshot: GameSnapshot) {
-    if (!snapshot) return;
-    if (!this.snapshot) {
-      this.createStars(snapshot.world, 200);
-    }
-    this.snapshot = snapshot;
-  }
-
   public drawScreen(engine: GameEngine): void {
-    // if (!this.snapshot) return;
     switch (engine.status) {
       case 'playing':
         this.drawGameScreen(engine);
@@ -182,43 +167,40 @@ class Drawer {
     engine.state.events = [];
   }
 
-  private addScoreAnimation(event: GameEventSnapshot, frozen: boolean) {
-    event = event as BulletHitSnapshot;
-    const score = bulletHitScore(event.size, frozen);
-    const scoreAnimation = new TextAnimation(score.toString(), event.coords);
+  private addScoreAnimation(event: GameEvent, frozen: boolean) {
+    const myEvent = event as BulletHit;
+    const score = bulletHitScore(myEvent.size, frozen);
+    const scoreAnimation = new TextAnimation(score.toString(), myEvent.coords);
     this.animations.push(scoreAnimation);
     // console.log('add points', score);
   }
 
-  private addExplosionAnimation(
-    event: GameEventSnapshot,
-    frozen: boolean
-  ): void {
+  private addExplosionAnimation(event: GameEvent, frozen: boolean): void {
     const explosionScaleMap = {
       large: 1,
       medium: 0.75,
       small: 0.5
     };
-    event = event as BulletHitSnapshot;
+    const myEvent = event as BulletHit;
     const assetKey = frozen ? 'shatterAnimation' : 'explosionAnimation';
     const frames = this.assets[assetKey];
-    const scale = explosionScaleMap[event.size];
-    const animation = new ImageAnimation(frames, event.coords, scale);
+    const scale = explosionScaleMap[myEvent.size];
+    const animation = new ImageAnimation(frames, myEvent.coords, scale);
     this.animations.push(animation);
   }
 
-  private addShipHitAnimation(event: GameEventSnapshot): void {
-    event = event as ShipHitSnapshot;
-    if (!event.shielded) {
+  private addShipHitAnimation(event: GameEvent): void {
+    const myEvent = event as ShipHit;
+    if (!myEvent.shielded) {
       this.animations.push(new OverlayAnimation(30, 'red'));
     }
   }
 
-  private addGotBonusAnimation(event: GameEventSnapshot): void {
-    event = event as GotBonusSnapshot;
+  private addGotBonusAnimation(event: GameEvent): void {
+    const myEvent = event as GotBonus;
     let color = 'white';
-    if (event.bonusType === 'shield') color = 'green';
-    else if (event.bonusType === 'freeze') color = 'blue';
+    if (myEvent.bonusType === 'shield') color = 'green';
+    else if (myEvent.bonusType === 'freeze') color = 'blue';
     const animation = new OverlayAnimation(30, color as OverlayAnimationColor);
     this.animations.push(animation);
   }
@@ -315,13 +297,13 @@ class Drawer {
     }
   }
 
-  private drawBonuses(bonuses: DropSnapshot[]): void {
+  private drawBonuses(bonuses: Drop[]): void {
     for (const bonus of bonuses) {
       this.drawGameObject(bonus, { image: this.assets.images[bonus.dropType] });
     }
   }
 
-  private drawAsteroids(asteroids: AsteroidSnapshot[], frozen: boolean): void {
+  private drawAsteroids(asteroids: Asteroid[], frozen: boolean): void {
     for (const asteroid of asteroids) {
       this.drawAsteroidTail(asteroid, frozen);
       const assetPrefix = frozen ? 'frozen-' : '';
@@ -376,7 +358,7 @@ class Drawer {
     }
   }
 
-  private drawAsteroidTail(asteroid: AsteroidSnapshot, frozen: boolean): void {
+  private drawAsteroidTail(asteroid: Asteroid, frozen: boolean): void {
     this.drawGameObject(asteroid, {
       image: this.assets.images['asteroid-tail'],
       ignoreOrientation: true,
@@ -410,7 +392,7 @@ class Drawer {
     }
   }
 
-  private drawBullets(bullets: GameObjectSnapshot[]): void {
+  private drawBullets(bullets: Bullet[]): void {
     for (const bullet of bullets) {
       this.drawGameObject(bullet, {
         image: this.assets.images.bullet

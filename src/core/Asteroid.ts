@@ -1,7 +1,4 @@
-import GameObject, {
-  GameObjectOptions,
-  GameObjectSnapshot
-} from './GameObject';
+import GameObject, { GameObjectOptions } from './GameObject';
 
 // aliases
 export type AsteroidSize = 'large' | 'medium' | 'small';
@@ -13,11 +10,6 @@ export type AsteroidsCount = Record<AsteroidSize, number>;
 // interfaces
 export interface AsteroidOptions extends Omit<GameObjectOptions, 'type'> {
   size?: AsteroidSize;
-}
-
-export interface AsteroidSnapshot extends GameObjectSnapshot {
-  size: AsteroidSize;
-  damage: AsteroidDamage;
 }
 
 // constants
@@ -73,14 +65,6 @@ class Asteroid extends GameObject {
     if (this.size === 'large') return 'medium';
     if (this.size === 'medium') return 'small';
     return null;
-  }
-
-  public serialize(): AsteroidSnapshot {
-    return {
-      ...super.serialize(),
-      size: this.size,
-      damage: this.damage
-    };
   }
 
   private changeDirection(): void {

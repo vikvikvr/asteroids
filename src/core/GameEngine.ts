@@ -1,13 +1,9 @@
-import Ship, { ShipSnapshot } from './Ship';
-import Asteroid, {
-  AsteroidsCount,
-  AsteroidSize,
-  AsteroidSnapshot
-} from './Asteroid';
+import Ship from './Ship';
+import Asteroid, { AsteroidsCount, AsteroidSize } from './Asteroid';
 import { haveCollided, Rect, Point, centerOf } from '../lib/geometry';
 import * as ev from './Events';
 import { remove, find, filter } from 'lodash';
-import Drop, { DropSnapshot } from './Drop';
+import Drop from './Drop';
 import Spawner, { SpawnerEtas } from './Spawner';
 import { bulletHitScore } from './game-rules';
 
@@ -23,20 +19,6 @@ export interface GameState {
   frozen: boolean;
 }
 
-export interface GameSnapshot {
-  world: Rect;
-  createdAt: number;
-  status: GameStatus;
-  etas: SpawnerEtas;
-  ship: ShipSnapshot;
-  asteroids: AsteroidSnapshot[];
-  bonuses: DropSnapshot[];
-  events: ev.GameEventSnapshot[];
-  score: number;
-  level: number;
-  frozen: boolean;
-}
-
 class GameEngine {
   // public
   public state: GameState;
@@ -46,7 +28,7 @@ class GameEngine {
   // private
   private gameOverCallback?: () => void;
   private gameWonCallback?: () => void;
-  private snapshotTimeout?: NodeJS.Timeout;
+  private updateTimeout?: NodeJS.Timeout;
 
   constructor(world: Rect) {
     this.state = {
@@ -67,9 +49,8 @@ class GameEngine {
     this.status = 'playing';
     spawner.spawnAsteroid({ count: 30 });
     spawner.asteroidEvery(5_000, { count: 5 });
-    this.snapshotTimeout = setInterval(() => {
+    this.updateTimeout = setInterval(() => {
       this.update();
-      // callback(this.createSnapshot());
     }, 16);
   }
 
@@ -107,35 +88,12 @@ class GameEngine {
     };
   }
 
-  private createSnapshot(): GameSnapshot {
-    this.update();
-    let etas = this.spawner.getEtas();
-    let { ship, asteroids, bonuses, events } = this.state;
-    let snapshot = {
-      score: this.state.score,
-      level: this.state.level,
-      world: this.world,
-      createdAt: Date.now(),
-      status: this.status,
-      etas,
-      ship: ship.serialize(),
-      asteroids: asteroids.map((a) => a.serialize()),
-      bonuses: bonuses.map((b) => b.serialize()),
-      events: events.map((e) => e.serialize()),
-      frozen: this.state.frozen
-    };
-
-    this.state.events = [];
-
-    return snapshot;
-  }
-
   private checkGameLost(): void {
     let { ship } = this.state;
     if (ship.life <= 0) {
       this.status = 'lost';
-      if (this.snapshotTimeout) {
-        clearInterval(this.snapshotTimeout);
+      if (this.updateTimeout) {
+        clearInterval(this.updateTimeout);
       }
       this.gameOverCallback?.();
     }
@@ -144,8 +102,8 @@ class GameEngine {
   private checkGameWon(): void {
     if (!this.state.asteroids.length) {
       this.status = 'won';
-      if (this.snapshotTimeout) {
-        clearInterval(this.snapshotTimeout);
+      if (this.updateTimeout) {
+        clearInterval(this.updateTimeout);
       }
       this.gameWonCallback?.();
     }

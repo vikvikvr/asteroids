@@ -1,5 +1,5 @@
 import P5 from 'p5';
-import GameEngine, { GameSnapshot } from '../core/GameEngine';
+import GameEngine from '../core/GameEngine';
 import KeyController from './KeyController';
 import Drawer from './Drawer';
 import { loadAssets } from './assets-loaders';
@@ -27,10 +27,6 @@ export interface DrawerAssets {
   shatterAnimation: P5.Image[];
 }
 
-interface SnapshotEvent extends CustomEvent {
-  detail: GameSnapshot;
-}
-
 const rootElementId = 'root';
 
 const Sketch = (p5: P5) => {
@@ -43,7 +39,6 @@ const Sketch = (p5: P5) => {
     explosionAnimation: [],
     shatterAnimation: []
   };
-  var lastSnapshot: GameSnapshot;
 
   p5.preload = async () => {};
 
@@ -52,15 +47,6 @@ const Sketch = (p5: P5) => {
     p5.pixelDensity(2);
     p5.imageMode(p5.CENTER);
     p5.rectMode(p5.CORNER);
-    // listenForSnapshots
-    // let container = document.getElementById(rootElementId)!;
-    // container.addEventListener('snapshot', ((event: SnapshotEvent) => {
-    //   lastSnapshot = event.detail;
-    // }) as EventListener);
-    // askToStartGame
-    // setTimeout(() => {
-    //   container.dispatchEvent(new Event('start'));
-    // }, 1000);
     p5.frameRate(60);
     setTimeout(() => {
       let $loading = document.getElementById('loading')!;
@@ -92,7 +78,6 @@ const Sketch = (p5: P5) => {
     const canDraw = loaded && engine.status === 'playing';
     if (canDraw) {
       keyController.pressed(p5);
-      // drawer.updateSnapshot(lastSnapshot);
       drawer.drawScreen(engine);
     }
   };

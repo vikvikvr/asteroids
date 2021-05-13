@@ -1,4 +1,4 @@
-import GameEngine, { GameSnapshot } from '../core/GameEngine';
+import GameEngine from '../core/GameEngine';
 // import { Command } from '../client/KeyController';
 
 type ClientEvent = 'start' | 'command';
@@ -29,11 +29,11 @@ class GameServer {
     this.container.dispatchEvent(new Event('started'));
   }
 
-  private sendSnapshotToClient(snapshot: GameSnapshot) {
-    this.container.dispatchEvent(
-      new CustomEvent('snapshot', { detail: snapshot })
-    );
-  }
+  // private sendSnapshotToClient(snapshot: GameSnapshot) {
+  //   this.container.dispatchEvent(
+  //     new CustomEvent('snapshot', { detail: snapshot })
+  //   );
+  // }
 
   // private handleCommand(event: CustomEvent) {
   //   let command = event.detail as Command;

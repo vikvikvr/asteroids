@@ -1,4 +1,4 @@
-import Entity, { EntityOptions, EntitySnapshot } from './Entity';
+import Entity, { EntityOptions } from './Entity';
 import { v4 as uuidv4 } from 'uuid';
 import { Point } from '../lib/geometry';
 
@@ -10,15 +10,6 @@ export interface GameObjectOptions extends Partial<EntityOptions> {
   duration?: number;
   hasTail?: boolean;
   tailLength?: number;
-}
-
-export interface GameObjectSnapshot extends EntitySnapshot {
-  id: string;
-  type: GameObjectType;
-  hitBoxRadius: number;
-  life: number;
-  isExpired: boolean;
-  tail: Point[];
 }
 
 class GameObject extends Entity {
@@ -44,18 +35,6 @@ class GameObject extends Entity {
     this.expiresAt = Date.now() + (options.duration || Infinity);
     this.hasTail = options.hasTail || false;
     this.tailLength = options.tailLength || 20;
-  }
-
-  protected serialize(): GameObjectSnapshot {
-    return {
-      ...super.serialize(),
-      id: this.id,
-      type: this.type,
-      hitBoxRadius: this.hitBoxRadius,
-      life: this.life,
-      isExpired: this.isExpired,
-      tail: this.tail
-    };
   }
 
   protected update(): void {

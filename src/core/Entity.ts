@@ -12,16 +12,6 @@ export type EntityOptions = {
   interpolationSteps: number;
 };
 
-export interface EntitySnapshot {
-  acceleration: number;
-  coords: Point;
-  speed: number;
-  orientation: number;
-  direction: number;
-  world: Rect;
-  rotationSpeed: number;
-}
-
 class Entity {
   // public
   public coords: Point;
@@ -45,18 +35,6 @@ class Entity {
     this.orientation = options.orientation || 0;
     this.angularSpeed = options.angularSpeed || 0;
     this.rotationSpeed = options.rotationSpeed || 0;
-  }
-
-  protected serialize(): EntitySnapshot {
-    return {
-      coords: { ...this.coords },
-      speed: this.speed,
-      acceleration: this.acceleration,
-      orientation: this.orientation,
-      direction: this.direction,
-      world: this.world,
-      rotationSpeed: this.rotationSpeed
-    };
   }
 
   protected changeRotationDirection() {
