@@ -214,6 +214,8 @@ class Drawer {
 
   private drawTextAnimations() {
     const { p5 } = this;
+    p5.textSize(30);
+    p5.noStroke();
     for (const animation of this.animations) {
       if (animation instanceof TextAnimation) {
         const coords = animation.getNextCoords();
@@ -223,7 +225,7 @@ class Drawer {
             const { currentFrame, frameCount, text } = animation;
             const alpha = (1 - currentFrame / frameCount) * 255;
             p5.fill(255, 255, 255, alpha);
-            p5.stroke(255, 255, 255, alpha);
+            // p5.stroke(255, 255, 255, alpha);
             p5.text(text, drawCoords.x, drawCoords.y);
           }
         }
