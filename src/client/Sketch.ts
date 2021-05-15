@@ -11,7 +11,12 @@ export type ImageAsset =
   | 'frozen-asteroid-large'
   | 'frozen-asteroid-medium'
   | 'frozen-asteroid-small'
+  | 'burning-asteroid-large'
+  | 'burning-asteroid-medium'
+  | 'burning-asteroid-small'
   | 'asteroid-tail'
+  | 'frozen-asteroid-tail'
+  | 'burning-asteroid-tail'
   | 'ship'
   | 'fix'
   | 'shield'
@@ -61,7 +66,7 @@ const Sketch = (p5: P5) => {
         showHitBoxes: false
       });
       engine.startLevel();
-      keyController = new KeyController(engine.state.ship);
+      keyController = new KeyController(engine.state);
 
       drawer.createStars(engine.world, 200);
     }, 500);
@@ -75,8 +80,7 @@ const Sketch = (p5: P5) => {
   };
 
   p5.draw = () => {
-    const canDraw = loaded && engine.status === 'playing';
-    if (canDraw) {
+    if (loaded) {
       keyController.pressed(p5);
       drawer.drawScreen(engine);
     }
