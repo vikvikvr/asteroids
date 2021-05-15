@@ -13,7 +13,7 @@ class Ship extends GameObject {
   private minTimeToFire = 200;
   private firedAt = -Infinity;
   // readonly
-  readonly MAX_SPEED = 6;
+  readonly MAX_SPEED = 4;
   readonly SHIELD_DURATION = 7000;
   // constructor
   constructor(options: Partial<EntityOptions> = {}) {
@@ -30,6 +30,7 @@ class Ship extends GameObject {
   public update(): void {
     super.update();
     this.updateBullets();
+    this.accelerate();
   }
 
   public turnLeft(): void {
@@ -46,8 +47,8 @@ class Ship extends GameObject {
   }
 
   public decelerate(): void {
-    const newSpeed = this.speed - this.accelerationStep;
-    this.speed = Math.max(-this.MAX_SPEED, newSpeed);
+    const newSpeed = this.speed - this.accelerationStep * 2;
+    this.speed = Math.max(0, newSpeed);
   }
 
   public fire(): void {

@@ -67,6 +67,7 @@ class GameEngine {
 
   private update(): void {
     this.state.ship.update();
+    this.state.ship.fire(this.state.temperature);
     this.updateAsteroids();
     this.updateBonuses();
     this.checkCollisions();
