@@ -2,6 +2,7 @@ import GameObject from './GameObject';
 import { remove } from 'lodash';
 import { EntityOptions } from './Entity';
 import Bullet from './Bullet';
+import { GameTemperature } from './GameEngine';
 
 class Ship extends GameObject {
   // public
@@ -51,8 +52,14 @@ class Ship extends GameObject {
     this.speed = Math.max(0, newSpeed);
   }
 
-  public fire(): void {
-    const canFire = Date.now() - this.firedAt > this.minTimeToFire;
+  public fire(temperature: GameTemperature): void {
+    const tempMultiplierMap: Record<GameTemperature, number> = {
+      low: 2,
+      normal: 1,
+      high: 0.5
+    };
+    const timeToWait = this.minTimeToFire * tempMultiplierMap[temperature];
+    const canFire = Date.now() - this.firedAt > timeToWait;
     if (canFire) {
       this.firedAt = Date.now();
       const bullet = this.makeBullet();
