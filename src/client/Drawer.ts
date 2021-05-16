@@ -57,6 +57,7 @@ class Drawer {
   private engine: GameEngine;
   private gui: GUI;
   private animations: Animation[] = [];
+  private shakeEndTime: number;
   // constructor
   constructor(options: DrawerOptions) {
     this.p5 = options.p5;
@@ -74,7 +75,7 @@ class Drawer {
     };
     this.gui = new GUI(this.p5, COLORS);
     this.p5.textSize(20);
-    // console.log('drawer assets', this.assets);
+    this.shakeEndTime = -Infinity;
   }
 
   public drawScreen(engine: GameEngine): void {
@@ -100,6 +101,14 @@ class Drawer {
   }
 
   private drawGameScreen(engine: GameEngine): void {
+    this.p5.push();
+    const currentTime = Date.now();
+    if (currentTime < this.shakeEndTime) {
+      const shakeSize = 10;
+      const offsetX = this.p5.noise(currentTime) * shakeSize;
+      const offsetY = this.p5.noise(0, currentTime) * shakeSize;
+      this.p5.translate(offsetX, offsetY);
+    }
     this.drawEnvironment();
     this.drawGameObjects(engine);
     this.addNewAnimations(engine);
