@@ -27,22 +27,13 @@ class Spawner {
   // public
   public state: GameState;
   public world: Rect;
-  public nextAsteroidSpawnAt: number;
   // private
-  private asteroidTimer?: NodeJS.Timeout;
   private HIT_BOX_MULTIPLIER = 5;
   private CONE_ANGLE = Math.PI / 3;
 
   constructor(state: GameState, world: Rect) {
     this.state = state;
     this.world = world;
-    this.nextAsteroidSpawnAt = Infinity;
-  }
-
-  public getEtas(): SpawnerEtas {
-    return {
-      asteroids: this.nextAsteroidSpawnAt - Date.now()
-    };
   }
 
   public spawnAsteroid(options: AsteroidSpawnOptions = {}): Asteroid[] {
@@ -55,14 +46,6 @@ class Spawner {
       added.push(asteroid);
     }
     return added;
-  }
-
-  public asteroidEvery(ms: number, options: AsteroidSpawnOptions = {}) {
-    this.nextAsteroidSpawnAt = Date.now() + ms;
-    this.asteroidTimer = setInterval(() => {
-      this.spawnAsteroid(options);
-      this.nextAsteroidSpawnAt = Date.now() + ms;
-    }, ms);
   }
 
   private makeAsteroidOptions(

@@ -48,7 +48,6 @@ class GameEngine {
     this.status = 'playing';
     this.updateLevel();
     // this.spawner.spawnAsteroid({ count: 30 });
-    // spawner.asteroidEvery(5_000, { count: 5 });
     this.updateTimeout = setInterval(this.update, 16);
     this.levelTimeout = setInterval(this.updateLevel, this.levelDuration);
   }
