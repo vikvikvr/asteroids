@@ -7,7 +7,7 @@ import Drop from './Drop';
 import Spawner from './Spawner';
 import { bulletHitScore } from './game-rules';
 
-export type GameStatus = 'playing' | 'won' | 'lost' | 'idle';
+export type GameStatus = 'playing' | 'lost' | 'idle';
 export type GameTemperature = 'low' | 'high' | 'normal';
 
 export interface GameState {
@@ -29,7 +29,6 @@ class GameEngine {
   public levelDuration = 30_000;
   // private
   private gameOverCallback?: () => void;
-  private gameWonCallback?: () => void;
   private updateTimeout?: NodeJS.Timeout;
   private levelTimeout?: NodeJS.Timeout;
   constructor(world: Rect) {
@@ -61,17 +60,12 @@ class GameEngine {
     this.gameOverCallback = callback;
   }
 
-  public onGameWon(callback: () => void) {
-    this.gameWonCallback = callback;
-  }
-
   private update(): void {
     this.state.ship.update();
     this.state.ship.fire(this.state.temperature);
     this.updateAsteroids();
     this.updateBonuses();
     this.checkCollisions();
-    this.checkGameWon();
     this.checkGameLost();
   }
 
@@ -102,19 +96,6 @@ class GameEngine {
         clearInterval(this.levelTimeout);
       }
       this.gameOverCallback?.();
-    }
-  }
-
-  private checkGameWon(): void {
-    if (!this.state.asteroids.length) {
-      this.status = 'won';
-      if (this.updateTimeout) {
-        clearInterval(this.updateTimeout);
-      }
-      if (this.levelTimeout) {
-        clearInterval(this.levelTimeout);
-      }
-      this.gameWonCallback?.();
     }
   }
 
