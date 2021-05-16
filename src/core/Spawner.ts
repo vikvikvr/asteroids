@@ -7,12 +7,9 @@ import {
 } from '../lib/geometry';
 import Asteroid, { AsteroidOptions, AsteroidSize } from './Asteroid';
 
-export interface SpawnOptions {
+export interface AsteroidSpawnOptions {
   count?: number;
   coords?: Point;
-}
-
-export interface AsteroidSpawnOptions extends SpawnOptions {
   size?: AsteroidSize;
   notDirection?: number;
 }
