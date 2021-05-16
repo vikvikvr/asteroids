@@ -1,5 +1,8 @@
 import P5 from 'p5';
-import { Point } from '../lib/geometry';
+import { AsteroidSize } from '../core/Asteroid';
+import { GameTemperature } from '../core/GameEngine';
+import GameObject from '../core/GameObject';
+import { Point, Rect } from '../lib/geometry';
 import { DrawableObject } from './Drawer';
 
 export interface AnimationFrame extends DrawableObject {
@@ -13,7 +16,7 @@ class Animation {
   public currentFrame: number = 0;
   constructor(public frameCount: number) {}
 
-  public next(): number | false {
+  protected next(): number | false {
     if (this.currentFrame >= this.frameCount - 1) {
       this.isExpired = true;
       return false;
@@ -55,6 +58,44 @@ export class TextAnimation extends Animation {
     } else {
       return false;
     }
+  }
+}
+
+export class ExplosionAnimation extends Animation {
+  // public size: AsteroidSize;
+  // public coords: Point;
+  // public temperature: GameTemperature;
+  public shards: GameObject[];
+  public percent = 0;
+  constructor(
+    size: AsteroidSize,
+    coords: Point,
+    temperature: GameTemperature,
+    world: Rect
+  ) {
+    super(20);
+    // this.size = size;
+    // this.coords = coords;
+    // this.temperature = temperature;
+    this.shards = [];
+    for (let i = 0; i < 10; i++) {
+      const shard = new GameObject({
+        speed: 4,
+        direction: Math.random() * Math.PI * 2,
+        coords: coords,
+        world: world
+      });
+      this.shards.push(shard);
+    }
+  }
+
+  public next(): number | false {
+    super.next();
+    this.percent += 0.05;
+    for (const shard of this.shards) {
+      shard.update();
+    }
+    return 1;
   }
 }
 
