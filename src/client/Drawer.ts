@@ -372,13 +372,17 @@ class Drawer {
   }
 
   private drawShip(ship: Ship): void {
-    // this.drawTail(ship.tail, 'ship');
+    this.drawShipTail(ship.tail);
     this.drawShipShield(ship.shielded);
-    this.drawGameObject(ship, {
-      image: this.assets.images.ship,
+    const options = {
       rotateDirection: true,
       rotationOffset: Math.PI / 2
-    });
+    };
+    const drawer = () => {
+      drawShipShape(this.p5, ship.hitBoxRadius / 2);
+      drawShipLifeArcShape(this.p5, ship.life);
+    };
+    this.drawGameObject(ship, options, drawer);
   }
 
   private drawShipShield(isShielded: boolean) {
