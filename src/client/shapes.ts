@@ -1,33 +1,20 @@
 import P5 from 'p5';
+import { AsteroidSize } from '../core/Asteroid';
+import { GameTemperature } from '../core/GameEngine';
 
-export function drawAsteroidShape(p5: P5, side: number): void {
-  p5.fill('#BEC6ED');
-  p5.beginShape();
-  p5.vertex(side * +0, side * -1);
-  p5.vertex(side * -2, side * -3);
-  p5.vertex(side * +3, side * -4);
-  p5.endShape();
-  p5.fill('#6D7BBD');
-  p5.beginShape();
-  p5.vertex(side * +0, side * -1);
-  p5.vertex(side * +3, side * -4);
-  p5.vertex(side * +4, side * -2);
-  p5.vertex(side * +3, side * +1);
-  p5.endShape();
-  p5.fill('#405BDE');
-  p5.beginShape();
-  p5.vertex(side * +0, side * -1);
-  p5.vertex(side * +3, side * +1);
-  p5.vertex(side * +1, side * +2);
-  p5.vertex(side * -1, side * +1);
-  p5.endShape();
-  p5.fill('#022BF5');
-  p5.beginShape();
-  p5.vertex(side * +0, side * -1);
-  p5.vertex(side * -1, side * +1);
-  p5.vertex(side * -3, side * -1);
-  p5.vertex(side * -2, side * -3);
-  p5.endShape();
+export function drawAsteroidShape(
+  p5: P5,
+  hitBoxRadius: number,
+  size: AsteroidSize,
+  temperature: GameTemperature
+): void {
+  const colorMap: Record<GameTemperature, string> = {
+    normal: 'green',
+    high: 'red',
+    low: 'blue'
+  };
+  p5.fill(colorMap[temperature]);
+  p5.circle(0, 0, hitBoxRadius * 2);
 }
 
 export function drawShipShape(p5: P5, side: number): void {
