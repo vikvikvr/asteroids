@@ -152,9 +152,7 @@ class Drawer {
 
   private addNewAnimations(engine: GameEngine): void {
     for (const event of engine.state.events) {
-      if (event.type === 'GOT_BONUS') {
-        this.addGotBonusAnimation(event);
-      } else if (['LEVEL_UP', 'FREEZE', 'BURN'].includes(event.type)) {
+      if (['LEVEL_UP', 'FREEZE', 'BURN'].includes(event.type)) {
         const textMap: Partial<Record<GameEventType, string>> = {
           LEVEL_UP: 'level up!',
           FREEZE: 'frozen!',
@@ -195,10 +193,6 @@ class Drawer {
       this.engine.world
     );
     this.animations.push(animation);
-  }
-
-  private addGotBonusAnimation(event: GameEvent): void {
-    // const myEvent = event as GotBonus;
   }
 
   private drawAnimations(): void {

@@ -15,7 +15,6 @@ export interface GameState {
   level: number;
   ship: Ship;
   asteroids: Asteroid[];
-  bonuses: Drop[];
   events: ev.TGameEvent[];
   temperature: GameTemperature;
 }
@@ -34,7 +33,6 @@ class GameEngine {
   constructor(world: Rect) {
     this.state = {
       asteroids: [],
-      bonuses: [],
       events: [],
       ship: new Ship({ world, coords: centerOf(world) }),
       score: 0,
@@ -64,7 +62,6 @@ class GameEngine {
     this.state.ship.update();
     this.state.ship.fire(this.state.temperature);
     this.updateAsteroids();
-    this.updateBonuses();
     this.checkCollisions();
     this.checkGameLost();
   }
@@ -111,16 +108,9 @@ class GameEngine {
     }
   }
 
-  private updateBonuses(): void {
-    for (const bonus of this.state.bonuses) {
-      bonus.update();
-    }
-  }
-
   private checkCollisions(): void {
     this.checkAsteroidBulletCollisions();
     this.checkAsteroidShipCollisions();
-    this.checkBonusShipCollisions();
   }
 
   private checkAsteroidBulletCollisions(): void {
@@ -152,22 +142,10 @@ class GameEngine {
     }
   }
 
-  private checkBonusShipCollisions(): void {
-    let { bonuses, ship, events } = this.state;
-    for (const bonus of bonuses) {
-      if (haveCollided(bonus, ship)) {
-        let event = new ev.GotBonus(bonus);
-        events.push(event);
-        this.processGotBonus(event);
-      }
-    }
-  }
-
   private processBulletHit(event: ev.BulletHit): void {
     let { asteroids, ship } = this.state;
     let asteroid = find(asteroids, { id: event.asteroidId });
     if (asteroid) {
-      this.createLoot(asteroid.coords);
       let nextSize = asteroid.splitSize();
       const shouldSplit = this.state.temperature !== 'low';
       if (shouldSplit && nextSize) {
@@ -224,31 +202,6 @@ class GameEngine {
     let { asteroids, ship } = this.state;
     remove(asteroids, { id: event.asteroidId });
     ship.life -= event.damage;
-  }
-
-  private processGotBonus(event: ev.GotBonus): void {
-    let { ship, bonuses } = this.state;
-    switch (event.bonusType) {
-      case 'fix':
-        ship.restoreLife();
-        break;
-      case 'freeze':
-        this.state.temperature = 'low';
-        // TODO: case when freeze is already active
-        setTimeout(() => {
-          this.state.temperature = 'normal';
-        }, 5000);
-        break;
-    }
-    remove(bonuses, { id: event.bonusId });
-  }
-
-  private createLoot(coords: Point): void {
-    let dropRate = 1 / 20;
-    let canDrop = Math.random() > 1 - dropRate;
-    if (canDrop) {
-      this.spawner.spawnBonus({ type: 'shield' });
-    }
   }
 }
 

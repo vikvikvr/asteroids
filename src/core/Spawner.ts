@@ -13,10 +13,6 @@ export interface SpawnOptions {
   coords?: Point;
 }
 
-export interface BonusSpawnOptions extends SpawnOptions {
-  type?: DropType;
-}
-
 export interface AsteroidSpawnOptions extends SpawnOptions {
   size?: AsteroidSize;
   notDirection?: number;
@@ -24,7 +20,6 @@ export interface AsteroidSpawnOptions extends SpawnOptions {
 
 export type SpawnerEtas = {
   asteroids: number;
-  bonuses: number;
 };
 
 export type ID = string;
@@ -33,11 +28,9 @@ class Spawner {
   // public
   public state: GameState;
   public world: Rect;
-  public nextBonusSpawnAt: number;
   public nextAsteroidSpawnAt: number;
   // private
   private asteroidTimer?: NodeJS.Timeout;
-  private bonusTimer?: NodeJS.Timeout;
   private HIT_BOX_MULTIPLIER = 5;
   private CONE_ANGLE = Math.PI / 3;
 
@@ -45,26 +38,12 @@ class Spawner {
     this.state = state;
     this.world = world;
     this.nextAsteroidSpawnAt = Infinity;
-    this.nextBonusSpawnAt = Infinity;
   }
 
   public getEtas(): SpawnerEtas {
     return {
-      asteroids: this.nextAsteroidSpawnAt - Date.now(),
-      bonuses: this.nextBonusSpawnAt - Date.now()
+      asteroids: this.nextAsteroidSpawnAt - Date.now()
     };
-  }
-
-  public spawnBonus(options: BonusSpawnOptions = {}): Drop[] {
-    let { bonuses } = this.state;
-    let added: Drop[] = [];
-    for (let i = 0; i < (options.count || 1); i++) {
-      let dropOptions = this.makeDropOptions(options);
-      let drop = new Drop(dropOptions);
-      bonuses.push(drop);
-      added.push(drop);
-    }
-    return added;
   }
 
   public spawnAsteroid(options: AsteroidSpawnOptions = {}): Asteroid[] {
@@ -85,26 +64,6 @@ class Spawner {
       this.spawnAsteroid(options);
       this.nextAsteroidSpawnAt = Date.now() + ms;
     }, ms);
-  }
-
-  private makeDropOptions(options: BonusSpawnOptions = {}): DropOptions {
-    let type: DropType;
-    if (!options.type) {
-      let roll = Math.random();
-      if (roll < 1 / 3) type = 'fix';
-      else if (roll < 2 / 3) type = 'freeze';
-      else type = 'shield';
-    } else {
-      type = options.type;
-    }
-    let coords =
-      options.coords ||
-      randomCoordsFarFrom(this.state.ship, this.world, this.HIT_BOX_MULTIPLIER);
-    return {
-      type,
-      world: this.world,
-      coords
-    };
   }
 
   private makeAsteroidOptions(

@@ -7,12 +7,11 @@ import Drop, { DropType } from './Drop';
 export type GameEventType =
   | 'BULLET_HIT'
   | 'SHIP_HIT'
-  | 'GOT_BONUS'
   | 'FREEZE'
   | 'BURN'
   | 'LEVEL_UP';
 
-export type TGameEvent = ShipHit | BulletHit | GotBonus | GameEvent;
+export type TGameEvent = ShipHit | BulletHit | GameEvent;
 
 export class GameEvent {
   // public
@@ -54,15 +53,5 @@ export class BulletHit extends GameEvent {
     this.asteroidId = asteroid.id;
     this.size = asteroid.size;
     this.shattered = shattered;
-  }
-}
-
-export class GotBonus extends GameEvent {
-  public bonusId: string;
-  public bonusType: DropType;
-  constructor(bonus: Drop) {
-    super('GOT_BONUS', bonus.coords);
-    this.bonusId = bonus.id;
-    this.bonusType = bonus.dropType;
   }
 }
