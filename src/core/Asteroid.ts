@@ -48,9 +48,9 @@ class Asteroid extends GameObject {
       type: 'asteroid',
       direction: options.direction || Math.random() * Math.PI * 2,
       rotationSpeed: options.rotationSpeed || (sign * Math.PI) / 50,
-      angularSpeed: Math.PI / 3 / 40
-      // hasTail: true,
-      // tailLength: hitBoxes[size]
+      angularSpeed: Math.PI / 3 / 40,
+      hasTail: true,
+      tailLength: 50
     });
     this.size = size;
     this.damage = damages[size];
@@ -73,7 +73,8 @@ class Asteroid extends GameObject {
     const angleChange = Math.PI / 3;
     let sign = Math.random() > 0.5 ? 1 : -1;
     let newDirection = this.direction + angleChange * sign;
-    super.setTargetDirection(newDirection);
+    this.direction = newDirection;
+    // super.setTargetDirection(newDirection);
   }
 }
 
