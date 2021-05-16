@@ -328,13 +328,11 @@ class Drawer {
     temperature: GameTemperature
   ): void {
     for (const asteroid of asteroids) {
+      const side = asteroid.hitBoxRadius / 3.5;
+      const options = {};
+      const drawer = () => drawAsteroidShape(this.p5, side);
+      this.drawGameObject(asteroid, options, drawer);
       this.drawAsteroidTail(asteroid, temperature);
-      let assetPrefix = '';
-      if (temperature === 'low') assetPrefix = 'frozen-';
-      const assetSuffix = '-' + asteroid.size;
-      const assetName = `${assetPrefix}asteroid${assetSuffix}`;
-      const options = { image: this.assets.images[assetName] };
-      this.drawGameObject(asteroid, options);
     }
   }
 
