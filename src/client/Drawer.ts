@@ -193,25 +193,13 @@ class Drawer {
     event: GameEvent,
     temperature: GameTemperature
   ): void {
-    const explosionScaleMap = {
-      large: 1,
-      medium: 0.75,
-      small: 0.5
-    };
-    const myEvent = event as BulletHit;
-    const assetKey =
-      temperature === 'low' ? 'shatterAnimation' : 'explosionAnimation';
-    const frames = this.assets[assetKey];
-    const scale = explosionScaleMap[myEvent.size];
-    const animation = new ImageAnimation(frames, myEvent.coords, scale);
+    const animation = new ExplosionAnimation(
+      'large',
+      event.coords,
+      temperature,
+      this.engine.world
+    );
     this.animations.push(animation);
-  }
-
-  private addShipHitAnimation(event: GameEvent): void {
-    const myEvent = event as ShipHit;
-    if (!myEvent.shielded) {
-      this.animations.push(new OverlayAnimation(30, 'red'));
-    }
   }
 
   private addGotBonusAnimation(event: GameEvent): void {
