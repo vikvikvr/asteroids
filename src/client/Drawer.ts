@@ -195,9 +195,8 @@ class Drawer {
   private addScoreAnimation(event: GameEvent, temperature: GameTemperature) {
     const myEvent = event as BulletHit;
     const score = bulletHitScore(myEvent.size, temperature);
-    const scoreAnimation = new TextAnimation(score.toString(), myEvent.coords);
+    const scoreAnimation = new TextAnimation(`+${score}`, myEvent.coords);
     this.animations.push(scoreAnimation);
-    // console.log('add points', score);
   }
 
   private addExplosionAnimation(
