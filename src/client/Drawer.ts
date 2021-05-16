@@ -1,7 +1,6 @@
 import GameEngine, { GameTemperature } from '../core/GameEngine';
 import P5 from 'p5';
 import { drawableCoords, Point, Rect } from '../lib/geometry';
-import { DrawerAssets } from './Sketch';
 import GUI from './GUI';
 import COLORS from './colors';
 import Animation, {
@@ -29,7 +28,6 @@ interface DrawGameObjectOptions {
 interface DrawerOptions {
   p5: P5;
   engine: GameEngine;
-  assets: DrawerAssets;
   rootElementId: string;
   showHitBoxes?: boolean;
 }
@@ -51,7 +49,6 @@ class Drawer {
   // private
   private p5: P5;
   private stars: Star[] = [];
-  private assets: DrawerAssets;
   private showHitBoxes: boolean;
   private screen: Rect;
   private engine: GameEngine;
@@ -67,7 +64,6 @@ class Drawer {
     );
     this.engine = options.engine;
     canvas.parent(options.rootElementId);
-    this.assets = options.assets;
     this.showHitBoxes = options.showHitBoxes || false;
     this.screen = {
       width: this.p5.windowWidth,
