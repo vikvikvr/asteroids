@@ -9,7 +9,7 @@ class Ship extends GameObject {
   public bullets: Bullet[] = [];
   public shielded: boolean = false;
   // private
-  private rotationStep = Math.PI / 24;
+  private rotationStep = Math.PI / 40;
   private accelerationStep = 1 / 5;
   private minTimeToFire = 200;
   private firedAt = -Infinity;
@@ -24,7 +24,8 @@ class Ship extends GameObject {
       hitBoxRadius: 30,
       direction: -Math.PI / 2,
       angularSpeed: Math.PI / 3 / 20,
-      hasTail: true
+      hasTail: true,
+      tailLength: 50
     });
   }
 
@@ -87,7 +88,8 @@ class Ship extends GameObject {
 
   private changeDirection(direction: 1 | -1) {
     const targetDirection = this.direction + this.rotationStep * direction;
-    this.setTargetDirection(targetDirection);
+    this.direction = targetDirection;
+    // this.setTargetDirection(targetDirection);
   }
 
   private makeBullet(): Bullet {
