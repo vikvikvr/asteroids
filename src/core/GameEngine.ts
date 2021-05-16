@@ -26,7 +26,7 @@ class GameEngine {
   public status: GameStatus = 'idle';
   public world: Rect;
   public spawner: Spawner;
-  public levelDuration = 20_000;
+  public levelDuration = 30_000;
   // private
   private gameOverCallback?: () => void;
   private gameWonCallback?: () => void;
@@ -210,38 +210,21 @@ class GameEngine {
   }
 
   private updateLevel() {
-    const { spawner, levelDuration } = this;
+    const { spawner } = this;
     const { ship, level } = this.state;
-    const spawnTime = levelDuration / 4;
-    this.planLowTemperaturePeriod(spawnTime);
-    this.planHighTemperaturePeriod(spawnTime);
-    spawner.spawnAsteroid({ count: 30 });
+    const spawnTime = this.levelDuration / 3;
+    this.state.temperature = 'normal';
+    setTimeout(() => {
+      this.state.temperature = 'low';
+    }, spawnTime);
+    setTimeout(() => {
+      this.state.temperature = 'high';
+    }, spawnTime * 2);
+    spawner.spawnAsteroid({ count: 20 });
     if (level > 0) {
       spawner.spawnBonus({ type: 'fix', coords: ship.coords });
     }
     this.state.level++;
-  }
-
-  private planHighTemperaturePeriod(spawnTime: number): void {
-    setTimeout(() => {
-      this.state.temperature = 'high';
-      console.log('high temp');
-      setTimeout(() => {
-        this.state.temperature = 'normal';
-        console.log('normal temp');
-      }, spawnTime);
-    }, spawnTime * 3);
-  }
-
-  private planLowTemperaturePeriod(spawnTime: number): void {
-    setTimeout(() => {
-      this.state.temperature = 'low';
-      console.log('low temp');
-      setTimeout(() => {
-        this.state.temperature = 'normal';
-        console.log('normal temp');
-      }, spawnTime);
-    }, spawnTime);
   }
 
   private processShipHit(event: ev.ShipHit): void {
