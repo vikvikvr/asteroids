@@ -222,18 +222,12 @@ class Drawer {
   }
 
   private addGotBonusAnimation(event: GameEvent): void {
-    const myEvent = event as GotBonus;
-    let color = 'white';
-    if (myEvent.bonusType === 'shield') color = 'green';
-    else if (myEvent.bonusType === 'freeze') color = 'blue';
-    const animation = new OverlayAnimation(30, color as OverlayAnimationColor);
-    this.animations.push(animation);
+    // const myEvent = event as GotBonus;
   }
 
   private drawAnimations(): void {
     this.drawExplosionAnimations();
     this.drawTextAnimations();
-    this.drawOverlayAnimations();
     remove(this.animations, { isExpired: true });
   }
 
@@ -249,28 +243,6 @@ class Drawer {
           this.drawGameObject(drawable, {}, () =>
             drawTextAnimation(p5, animation)
           );
-        }
-      }
-    }
-  }
-
-  private drawOverlayAnimations() {
-    let { p5 } = this;
-    for (const animation of this.animations) {
-      if (animation instanceof OverlayAnimation) {
-        let nextFrame = animation.next();
-        if (nextFrame) {
-          let alpha =
-            (animation.frameCount - nextFrame) / animation.frameCount / 2;
-          const colorMap = {
-            red: `rgba(128, 0, 0, ${alpha})`,
-            green: `rgba(0, 128, 0, ${alpha})`,
-            blue: `rgba(0, 200, 255, ${alpha})`,
-            white: `rgba(128, 128, 128, ${alpha})`
-          };
-          p5.fill(colorMap[animation.color]);
-          p5.noStroke();
-          p5.rect(0, 0, this.screen.width, this.screen.height);
         }
       }
     }

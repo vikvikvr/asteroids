@@ -26,16 +26,6 @@ class Animation {
   }
 }
 
-export type OverlayAnimationColor = 'white' | 'red' | 'green' | 'blue';
-
-export class OverlayAnimation extends Animation {
-  public color: OverlayAnimationColor;
-  constructor(length: number, color: OverlayAnimationColor) {
-    super(length);
-    this.color = color;
-  }
-}
-
 export class TextAnimation extends Animation {
   // private
   public text: string;
