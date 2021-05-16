@@ -404,23 +404,14 @@ class Drawer {
     });
   }
 
-  private drawTail(tail: Point[], type: 'ship' | 'asteroid') {
+  private drawShipTail(tail: Point[]) {
     let { p5 } = this;
-    for (let i = 0; i < tail.length; i++) {
+    const length = tail.length;
+    p5.noStroke();
+    for (let i = 0; i < length; i++) {
       const point = tail[i];
-      let coords = this.drawableCoords(point);
-      if (coords) {
-        let size = (1 - (tail.length - i) / tail.length + 1) * 10;
-        let alpha = (1 - (tail.length - i) / tail.length) * 125;
-        p5.noStroke();
-        if (type === 'ship') {
-          p5.fill(50, 50, 50, alpha);
-        } else {
-          size *= 1.5;
-          p5.fill(240, 125, 10, alpha);
-        }
-        p5.circle(coords.x, coords.y, size);
-      }
+      const drawable = this.toDrawableObject(point);
+      this.drawGameObject(drawable, {}, () => drawShipTailShape(p5, i, length));
     }
   }
 
