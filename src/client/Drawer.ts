@@ -150,9 +150,9 @@ class Drawer {
   private drawEnvironment(): void {
     let { p5, stars, engine } = this;
     const bgColorMap: Record<GameTemperature, string> = {
-      high: '#2E0F16',
-      normal: '#03164E',
-      low: '#202946'
+      high: '#311b92',
+      normal: '#1a237e',
+      low: '#0d47a1'
     };
     p5.background(bgColorMap[engine.state.temperature]);
     this.drawStars(stars);
