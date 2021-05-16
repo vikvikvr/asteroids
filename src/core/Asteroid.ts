@@ -74,7 +74,6 @@ class Asteroid extends GameObject {
     let sign = Math.random() > 0.5 ? 1 : -1;
     let newDirection = this.direction + angleChange * sign;
     this.direction = newDirection;
-    // super.setTargetDirection(newDirection);
   }
 }
 

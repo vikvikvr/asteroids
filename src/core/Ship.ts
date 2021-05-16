@@ -80,7 +80,6 @@ class Ship extends GameObject {
   private changeDirection(direction: 1 | -1) {
     const targetDirection = this.direction + this.rotationStep * direction;
     this.direction = targetDirection;
-    // this.setTargetDirection(targetDirection);
   }
 
   private makeBullet(): Bullet {

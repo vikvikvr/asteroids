@@ -21,9 +21,6 @@ class Entity {
   public direction: number;
   public world: Rect;
   public rotationSpeed: number;
-  // private
-  private angularSpeed: number;
-  private targetDirection: number;
 
   constructor(options: Partial<EntityOptions> = {}) {
     this.world = options.world || { width: 1000, height: 1000 };
@@ -31,9 +28,7 @@ class Entity {
     this.speed = options.speed || 0;
     this.acceleration = options.acceleration || 0;
     this.direction = options.direction || 0;
-    this.targetDirection = this.direction;
     this.orientation = options.orientation || 0;
-    this.angularSpeed = options.angularSpeed || 0;
     this.rotationSpeed = options.rotationSpeed || 0;
   }
 
@@ -44,10 +39,6 @@ class Entity {
   protected update(speedMultiplier = 1): void {
     this.updatePosition(speedMultiplier);
     this.orientation += this.rotationSpeed * speedMultiplier;
-  }
-
-  protected setTargetDirection(direction: number): void {
-    this.targetDirection = direction;
   }
 
   private updatePosition(speedMultiplier = 1): void {
