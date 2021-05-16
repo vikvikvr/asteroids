@@ -4,9 +4,15 @@ import Asteroid, { AsteroidDamage, AsteroidSize } from './Asteroid';
 import Bullet from './Bullet';
 import Drop, { DropType } from './Drop';
 
-export type GameEventType = 'BULLET_HIT' | 'SHIP_HIT' | 'GOT_BONUS';
+export type GameEventType =
+  | 'BULLET_HIT'
+  | 'SHIP_HIT'
+  | 'GOT_BONUS'
+  | 'FREEZE'
+  | 'BURN'
+  | 'LEVEL_UP';
 
-export type TGameEvent = ShipHit | BulletHit | GotBonus;
+export type TGameEvent = ShipHit | BulletHit | GotBonus | GameEvent;
 
 export class GameEvent {
   // public
