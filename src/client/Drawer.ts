@@ -279,11 +279,11 @@ class Drawer {
     temperature: GameTemperature
   ): void {
     for (const asteroid of asteroids) {
+      this.drawAsteroidTail(asteroid, temperature);
       const side = asteroid.hitBoxRadius / 3.5;
       const options = {};
       const drawer = () => drawAsteroidShape(this.p5, side);
       this.drawGameObject(asteroid, options, drawer);
-      this.drawAsteroidTail(asteroid, temperature);
     }
   }
 
