@@ -16,6 +16,16 @@ import { BulletHit, GameEvent, GotBonus, ShipHit } from '../core/Events';
 import Drop from '../core/Drop';
 import Asteroid from '../core/Asteroid';
 import Bullet from '../core/Bullet';
+import {
+  drawAsteroidShape,
+  drawAsteroidTailShape,
+  drawBulletShape,
+  drawBulletTailShape,
+  drawShipLifeArcShape,
+  drawShipShape,
+  drawShipTailShape
+} from './shapes';
+import { drawExplostionShard, drawTextAnimation } from './animations';
 
 interface DrawGameObjectOptions {
   image: P5.Image;
@@ -264,15 +274,16 @@ class Drawer {
   }
 
   private drawExplosionAnimations() {
+    const { p5 } = this;
     for (const animation of this.animations) {
-      if (animation instanceof ImageAnimation) {
-        let drawable = animation.getNextFrame();
-        if (drawable) {
-          this.drawGameObject(drawable, {
-            image: drawable.image,
-            rotationOffset: animation.rotation,
-            scale: drawable.scale
-          });
+      if (animation instanceof ExplosionAnimation) {
+        animation.next();
+        const percent = animation.percent;
+        if (percent <= 1) {
+          for (const shard of animation.shards) {
+            const drawer = () => drawExplostionShard(p5);
+            this.drawGameObject(shard, {}, drawer);
+          }
         }
       }
     }
