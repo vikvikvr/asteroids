@@ -164,7 +164,7 @@ class GameEngine {
     let { asteroids, ship, events } = this.state;
     for (const asteroid of asteroids) {
       if (haveCollided(asteroid, ship)) {
-        let event = new ev.ShipHit(asteroid, ship.shielded);
+        let event = new ev.ShipHit(asteroid);
         events.push(event);
         this.processShipHit(event);
       }
@@ -247,7 +247,7 @@ class GameEngine {
   private processShipHit(event: ev.ShipHit): void {
     let { asteroids, ship } = this.state;
     remove(asteroids, { id: event.asteroidId });
-    if (!ship.shielded) ship.life -= event.damage;
+    ship.life -= event.damage;
   }
 
   private processGotBonus(event: ev.GotBonus): void {
@@ -255,9 +255,6 @@ class GameEngine {
     switch (event.bonusType) {
       case 'fix':
         ship.restoreLife();
-        break;
-      case 'shield':
-        ship.activateShield();
         break;
       case 'freeze':
         this.state.temperature = 'low';

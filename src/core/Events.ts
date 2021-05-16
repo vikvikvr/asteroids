@@ -26,14 +26,12 @@ export class ShipHit extends GameEvent {
   public asteroidId: string;
   public damage: AsteroidDamage;
   public size: AsteroidSize;
-  public shielded: boolean;
   // constructor
-  constructor(asteroid: Asteroid, shielded: boolean) {
+  constructor(asteroid: Asteroid) {
     super('SHIP_HIT', asteroid.coords);
     this.asteroidId = asteroid.id;
     this.damage = asteroid.damage;
     this.size = asteroid.size;
-    this.shielded = shielded;
   }
 }
 

@@ -7,7 +7,6 @@ import { GameTemperature } from './GameEngine';
 class Ship extends GameObject {
   // public
   public bullets: Bullet[] = [];
-  public shielded: boolean = false;
   // private
   private rotationStep = Math.PI / 40;
   private accelerationStep = 1 / 5;
@@ -15,7 +14,6 @@ class Ship extends GameObject {
   private firedAt = -Infinity;
   // readonly
   readonly MAX_SPEED = 4;
-  readonly SHIELD_DURATION = 7000;
   // constructor
   constructor(options: Partial<EntityOptions> = {}) {
     super({
@@ -70,13 +68,6 @@ class Ship extends GameObject {
 
   public restoreLife() {
     this.life = 1;
-  }
-
-  public activateShield() {
-    this.shielded = true;
-    setTimeout(() => {
-      this.shielded = false;
-    }, this.SHIELD_DURATION);
   }
 
   private updateBullets() {

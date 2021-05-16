@@ -324,7 +324,6 @@ class Drawer {
 
   private drawShip(ship: Ship): void {
     this.drawShipTail(ship.tail);
-    this.drawShipShield(ship.shielded);
     const options = {
       rotateDirection: true,
       rotationOffset: Math.PI / 2
@@ -334,15 +333,6 @@ class Drawer {
       drawShipLifeArcShape(this.p5, ship.life);
     };
     this.drawGameObject(ship, options, drawer);
-  }
-
-  private drawShipShield(isShielded: boolean) {
-    if (isShielded) {
-      const { p5 } = this;
-      p5.stroke(0, 255, 0, 128);
-      p5.fill(0, 55, 0, 128);
-      p5.circle(p5.windowWidth / 2, p5.windowHeight / 2, 80);
-    }
   }
 
   private drawAsteroidTail(
