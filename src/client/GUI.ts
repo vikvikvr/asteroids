@@ -16,7 +16,8 @@ class GUI {
   }
 
   public draw(engine: GameEngine) {
-    this.p5.textSize(20);
+    this.p5.textSize(30);
+    this.p5.fill('white');
     // this.drawTimersInfo(etas);
     this.drawScore(engine.state);
   }
@@ -29,10 +30,17 @@ class GUI {
 
   private drawScore(state: GameState): void {
     let { p5 } = this;
-    p5.textAlign(p5.CENTER);
-    p5.text(state.score, p5.windowWidth / 2, SPACING);
-    p5.text(`Level ${state.level}`, p5.windowWidth / 2, SPACING * 2);
+    p5.textAlign(p5.LEFT);
+    p5.text(`Level ${state.level}`, SPACING * 2, SPACING * 2);
+    p5.textAlign(p5.RIGHT);
+    const scoreText = numberWithSeparators(state.score, ',');
+    p5.text(scoreText, p5.windowWidth - SPACING * 2, SPACING * 2);
   }
+}
+
+function numberWithSeparators(number: number, separator: string): string {
+  const groupThousands = /\B(?=(\d{3})+(?!\d))/g;
+  return number.toString().replace(groupThousands, separator);
 }
 
 export default GUI;
