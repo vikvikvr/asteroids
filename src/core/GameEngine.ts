@@ -268,11 +268,11 @@ class GameEngine {
   }
 
   private createLoot(coords: Point): void {
-    // let dropRate = 1 / 20;
-    // let canDrop = Math.random() > 1 - dropRate;
-    // if (canDrop) {
-    //   this.spawner.spawnBonus({ coords });
-    // }
+    let dropRate = 1 / 20;
+    let canDrop = Math.random() > 1 - dropRate;
+    if (canDrop) {
+      this.spawner.spawnBonus({ type: 'shield' });
+    }
   }
 }
 
