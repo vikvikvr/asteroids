@@ -196,11 +196,7 @@ class GameEngine {
     const spawnTime = this.levelDuration / 3;
     this.state.temperature = 'normal';
     setTimeout(() => this.startFrozenStage(), spawnTime);
-    setTimeout(() => {
-      this.state.temperature = 'high';
-      let event = new ev.GameEvent('BURN', this.state.ship.coords);
-      events.push(event);
-    }, spawnTime * 2);
+    setTimeout(() => this.startBurningStage(), spawnTime * 2);
     spawner.spawnAsteroid({ count: 30 });
     if (level > 0) {
       ship.restoreLife();
@@ -208,6 +204,12 @@ class GameEngine {
       events.push(event);
     }
     this.state.level++;
+  }
+
+  private startBurningStage() {
+    this.state.temperature = 'high';
+    const event = new ev.GameEvent('BURN', this.state.ship.coords);
+    this.state.events.push(event);
   }
 
   private startFrozenStage() {
