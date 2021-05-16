@@ -20,10 +20,10 @@ class GameObject extends Entity {
   public life: number;
   public isExpired: boolean;
   public tail: Point[] = [];
+  public hasTail: boolean;
+  public tailLength: number;
   // private
   private expiresAt: number;
-  private hasTail: boolean;
-  private tailLength: number;
   // constructor
   constructor(options: GameObjectOptions = {}) {
     super({ ...options });
@@ -37,7 +37,7 @@ class GameObject extends Entity {
     this.tailLength = options.tailLength || 20;
   }
 
-  protected update(speedMultiplier = 1): void {
+  public update(speedMultiplier = 1): void {
     super.update(speedMultiplier);
     this.isExpired = Date.now() > this.expiresAt;
     if (this.hasTail) {
