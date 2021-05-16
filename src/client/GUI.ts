@@ -17,6 +17,7 @@ class GUI {
   }
 
   public draw(engine: GameEngine) {
+    this.p5.textSize(20);
     this.drawShipInfo(engine.state.ship);
     // this.drawTimersInfo(etas);
     this.drawScore(engine.state);
