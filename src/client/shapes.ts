@@ -8,13 +8,19 @@ export function drawAsteroidShape(
   size: AsteroidSize,
   temperature: GameTemperature
 ): void {
-  const colorMap: Record<GameTemperature, string> = {
-    normal: 'green',
-    high: 'red',
-    low: 'blue'
+  const colorMap: Record<GameTemperature, string[]> = {
+    normal: ['#009688', '#00897b', '#00796b', '#00695c'],
+    high: ['#f44336', '#e53935', '#d32f2f', '#c62828'],
+    low: ['#2196f3', '#1e88e5', '#1976d2', '#1565c0']
   };
-  p5.fill(colorMap[temperature]);
-  p5.circle(0, 0, hitBoxRadius * 2);
+  const offsets = {
+    x: [2, 2, -2, -2],
+    y: [-2, 2, 2, -2]
+  };
+  for (let i = 4; i > 0; i--) {
+    p5.fill(colorMap[temperature][i - 1]);
+    p5.circle(offsets.x[i], offsets.y[i], (hitBoxRadius * 2 * i) / 4);
+  }
 }
 
 export function drawShipShape(p5: P5, side: number): void {
