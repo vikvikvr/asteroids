@@ -24,13 +24,13 @@ export function drawAsteroidShape(
 }
 
 export function drawShipShape(p5: P5, side: number): void {
-  p5.fill('#BEC6ED');
+  p5.fill('#ff9800');
   p5.beginShape();
   p5.vertex(side * +0, side * +1);
   p5.vertex(side * -2, side * +2);
   p5.vertex(side * +0, side * -2);
   p5.endShape();
-  p5.fill('#6D7BBD');
+  p5.fill('#f57c00');
   p5.beginShape();
   p5.vertex(side * +0, side * +1);
   p5.vertex(side * +0, side * -2);
