@@ -43,7 +43,7 @@ class Entity {
 
   protected update(speedMultiplier = 1): void {
     this.updatePosition(speedMultiplier);
-    this.approachTargetDirection(speedMultiplier);
+    // this.approachTargetDirection(speedMultiplier);
     this.orientation += this.rotationSpeed * speedMultiplier;
   }
 
