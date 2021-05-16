@@ -268,7 +268,7 @@ class Drawer {
   private drawStars(stars: Star[]): void {
     let { p5 } = this;
     p5.noStroke();
-    p5.fill('white');
+    p5.fill(`rgba(255,255,255,${(Date.now() / 10) % 255})`);
     for (const star of stars) {
       let coords = this.drawableCoords(star);
       coords && p5.circle(coords.x, coords.y, star.radius);
