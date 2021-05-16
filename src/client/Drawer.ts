@@ -159,10 +159,9 @@ class Drawer {
   }
 
   private drawGameObjects(engine: GameEngine): void {
-    let { ship, bonuses, asteroids } = engine.state;
+    let { ship, asteroids } = engine.state;
     this.drawBullets(ship.bullets);
     this.drawShip(ship);
-    this.drawBonuses(bonuses);
     this.drawAsteroids(asteroids, engine.state.temperature);
   }
 
@@ -284,23 +283,6 @@ class Drawer {
     for (const star of stars) {
       let coords = this.drawableCoords(star);
       coords && p5.circle(coords.x, coords.y, star.radius);
-    }
-  }
-
-  private drawBonuses(bonuses: Drop[]): void {
-    for (const bonus of bonuses) {
-      this.drawGameObject(bonus, { image: this.assets.images[bonus.dropType] });
-    }
-  }
-
-  private setGradient(c1: P5.Color, c2: P5.Color): void {
-    const { p5 } = this;
-    p5.noFill();
-    for (var y = 0; y < p5.height; y++) {
-      var inter = p5.map(y, 0, p5.height, 0, 1);
-      var c = p5.lerpColor(c1, c2, inter);
-      p5.stroke(c);
-      p5.line(0, y, p5.width, y);
     }
   }
 
