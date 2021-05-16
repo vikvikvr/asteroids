@@ -192,24 +192,24 @@ class GameEngine {
 
   private updateLevel() {
     const { spawner } = this;
-    const { ship, level } = this.state;
+    const { ship, level, events } = this.state;
     const spawnTime = this.levelDuration / 3;
     this.state.temperature = 'normal';
     setTimeout(() => {
       this.state.temperature = 'low';
       let event = new ev.GameEvent('FREEZE', this.state.ship.coords);
-      this.state.events.push(event);
+      events.push(event);
     }, spawnTime);
     setTimeout(() => {
       this.state.temperature = 'high';
       let event = new ev.GameEvent('BURN', this.state.ship.coords);
-      this.state.events.push(event);
+      events.push(event);
     }, spawnTime * 2);
     spawner.spawnAsteroid({ count: 30 });
     if (level > 0) {
-      spawner.spawnBonus({ type: 'fix', coords: ship.coords });
+      ship.restoreLife();
       let event = new ev.GameEvent('LEVEL_UP', this.state.ship.coords);
-      this.state.events.push(event);
+      events.push(event);
     }
     this.state.level++;
   }
