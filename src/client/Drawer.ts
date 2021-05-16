@@ -227,14 +227,10 @@ class Drawer {
       if (animation instanceof TextAnimation) {
         const coords = animation.getNextCoords();
         if (coords) {
-          let drawCoords = this.drawableCoords(coords);
-          if (drawCoords) {
-            const { currentFrame, frameCount, text } = animation;
-            const alpha = (1 - currentFrame / frameCount) * 255;
-            p5.fill(255, 255, 255, alpha);
-            // p5.stroke(255, 255, 255, alpha);
-            p5.text(text, drawCoords.x, drawCoords.y);
-          }
+          const drawable = this.toDrawableObject(coords);
+          this.drawGameObject(drawable, {}, () =>
+            drawTextAnimation(p5, animation)
+          );
         }
       }
     }
