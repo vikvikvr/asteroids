@@ -7,7 +7,7 @@ import Animation, { ExplosionAnimation, TextAnimation } from './Animation';
 import Ship from '../core/Ship';
 import { remove } from 'lodash';
 import { bulletHitScore } from '../core/game-rules';
-import { BulletHit, GameEvent } from '../core/Events';
+import { BulletHit, GameEvent, GameEventType } from '../core/Events';
 import Drop from '../core/Drop';
 import Asteroid from '../core/Asteroid';
 import Bullet from '../core/Bullet';
@@ -169,6 +169,17 @@ class Drawer {
     for (const event of engine.state.events) {
       if (event.type === 'GOT_BONUS') {
         this.addGotBonusAnimation(event);
+      } else if (['LEVEL_UP', 'FREEZE', 'BURN'].includes(event.type)) {
+        const textMap: Partial<Record<GameEventType, string>> = {
+          LEVEL_UP: 'level up!',
+          FREEZE: 'frozen!',
+          BURN: 'on fire!'
+        };
+        const textAnimation = new TextAnimation(
+          textMap[event.type] as string,
+          engine.state.ship.coords
+        );
+        this.animations.push(textAnimation);
       } else {
         this.addExplosionAnimation(event, engine.state.temperature);
         if (event.type === 'SHIP_HIT') {
