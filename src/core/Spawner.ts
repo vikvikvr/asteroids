@@ -14,12 +14,6 @@ export interface AsteroidSpawnOptions {
   notDirection?: number;
 }
 
-export type SpawnerEtas = {
-  asteroids: number;
-};
-
-export type ID = string;
-
 class Spawner {
   // public
   public state: GameState;

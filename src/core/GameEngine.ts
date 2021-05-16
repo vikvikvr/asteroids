@@ -1,6 +1,6 @@
 import Ship from './Ship';
 import Asteroid, { AsteroidsCount, AsteroidSize } from './Asteroid';
-import { haveCollided, Rect, Point, centerOf } from '../lib/geometry';
+import { haveCollided, Rect, centerOf } from '../lib/geometry';
 import * as ev from './Events';
 import { remove, find, filter } from 'lodash';
 import Spawner from './Spawner';
@@ -26,7 +26,6 @@ class GameEngine {
   public spawner: Spawner;
   public levelDuration = 30_000;
   // private
-  private gameOverCallback?: () => void;
   private updateTimeout?: NodeJS.Timeout;
   private levelTimeout?: NodeJS.Timeout;
   constructor(world: Rect) {
@@ -47,13 +46,8 @@ class GameEngine {
   public startLevel(): void {
     this.status = 'playing';
     this.updateLevel();
-    // this.spawner.spawnAsteroid({ count: 30 });
     this.updateTimeout = setInterval(this.update, 16);
     this.levelTimeout = setInterval(this.updateLevel, this.levelDuration);
-  }
-
-  public onGameOver(callback: () => void) {
-    this.gameOverCallback = callback;
   }
 
   private update(): void {
@@ -90,7 +84,6 @@ class GameEngine {
       if (this.levelTimeout) {
         clearInterval(this.levelTimeout);
       }
-      this.gameOverCallback?.();
     }
   }
 
