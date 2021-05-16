@@ -3,16 +3,11 @@ import P5 from 'p5';
 import { drawableCoords, Point, Rect } from '../lib/geometry';
 import GUI from './GUI';
 import COLORS from './colors';
-import Animation, {
-  ImageAnimation,
-  OverlayAnimation,
-  OverlayAnimationColor,
-  TextAnimation
-} from './Animation';
+import Animation, { ExplosionAnimation, TextAnimation } from './Animation';
 import Ship from '../core/Ship';
 import { remove } from 'lodash';
 import { bulletHitScore } from '../core/game-rules';
-import { BulletHit, GameEvent, GotBonus, ShipHit } from '../core/Events';
+import { BulletHit, GameEvent } from '../core/Events';
 import Drop from '../core/Drop';
 import Asteroid from '../core/Asteroid';
 import Bullet from '../core/Bullet';
