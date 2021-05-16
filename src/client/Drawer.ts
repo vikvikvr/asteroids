@@ -23,7 +23,6 @@ import {
 import { drawExplostionShard, drawTextAnimation } from './animations';
 
 interface DrawGameObjectOptions {
-  image: P5.Image;
   rotateDirection?: boolean;
   ignoreOrientation?: boolean;
   rotationOffset?: number;
