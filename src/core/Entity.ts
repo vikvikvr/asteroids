@@ -43,27 +43,11 @@ class Entity {
 
   protected update(speedMultiplier = 1): void {
     this.updatePosition(speedMultiplier);
-    // this.approachTargetDirection(speedMultiplier);
     this.orientation += this.rotationSpeed * speedMultiplier;
   }
 
   protected setTargetDirection(direction: number): void {
     this.targetDirection = direction;
-  }
-
-  private approachTargetDirection(speedMultiplier = 1): void {
-    const angularSpeed = this.angularSpeed * speedMultiplier;
-    if (this.targetDirection > this.direction) {
-      this.direction = Math.min(
-        this.targetDirection,
-        this.direction + angularSpeed
-      );
-    } else if (this.targetDirection < this.direction) {
-      this.direction = Math.max(
-        this.targetDirection,
-        this.direction - angularSpeed
-      );
-    }
   }
 
   private updatePosition(speedMultiplier = 1): void {
