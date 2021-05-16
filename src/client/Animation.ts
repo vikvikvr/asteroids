@@ -52,9 +52,7 @@ export class TextAnimation extends Animation {
 }
 
 export class ExplosionAnimation extends Animation {
-  // public size: AsteroidSize;
-  // public coords: Point;
-  // public temperature: GameTemperature;
+  public temperature: GameTemperature;
   public shards: GameObject[];
   public percent = 0;
   constructor(
@@ -64,16 +62,15 @@ export class ExplosionAnimation extends Animation {
     world: Rect
   ) {
     super(20);
-    // this.size = size;
-    // this.coords = coords;
-    // this.temperature = temperature;
     this.shards = [];
-    for (let i = 0; i < 10; i++) {
+    this.temperature = temperature;
+    for (let i = 0; i < 20; i++) {
       const shard = new GameObject({
-        speed: 4,
+        speed: 3 + Math.random() * 2,
         direction: Math.random() * Math.PI * 2,
         coords: coords,
-        world: world
+        world: world,
+        hitBoxRadius: 10 + Math.random() * 15
       });
       this.shards.push(shard);
     }
