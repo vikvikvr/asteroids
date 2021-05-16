@@ -8,7 +8,6 @@ import Ship from '../core/Ship';
 import { remove } from 'lodash';
 import { bulletHitScore } from '../core/game-rules';
 import { BulletHit, GameEvent, GameEventType } from '../core/Events';
-import Drop from '../core/Drop';
 import Asteroid from '../core/Asteroid';
 import Bullet from '../core/Bullet';
 import {
@@ -102,6 +101,16 @@ class Drawer {
 
   private drawGameScreen(engine: GameEngine): void {
     this.p5.push();
+    this.shakeCamera();
+    this.drawEnvironment();
+    this.drawGameObjects(engine);
+    this.addNewAnimations(engine);
+    this.drawAnimations();
+    this.p5.pop();
+    this.gui.draw(engine);
+  }
+
+  private shakeCamera() {
     const currentTime = Date.now();
     if (currentTime < this.shakeEndTime) {
       const shakeSize = 10;
@@ -109,12 +118,6 @@ class Drawer {
       const offsetY = this.p5.noise(0, currentTime) * shakeSize;
       this.p5.translate(offsetX, offsetY);
     }
-    this.drawEnvironment();
-    this.drawGameObjects(engine);
-    this.addNewAnimations(engine);
-    this.drawAnimations();
-    this.p5.pop();
-    this.gui.draw(engine);
   }
 
   private drawGameOverScreen(score: number): void {
@@ -293,7 +296,13 @@ class Drawer {
       this.drawAsteroidTail(asteroid, temperature);
       // const side = asteroid.hitBoxRadius / 3.5;
       const options = {};
-      const drawer = () => drawAsteroidShape(this.p5, asteroid.hitBoxRadius, asteroid.size,temperature);
+      const drawer = () =>
+        drawAsteroidShape(
+          this.p5,
+          asteroid.hitBoxRadius,
+          asteroid.size,
+          temperature
+        );
       this.drawGameObject(asteroid, options, drawer);
     }
   }
