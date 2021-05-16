@@ -195,11 +195,7 @@ class GameEngine {
     const { ship, level, events } = this.state;
     const spawnTime = this.levelDuration / 3;
     this.state.temperature = 'normal';
-    setTimeout(() => {
-      this.state.temperature = 'low';
-      let event = new ev.GameEvent('FREEZE', this.state.ship.coords);
-      events.push(event);
-    }, spawnTime);
+    setTimeout(() => this.startFrozenStage(), spawnTime);
     setTimeout(() => {
       this.state.temperature = 'high';
       let event = new ev.GameEvent('BURN', this.state.ship.coords);
@@ -212,6 +208,12 @@ class GameEngine {
       events.push(event);
     }
     this.state.level++;
+  }
+
+  private startFrozenStage() {
+    this.state.temperature = 'low';
+    const event = new ev.GameEvent('FREEZE', this.state.ship.coords);
+    this.state.events.push(event);
   }
 
   private processShipHit(event: ev.ShipHit): void {
