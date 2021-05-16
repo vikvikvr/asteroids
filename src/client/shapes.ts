@@ -71,6 +71,10 @@ export function drawAsteroidTailShape(
 
 export function drawShipLifeArcShape(p5: P5, life: number) {
   p5.noFill();
-  p5.stroke('white');
-  p5.arc(0, 0, 100, 100, 0, 2 * Math.PI * life);
+  p5.strokeWeight(4);
+  p5.stroke('#ffb74d');
+  const subtractAngle = ((1 - life) * Math.PI) / 2;
+  const startAngle = subtractAngle;
+  const endAngle = Math.PI - subtractAngle;
+  p5.arc(0, 0, 100, 100, startAngle, endAngle);
 }
