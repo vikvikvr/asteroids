@@ -32,7 +32,7 @@ export class TextAnimation extends Animation {
   private coords: Point;
   // constructor
   constructor(text: string, coords: Point) {
-    super(30);
+    super(50);
     this.coords = coords;
     this.text = text;
   }
