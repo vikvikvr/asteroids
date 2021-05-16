@@ -230,7 +230,7 @@ class GameEngine {
         this.state.temperature = 'normal';
         console.log('normal temp');
       }, spawnTime);
-    }, spawnTime);
+    }, spawnTime * 3);
   }
 
   private planLowTemperaturePeriod(spawnTime: number): void {
