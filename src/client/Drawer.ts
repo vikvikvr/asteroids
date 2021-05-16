@@ -347,7 +347,8 @@ class Drawer {
 
   private drawGameObject(
     object: DrawableObject,
-    options: DrawGameObjectOptions
+    options: DrawGameObjectOptions,
+    drawer: () => void
   ): void {
     const { p5 } = this;
     const coords = this.drawableCoords(object.coords);
@@ -360,7 +361,7 @@ class Drawer {
       p5.translate(coords.x, coords.y);
       p5.rotate(orientation + offset + direction);
       p5.scale(options.scale || 1);
-      p5.image(options.image, 0, 0, side, side);
+      drawer();
       if (this.showHitBoxes) {
         p5.noFill();
         p5.stroke('red');
