@@ -338,6 +338,15 @@ class Drawer {
     }
   }
 
+  private toDrawableObject(point: Point): DrawableObject {
+    return {
+      coords: point,
+      hitBoxRadius: 2,
+      orientation: 0,
+      direction: 0
+    };
+  }
+
   private drawGameObject(
     object: DrawableObject,
     options: DrawGameObjectOptions
@@ -416,23 +425,15 @@ class Drawer {
   }
 
   private drawBullets(bullets: Bullet[]): void {
-    // const size = 3;
     for (const bullet of bullets) {
       const tailLength = bullet.tailLength;
-      const coords = this.drawableCoords(bullet.coords);
-      if (coords) {
-        this.p5.fill(255, 255, 255);
-        this.p5.circle(coords.x, coords.y, 4);
-      }
-      // bullets tail
+      this.drawGameObject(bullet, {}, () => drawBulletShape(this.p5));
       for (let i = 0; i < bullet.tail.length; i++) {
         const point = bullet.tail[i];
-        const coords = this.drawableCoords(point);
-        if (coords) {
-          const alpha = (i / tailLength) * 125;
-          this.p5.fill(255, 255, 255, alpha);
-          this.p5.circle(coords.x, coords.y, 3);
-        }
+        const drawable = this.toDrawableObject(point);
+        this.drawGameObject(drawable, {}, () =>
+          drawBulletTailShape(this.p5, i, tailLength)
+        );
       }
     }
   }
