@@ -1,4 +1,3 @@
-import Drop, { DropOptions, DropType } from './Drop';
 import { GameState } from './GameEngine';
 import {
   notDirection,

@@ -2,7 +2,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { Point } from '../lib/geometry';
 import Asteroid, { AsteroidDamage, AsteroidSize } from './Asteroid';
 import Bullet from './Bullet';
-import Drop, { DropType } from './Drop';
 
 export type GameEventType =
   | 'BULLET_HIT'

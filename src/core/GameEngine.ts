@@ -3,7 +3,6 @@ import Asteroid, { AsteroidsCount, AsteroidSize } from './Asteroid';
 import { haveCollided, Rect, Point, centerOf } from '../lib/geometry';
 import * as ev from './Events';
 import { remove, find, filter } from 'lodash';
-import Drop from './Drop';
 import Spawner from './Spawner';
 import { bulletHitScore } from './game-rules';
 
