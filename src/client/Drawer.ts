@@ -154,11 +154,13 @@ class Drawer {
   }
 
   private drawEnvironment(): void {
-    let { p5, stars } = this;
-    // p5.background(COLORS.space);
-    const c1 = p5.color('#030039');
-    const c2 = p5.color('#075eac');
-    this.setGradient(c1, c2);
+    let { p5, stars, engine } = this;
+    const bgColorMap: Record<GameTemperature, string> = {
+      high: '#2E0F16',
+      normal: '#03164E',
+      low: '#202946'
+    };
+    p5.background(bgColorMap[engine.state.temperature]);
     this.drawStars(stars);
   }
 
