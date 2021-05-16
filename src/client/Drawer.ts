@@ -119,6 +119,7 @@ class Drawer {
     this.drawGameObjects(engine);
     this.addNewAnimations(engine);
     this.drawAnimations();
+    this.p5.pop();
     this.gui.draw(engine);
   }
 
@@ -176,7 +177,7 @@ class Drawer {
       } else {
         this.addExplosionAnimation(event, engine.state.temperature);
         if (event.type === 'SHIP_HIT') {
-          this.addShipHitAnimation(event);
+          this.shakeEndTime = Date.now() + 500;
         } else {
           this.addScoreAnimation(event, engine.state.temperature);
         }
