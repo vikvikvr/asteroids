@@ -395,13 +395,14 @@ class Drawer {
     asteroid: Asteroid,
     temperature: GameTemperature
   ): void {
-    this.drawGameObject(asteroid, {
-      image: this.assets.images['asteroid-tail'],
-      ignoreOrientation: true,
-      rotateDirection: true,
-      rotationOffset: Math.PI,
-      scale: 3
-    });
+    const length = asteroid.tail.length;
+    for (let i = 0; i < length; i++) {
+      const point = asteroid.tail[i];
+      const drawable = this.toDrawableObject(point);
+      this.drawGameObject(drawable, {}, () =>
+        drawAsteroidTailShape(this.p5, i, length)
+      );
+    }
   }
 
   private drawShipTail(tail: Point[]) {
