@@ -10,16 +10,16 @@ export function drawAsteroidShape(
 ): void {
   const colorMap: Record<GameTemperature, string[]> = {
     normal: ['#009688', '#00897b', '#00796b', '#00695c'],
-    high: ['#f44336', '#e53935', '#d32f2f', '#c62828'],
+    high: ['#ff9800', '#f57c00', '#ef6c00', '#e65100'],
     low: ['#2196f3', '#1e88e5', '#1976d2', '#1565c0']
   };
   const offsets = {
     x: [2, 2, -2, -2],
     y: [-2, 2, 2, -2]
   };
-  for (let i = 4; i > 0; i--) {
-    p5.fill(colorMap[temperature][i - 1]);
-    p5.circle(offsets.x[i], offsets.y[i], (hitBoxRadius * 2 * i) / 4);
+  for (let i = 3; i >= 0; i--) {
+    p5.fill(colorMap[temperature][i]);
+    p5.circle(offsets.x[i], offsets.y[i], (hitBoxRadius * 2 * (i + 1)) / 4);
   }
 }
 
