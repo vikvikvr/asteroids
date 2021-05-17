@@ -13,7 +13,7 @@ const colors: ColorsMap = {
   life: '#F24726',
   shield: '#E6E6E6',
   hud: '#2D9BF0',
-  space: 'black'
+  space: '#1a237e'
 };
 
 export default colors;

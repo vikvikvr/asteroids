@@ -120,9 +120,11 @@ class Drawer {
   private drawGameOverScreen(score: number): void {
     let { p5 } = this;
     p5.background(COLORS.space);
-    p5.fill('yellow');
+    p5.fill('white');
+    p5.textSize(40);
     p5.textAlign(p5.CENTER);
     p5.text('GAME OVER', p5.windowWidth / 2, p5.windowHeight / 2);
+    p5.textSize(20);
     p5.text(score, p5.windowWidth / 2, p5.windowHeight / 2 + 30);
     p5.text(
       'press F5 to try again',
