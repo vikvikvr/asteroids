@@ -24,13 +24,13 @@ export function drawAsteroidShape(
 }
 
 export function drawShipShape(p5: P5, side: number): void {
-  p5.fill('#ff9800');
+  p5.fill('#b0bec5');
   p5.beginShape();
   p5.vertex(side * +0, side * +1);
   p5.vertex(side * -2, side * +2);
   p5.vertex(side * +0, side * -2);
   p5.endShape();
-  p5.fill('#f57c00');
+  p5.fill('#90a4ae');
   p5.beginShape();
   p5.vertex(side * +0, side * +1);
   p5.vertex(side * +0, side * -2);
@@ -54,9 +54,10 @@ export function drawBulletTailShape(
 }
 
 export function drawShipTailShape(p5: P5, index: number, length: number): void {
-  const alpha = (1 - (length - index) / length) * 125;
+  const difference = length - index;
+  const alpha = (1 - (length - index) / length) * 50;
   p5.fill(255, 255, 255, alpha);
-  p5.circle(0, 0, 5);
+  p5.circle(0, 0, difference / 1.5 + 15);
 }
 
 export function drawAsteroidTailShape(
@@ -72,7 +73,7 @@ export function drawAsteroidTailShape(
 export function drawShipLifeArcShape(p5: P5, life: number) {
   p5.noFill();
   p5.strokeWeight(4);
-  p5.stroke('#ffb74d');
+  p5.stroke(207, 216, 220, 75);
   const subtractAngle = ((1 - life) * Math.PI) / 2;
   const startAngle = subtractAngle;
   const endAngle = Math.PI - subtractAngle;
