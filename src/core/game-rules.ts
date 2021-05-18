@@ -19,6 +19,8 @@ function bulletHitScore(
     } else {
       score = SCORES.small;
     }
+  } else if (temperature === 'high') {
+    score *= 2;
   }
   return score;
 }
