@@ -26,7 +26,8 @@ class Ship extends GameObject {
       direction: -Math.PI / 2,
       angularSpeed: Math.PI / 3 / 20,
       hasTail: true,
-      tailLength: 20
+      tailLength: 20,
+      life: 1
     });
   }
 

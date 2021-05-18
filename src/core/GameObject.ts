@@ -11,6 +11,7 @@ export interface GameObjectOptions extends Partial<EntityOptions> {
   duration?: number;
   hasTail?: boolean;
   tailLength?: number;
+  life?: number;
 }
 
 class GameObject extends Entity {
@@ -32,7 +33,7 @@ class GameObject extends Entity {
     this.type = options.type || 'asteroid';
     this.hitBoxRadius = options.hitBoxRadius || 50;
     this.isExpired = false;
-    this.life = 1;
+    this.life = options.life || 1;
     this.expiresAt = Date.now() + (options.duration || Infinity);
     this.hasTail = options.hasTail || false;
     this.tailLength = options.tailLength || 20;
