@@ -51,6 +51,12 @@ export class TextAnimation extends Animation {
   }
 }
 
+const shardsCountMap: Record<AsteroidSize, number> = {
+  large: 30,
+  medium: 20,
+  small: 10
+};
+
 export class ExplosionAnimation extends Animation {
   public temperature: GameTemperature;
   public shards: GameObject[];
@@ -66,7 +72,8 @@ export class ExplosionAnimation extends Animation {
     this.shards = [];
     this.temperature = temperature;
     this.size = size;
-    for (let i = 0; i < 20; i++) {
+    const shardsCount = shardsCountMap[size];
+    for (let i = 0; i < shardsCount; i++) {
       const shard = new GameObject({
         speed: 3 + Math.random() * 2,
         direction: Math.random() * Math.PI * 2,

@@ -188,9 +188,10 @@ class Drawer {
     event: GameEvent,
     temperature: GameTemperature
   ): void {
+    const myEvent = event as BulletHit;
     const animation = new ExplosionAnimation(
-      'large',
-      event.coords,
+      myEvent.size,
+      myEvent.coords,
       temperature,
       this.engine.world
     );
