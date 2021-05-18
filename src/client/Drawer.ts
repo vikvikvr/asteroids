@@ -3,7 +3,7 @@ import P5 from 'p5';
 import { drawableCoords, Point, Rect } from '../lib/geometry';
 import GUI from './GUI';
 import COLORS from './colors';
-import Animation, { ExplosionAnimation, TextAnimation } from './Animation';
+import Animation, { TextAnimation } from './Animation';
 import Ship from '../core/Ship';
 import { remove } from 'lodash';
 import { bulletHitScore } from '../core/game-rules';
@@ -166,7 +166,6 @@ class Drawer {
         );
         this.animations.push(textAnimation);
       } else {
-        this.addExplosionAnimation(event, engine.state.temperature);
         if (event.type === 'SHIP_HIT') {
           this.shakeEndTime = Date.now() + 500;
         } else {
@@ -184,22 +183,8 @@ class Drawer {
     this.animations.push(scoreAnimation);
   }
 
-  private addExplosionAnimation(
-    event: GameEvent,
-    temperature: GameTemperature
-  ): void {
-    const myEvent = event as BulletHit;
-    const animation = new ExplosionAnimation(
-      myEvent.size,
-      myEvent.coords,
-      temperature,
-      this.engine.world
-    );
-    this.animations.push(animation);
-  }
-
   private drawAnimations(): void {
-    this.drawExplosionAnimations();
+    this.drawExplosionShards();
     this.drawTextAnimations();
     remove(this.animations, { isExpired: true });
   }
@@ -221,25 +206,11 @@ class Drawer {
     }
   }
 
-  private drawExplosionAnimations() {
+  private drawExplosionShards() {
     const { p5 } = this;
-    for (const animation of this.animations) {
-      if (animation instanceof ExplosionAnimation) {
-        animation.next();
-        const percent = animation.percent;
-        if (percent <= 1) {
-          for (const shard of animation.shards) {
-            const drawer = () =>
-              drawExplostionShard(
-                p5,
-                shard,
-                animation.size,
-                animation.temperature
-              );
-            this.drawGameObject(shard, {}, drawer);
-          }
-        }
-      }
+    for (const shard of this.engine.state.shards) {
+      const drawer = () => drawExplostionShard(p5, shard);
+      this.drawGameObject(shard, {}, drawer);
     }
   }
 

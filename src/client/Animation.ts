@@ -1,8 +1,5 @@
 import P5 from 'p5';
-import { AsteroidSize } from '../core/Asteroid';
-import { GameTemperature } from '../core/GameEngine';
-import GameObject from '../core/GameObject';
-import { Point, Rect } from '../lib/geometry';
+import { Point } from '../lib/geometry';
 import { DrawableObject } from './Drawer';
 
 export interface AnimationFrame extends DrawableObject {
@@ -48,60 +45,6 @@ export class TextAnimation extends Animation {
     } else {
       return false;
     }
-  }
-}
-
-type AsteroidSizeMap = Record<AsteroidSize, number>;
-
-const shardsCountMap: AsteroidSizeMap = {
-  large: 30,
-  medium: 20,
-  small: 10
-};
-
-const shardSizeMap: AsteroidSizeMap = {
-  large: 15,
-  medium: 12,
-  small: 9
-};
-
-export class ExplosionAnimation extends Animation {
-  public temperature: GameTemperature;
-  public shards: GameObject[];
-  public percent = 0;
-  public size: AsteroidSize;
-  constructor(
-    size: AsteroidSize,
-    coords: Point,
-    temperature: GameTemperature,
-    world: Rect
-  ) {
-    super(20);
-    this.shards = [];
-    this.temperature = temperature;
-    this.size = size;
-    const shardsCount = shardsCountMap[size];
-    const minSpeed = shardsCountMap[size] / 10;
-    const shardSize = shardSizeMap[size];
-    for (let i = 0; i < shardsCount; i++) {
-      const shard = new GameObject({
-        speed: minSpeed + Math.random() * 2,
-        direction: Math.random() * Math.PI * 2,
-        coords: coords,
-        world: world,
-        hitBoxRadius: shardSize + (Math.random() * shardSize) / 2
-      });
-      this.shards.push(shard);
-    }
-  }
-
-  public next(): number | false {
-    super.next();
-    this.percent += 0.05;
-    for (const shard of this.shards) {
-      shard.update();
-    }
-    return 1;
   }
 }
 
