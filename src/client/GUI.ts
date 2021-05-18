@@ -34,7 +34,10 @@ class GUI {
   }
 }
 
-function numberWithSeparators(number: number, separator: string): string {
+export function numberWithSeparators(
+  number: number,
+  separator: string
+): string {
   const groupThousands = /\B(?=(\d{3})+(?!\d))/g;
   return number.toString().replace(groupThousands, separator);
 }

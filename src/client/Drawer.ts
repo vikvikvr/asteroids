@@ -1,7 +1,7 @@
 import GameEngine, { GameState, GameTemperature } from '../core/GameEngine';
 import P5 from 'p5';
 import { drawableCoords, Point, Rect } from '../lib/geometry';
-import GUI from './GUI';
+import GUI, { numberWithSeparators } from './GUI';
 import COLORS from './colors';
 import Animation, { TextAnimation } from './Animation';
 import { remove } from 'lodash';
@@ -82,7 +82,7 @@ class Drawer {
         this.drawGameScreen(engine);
         break;
       case 'lost':
-        this.drawGameOverScreen(engine.state.score);
+        this.drawGameOverScreen(engine);
         break;
       case 'idle':
         console.log('idle');
@@ -116,20 +116,23 @@ class Drawer {
     }
   }
 
-  private drawGameOverScreen(score: number): void {
+  private drawGameOverScreen(engine: GameEngine): void {
     let { p5 } = this;
+    const ankerX = p5.windowWidth / 2;
+    const ankerY = p5.windowHeight / 2;
     p5.background(COLORS.space);
     p5.fill('white');
     p5.textSize(40);
     p5.textAlign(p5.CENTER);
-    p5.text('GAME OVER', p5.windowWidth / 2, p5.windowHeight / 2);
+    p5.text('GAME OVER', ankerX, ankerY - 60);
     p5.textSize(20);
-    p5.text(score, p5.windowWidth / 2, p5.windowHeight / 2 + 30);
-    p5.text(
-      'press F5 to try again',
-      p5.windowWidth / 2,
-      p5.windowHeight / 2 + 60
-    );
+    const scoreText = 'Score: ' + numberWithSeparators(engine.state.score, ',');
+    p5.text(scoreText, ankerX, ankerY);
+    const bestScoreText =
+      'Best: ' + numberWithSeparators(engine.highScore, ',');
+    p5.text(bestScoreText, ankerX, ankerY + 30);
+    p5.textSize(20);
+    p5.text('press F5 to try again', ankerX, ankerY + 90);
     p5.textAlign(p5.LEFT);
   }
 
