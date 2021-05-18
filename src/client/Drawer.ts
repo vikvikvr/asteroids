@@ -1,10 +1,9 @@
-import GameEngine, { GameTemperature } from '../core/GameEngine';
+import GameEngine, { GameState, GameTemperature } from '../core/GameEngine';
 import P5 from 'p5';
 import { drawableCoords, Point, Rect } from '../lib/geometry';
 import GUI from './GUI';
 import COLORS from './colors';
 import Animation, { TextAnimation } from './Animation';
-import Ship from '../core/Ship';
 import { remove } from 'lodash';
 import { bulletHitScore } from '../core/game-rules';
 import { BulletHit, GameEvent, GameEventType } from '../core/Events';
@@ -148,7 +147,7 @@ class Drawer {
   private drawGameObjects(engine: GameEngine): void {
     let { ship, asteroids } = engine.state;
     this.drawBullets(ship.bullets);
-    this.drawShip(ship);
+    this.drawShip(engine.state);
     this.drawAsteroids(asteroids, engine.state.temperature);
   }
 
@@ -297,17 +296,17 @@ class Drawer {
     }
   }
 
-  private drawShip(ship: Ship): void {
-    this.drawShipTail(ship.tail);
+  private drawShip(state: GameState): void {
+    this.drawShipTail(state.ship.tail);
     const options = {
       rotateDirection: true,
       rotationOffset: Math.PI / 2
     };
     const drawer = () => {
-      drawShipShape(this.p5, ship.hitBoxRadius / 2);
-      drawShipLifeArcShape(this.p5, ship.life);
+      drawShipShape(this.p5, state.ship.hitBoxRadius / 2);
+      drawShipLifeArcShape(this.p5, state.ship.life, state.temperature);
     };
-    this.drawGameObject(ship, options, drawer);
+    this.drawGameObject(state.ship, options, drawer);
   }
 
   private drawAsteroidTail(
