@@ -18,7 +18,13 @@ export function drawAsteroidShape(
     y: [-2, 2, 2, -2]
   };
   for (let i = 3; i >= 0; i--) {
-    p5.fill(colorMap[temperature][i]);
+    let color = colorMap[temperature][i];
+    let alpha = 255;
+    if (size === 'large' && temperature === 'low') {
+      alpha = Math.floor((Math.sin(Date.now() / 100) + 2) * 80);
+    }
+    color += alpha.toString(16);
+    p5.fill(color);
     p5.circle(offsets.x[i], offsets.y[i], (hitBoxRadius * 2 * (i + 1)) / 4);
   }
 }
