@@ -14,6 +14,7 @@ class Ship extends GameObject {
   private accelerationStep = 1 / 5;
   private minTimeToFire = 200;
   private firedAt = -Infinity;
+  private lifeRegenRate = 0.0005;
   // readonly
   readonly MAX_SPEED = 4;
   // constructor
@@ -34,6 +35,7 @@ class Ship extends GameObject {
     this.fire(temperature);
     this.updateBullets();
     this.accelerate();
+    this.restoreLife(temperature);
   }
 
   public turnLeft(): void {
@@ -76,8 +78,10 @@ class Ship extends GameObject {
     }
   }
 
-  public restoreLife() {
-    this.life = 1;
+  public restoreLife(temperature: GameTemperature) {
+    if (temperature === 'normal') {
+      this.life = Math.min(this.life + this.lifeRegenRate, 1);
+    }
   }
 
   private updateBullets() {

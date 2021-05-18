@@ -204,7 +204,6 @@ class GameEngine {
     this.state.temperature = 'normal';
     this.spawner.spawnAsteroid({ count: 30 });
     if (this.state.level > 0) {
-      this.state.ship.restoreLife();
       let event = new ev.GameEvent('LEVEL_UP', this.state.ship.coords);
       this.state.events.push(event);
     }
