@@ -167,7 +167,7 @@ class GameEngine {
           size: asteroid.size,
           coords: asteroid.coords,
           world: this.world,
-          duration: 500
+          duration: 350
         })
       );
     }
