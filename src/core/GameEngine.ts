@@ -27,6 +27,7 @@ class GameEngine {
   public world: Rect;
   public spawner: Spawner;
   public levelDuration = 30_000;
+  public highScore: number;
   // private
   private updateTimeout?: NodeJS.Timeout;
   private levelTimeout?: NodeJS.Timeout;
@@ -40,6 +41,8 @@ class GameEngine {
       level: 0,
       temperature: 'normal'
     };
+    const bestScore = localStorage.getItem('asteroids-highscore') || '0';
+    this.highScore = JSON.parse(bestScore) || 0;
     this.world = world;
     this.spawner = new Spawner(this.state, this.world);
     this.update = this.update.bind(this);
@@ -78,9 +81,10 @@ class GameEngine {
   }
 
   private checkGameLost(): void {
-    let { ship } = this.state;
+    let { ship, score } = this.state;
     if (ship.life <= 0) {
       this.status = 'lost';
+      localStorage.setItem('asteroids-highscore', score.toString());
       if (this.updateTimeout) {
         clearInterval(this.updateTimeout);
       }

@@ -17,16 +17,20 @@ class GUI {
   public draw(engine: GameEngine) {
     this.p5.textSize(30);
     this.p5.fill('white');
-    this.drawScore(engine.state);
+    this.drawScore(engine);
   }
 
-  private drawScore(state: GameState): void {
+  private drawScore(engine: GameEngine): void {
+    const { level, score } = engine.state;
     let { p5 } = this;
     p5.textAlign(p5.LEFT);
-    p5.text(`Level ${state.level}`, SPACING * 2, SPACING * 2);
+    p5.text(`Level ${level}`, SPACING * 2, SPACING * 2);
     p5.textAlign(p5.RIGHT);
-    const scoreText = numberWithSeparators(state.score, ',');
+    const scoreText = numberWithSeparators(score, ',');
     p5.text(scoreText, p5.windowWidth - SPACING * 2, SPACING * 2);
+    this.p5.textSize(20);
+    const bestScoreText = numberWithSeparators(engine.highScore, ',');
+    p5.text(bestScoreText, p5.windowWidth - SPACING * 2, SPACING * 4);
   }
 }
 
