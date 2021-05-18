@@ -117,6 +117,7 @@ class GameEngine {
             asteroid,
             this.state.temperature === 'low'
           );
+          this.createExplosionShards(asteroid);
           events.push(event);
           this.processBulletHit(event);
           this.assignScore(event);
@@ -130,9 +131,35 @@ class GameEngine {
     for (const asteroid of asteroids) {
       if (haveCollided(asteroid, ship)) {
         let event = new ev.ShipHit(asteroid);
+        this.createExplosionShards(asteroid);
         events.push(event);
         this.processShipHit(event);
       }
+    }
+  }
+
+  private createExplosionShards(asteroid: Asteroid) {
+    const shardsCountMap: Record<AsteroidSize, number> = {
+      large: 30,
+      medium: 20,
+      small: 10
+    };
+    const shardsCount = shardsCountMap[asteroid.size];
+    const colorMap: Record<GameTemperature, string[]> = {
+      normal: ['#009688', '#00897b', '#00796b', '#00695c'],
+      high: ['#f44336', '#e53935', '#d32f2f', '#c62828'],
+      low: ['#2196f3', '#1e88e5', '#1976d2', '#1565c0']
+    };
+    for (let i = 0; i < shardsCount; i++) {
+      this.state.shards.push(
+        new Shard({
+          color: colorMap[this.state.temperature][0],
+          size: asteroid.size,
+          coords: this.state.ship.coords,
+          world: this.world,
+          duration: 500
+        })
+      );
     }
   }
 
