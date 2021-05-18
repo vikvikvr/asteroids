@@ -163,7 +163,7 @@ class GameEngine {
         new Shard({
           color: colorMap[this.state.temperature][0],
           size: asteroid.size,
-          coords: this.state.ship.coords,
+          coords: asteroid.coords,
           world: this.world,
           duration: 500
         })
