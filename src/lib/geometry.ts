@@ -20,6 +20,32 @@ export function centerOf(rect: Rect): Point {
   };
 }
 
+function makePointMirros(object: Point, world: Rect): Point[] {
+  const mirrors = [];
+  for (let i = -1; i <= 1; i++) {
+    for (let j = -1; j <= 1; j++) {
+      mirrors.push({
+        x: object.x + world.width * i,
+        y: object.y + world.height * j
+      });
+    }
+  }
+  return mirrors;
+}
+
+function minDistance(obj1: Point, obj2: Point, world: Rect) {
+  let min = Infinity;
+  const mirrors1 = makePointMirros(obj1, world);
+  const mirrors2 = makePointMirros(obj2, world);
+  for (const mirror1 of mirrors1) {
+    for (const mirror2 of mirrors2) {
+      const dist = distance(mirror1, mirror2);
+      if (dist < min) min = dist;
+    }
+  }
+  return min;
+}
+
 export function distance(obj1: Point, obj2: Point): number {
   let deltaX = obj1.x - obj2.x;
   let deltaY = obj1.y - obj2.y;
@@ -46,7 +72,7 @@ export function randomCoordsFarFrom(
       x: Math.random() * world.width,
       y: Math.random() * world.height
     };
-    distFromObject = distance(coords, object.coords);
+    distFromObject = minDistance(coords, object.coords, world);
   } while (distFromObject < object.hitBoxRadius * hitBoxMultiplier);
 
   return coords;
