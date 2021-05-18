@@ -33,10 +33,16 @@ export const damages: Record<AsteroidSize, AsteroidDamage> = {
   small: 0.1
 };
 
+export const directionChangeTimes: Record<AsteroidSize, number> = {
+  large: 5_000,
+  medium: 4_000,
+  small: 3_000
+};
+
 class Asteroid extends GameObject {
   public size: AsteroidSize;
   public damage: AsteroidDamage;
-
+  public nextDirectionChangeAt: number;
   constructor(options: AsteroidOptions = {}) {
     let sign = Math.random() > 0.5 ? 1 : -1;
     let size = options.size || 'large';
@@ -52,13 +58,16 @@ class Asteroid extends GameObject {
       hasTail: true,
       tailLength: 50
     });
+    this.nextDirectionChangeAt =
+      Date.now() + directionChangeTimes[size] * Math.random();
     this.size = size;
     this.damage = damages[size];
   }
 
   public update(speedMultiplier = 1) {
     super.update(speedMultiplier);
-    const canChangeDirection = speedMultiplier >= 1 && Math.random() > 0.995;
+    const canChangeDirection =
+      speedMultiplier >= 1 && Date.now() > this.nextDirectionChangeAt;
     if (canChangeDirection) this.changeDirection();
   }
 
@@ -69,11 +78,11 @@ class Asteroid extends GameObject {
   }
 
   private changeDirection(): void {
-    // console.log('changing direction', this.id);
     const angleChange = Math.PI / 3;
     let sign = Math.random() > 0.5 ? 1 : -1;
     let newDirection = this.direction + angleChange * sign;
     this.direction = newDirection;
+    this.nextDirectionChangeAt = Date.now() + directionChangeTimes[this.size];
   }
 }
 
