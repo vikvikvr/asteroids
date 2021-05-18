@@ -158,10 +158,12 @@ class GameEngine {
       high: ['#f44336', '#e53935', '#d32f2f', '#c62828'],
       low: ['#2196f3', '#1e88e5', '#1976d2', '#1565c0']
     };
+    const colorShades = colorMap[this.state.temperature];
     for (let i = 0; i < shardsCount; i++) {
+      const colorIndex = Math.floor(Math.random() * 4);
       this.state.shards.push(
         new Shard({
-          color: colorMap[this.state.temperature][0],
+          color: colorShades[colorIndex],
           size: asteroid.size,
           coords: asteroid.coords,
           world: this.world,
