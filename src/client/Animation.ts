@@ -51,7 +51,9 @@ export class TextAnimation extends Animation {
   }
 }
 
-const shardsCountMap: Record<AsteroidSize, number> = {
+type AsteroidSizeMap = Record<AsteroidSize, number>;
+
+const shardsCountMap: AsteroidSizeMap = {
   large: 30,
   medium: 20,
   small: 10
@@ -73,9 +75,10 @@ export class ExplosionAnimation extends Animation {
     this.temperature = temperature;
     this.size = size;
     const shardsCount = shardsCountMap[size];
+    const minSpeed = shardsCountMap[size] / 10;
     for (let i = 0; i < shardsCount; i++) {
       const shard = new GameObject({
-        speed: 3 + Math.random() * 2,
+        speed: minSpeed + Math.random() * 2,
         direction: Math.random() * Math.PI * 2,
         coords: coords,
         world: world,
