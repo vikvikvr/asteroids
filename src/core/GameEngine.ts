@@ -41,8 +41,7 @@ class GameEngine {
       level: 0,
       temperature: 'normal'
     };
-    const bestScore = localStorage.getItem('asteroids-highscore') || '0';
-    this.highScore = JSON.parse(bestScore) || 0;
+    this.highScore = this.getHighScore();
     this.world = world;
     this.spawner = new Spawner(this.state, this.world);
     this.update = this.update.bind(this);
@@ -80,11 +79,23 @@ class GameEngine {
     };
   }
 
+  private getHighScore(): number {
+    const bestScore = localStorage.getItem('asteroids-highscore') || '0';
+    return JSON.parse(bestScore);
+  }
+
+  private saveHighScore(): void {
+    let { score } = this.state;
+    if (score > this.highScore) {
+      localStorage.setItem('asteroids-highscore', score.toString());
+    }
+  }
+
   private checkGameLost(): void {
-    let { ship, score } = this.state;
+    let { ship } = this.state;
     if (ship.life <= 0) {
       this.status = 'lost';
-      localStorage.setItem('asteroids-highscore', score.toString());
+      this.saveHighScore();
       if (this.updateTimeout) {
         clearInterval(this.updateTimeout);
       }
