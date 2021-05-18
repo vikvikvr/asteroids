@@ -38,7 +38,8 @@ class Entity {
 
   protected update(speedMultiplier = 1): void {
     this.updatePosition(speedMultiplier);
-    this.orientation += this.rotationSpeed * speedMultiplier;
+    const rotSpeed = this.rotationSpeed * (speedMultiplier > 1 ? 2 : 1);
+    this.orientation += rotSpeed * speedMultiplier;
   }
 
   private updatePosition(speedMultiplier = 1): void {
