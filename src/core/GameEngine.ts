@@ -5,6 +5,7 @@ import * as ev from './Events';
 import { remove, find, filter } from 'lodash';
 import Spawner from './Spawner';
 import { bulletHitScore } from './game-rules';
+import Shard from './Shard';
 
 export type GameStatus = 'playing' | 'lost' | 'idle';
 export type GameTemperature = 'low' | 'high' | 'normal';
@@ -14,6 +15,7 @@ export interface GameState {
   level: number;
   ship: Ship;
   asteroids: Asteroid[];
+  shards: Shard[];
   events: ev.TGameEvent[];
   temperature: GameTemperature;
 }
@@ -32,6 +34,7 @@ class GameEngine {
     this.state = {
       asteroids: [],
       events: [],
+      shards: [],
       ship: new Ship({ world, coords: centerOf(world) }),
       score: 0,
       level: 0,
