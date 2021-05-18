@@ -229,7 +229,12 @@ class Drawer {
         if (percent <= 1) {
           for (const shard of animation.shards) {
             const drawer = () =>
-              drawExplostionShard(p5, shard, animation.temperature);
+              drawExplostionShard(
+                p5,
+                shard,
+                animation.size,
+                animation.temperature
+              );
             this.drawGameObject(shard, {}, drawer);
           }
         }

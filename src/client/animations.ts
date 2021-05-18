@@ -1,4 +1,5 @@
 import P5 from 'p5';
+import { AsteroidSize } from '../core/Asteroid';
 import { GameTemperature } from '../core/GameEngine';
 import GameObject from '../core/GameObject';
 import { TextAnimation } from './Animation';
@@ -19,6 +20,7 @@ export function drawTextAnimation(p5: P5, animation: TextAnimation): void {
 export function drawExplostionShard(
   p5: P5,
   shard: GameObject,
+  size: AsteroidSize,
   temperature: GameTemperature
 ) {
   p5.fill(colorMap[temperature][0]);
