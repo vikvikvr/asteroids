@@ -55,6 +55,7 @@ export class ExplosionAnimation extends Animation {
   public temperature: GameTemperature;
   public shards: GameObject[];
   public percent = 0;
+  public size: AsteroidSize;
   constructor(
     size: AsteroidSize,
     coords: Point,
@@ -64,6 +65,7 @@ export class ExplosionAnimation extends Animation {
     super(20);
     this.shards = [];
     this.temperature = temperature;
+    this.size = size;
     for (let i = 0; i < 20; i++) {
       const shard = new GameObject({
         speed: 3 + Math.random() * 2,
