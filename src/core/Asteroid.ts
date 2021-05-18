@@ -1,3 +1,4 @@
+import { GameTemperature } from './GameEngine';
 import GameObject, { GameObjectOptions } from './GameObject';
 
 // aliases
@@ -64,11 +65,11 @@ class Asteroid extends GameObject {
     this.damage = damages[size];
   }
 
-  public update(speedMultiplier = 1) {
-    super.update(speedMultiplier);
+  public update(temperature: GameTemperature) {
+    super.update(temperature);
     const canChangeDirection =
-      speedMultiplier >= 1 && Date.now() > this.nextDirectionChangeAt;
-    if (canChangeDirection) this.changeDirection(speedMultiplier);
+      temperature !== 'low' && Date.now() > this.nextDirectionChangeAt;
+    if (canChangeDirection) this.changeDirection(temperature);
   }
 
   public splitSize(): AsteroidSize | null {
@@ -77,13 +78,13 @@ class Asteroid extends GameObject {
     return null;
   }
 
-  private changeDirection(speedMultiplier: number): void {
+  private changeDirection(temperature: GameTemperature): void {
     const angleChange = Math.PI / 3;
     let sign = Math.random() > 0.5 ? 1 : -1;
     let newDirection = this.direction + angleChange * sign;
     this.direction = newDirection;
     const timeToNextChange =
-      directionChangeTimes[this.size] * (speedMultiplier > 1 ? 0.5 : 1);
+      directionChangeTimes[this.size] * (temperature !== 'low' ? 0.5 : 1);
     this.nextDirectionChangeAt = Date.now() + timeToNextChange;
   }
 }

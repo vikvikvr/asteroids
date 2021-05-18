@@ -54,8 +54,7 @@ class GameEngine {
   }
 
   private update(): void {
-    this.state.ship.update();
-    this.state.ship.fire(this.state.temperature);
+    this.state.ship.update(this.state.temperature);
     this.updateAsteroids();
     this.updateShards();
     this.checkCollisions();
@@ -93,13 +92,8 @@ class GameEngine {
 
   private updateAsteroids(): void {
     const { temperature, asteroids } = this.state;
-    const speedMultiplierMap: Record<GameTemperature, number> = {
-      normal: 1,
-      low: 0.05,
-      high: 2
-    };
     for (const asteroid of asteroids) {
-      asteroid.update(speedMultiplierMap[temperature]);
+      asteroid.update(temperature);
     }
   }
 

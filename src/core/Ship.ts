@@ -29,8 +29,9 @@ class Ship extends GameObject {
     });
   }
 
-  public update(): void {
-    super.update();
+  public update(temperature: GameTemperature): void {
+    super.update('normal');
+    this.fire(temperature);
     this.updateBullets();
     this.accelerate();
   }
