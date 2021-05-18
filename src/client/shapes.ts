@@ -32,17 +32,9 @@ export function drawAsteroidShape(
 
 export function drawShipShape(p5: P5, side: number): void {
   p5.fill('#fdd835');
-  p5.beginShape();
-  p5.vertex(side * +0, side * +1);
-  p5.vertex(side * -2, side * +2);
-  p5.vertex(side * +0, side * -2);
-  p5.endShape();
+  p5.triangle(0, side, -2 * side, side * 2, 0, -2 * side);
   p5.fill('#ffee58');
-  p5.beginShape();
-  p5.vertex(side * +0, side * +1);
-  p5.vertex(side * +0, side * -2);
-  p5.vertex(side * +2, side * +2);
-  p5.endShape();
+  p5.triangle(0, side, 0, -2 * side, 2 * side, 2 * side);
 }
 
 export function drawBulletShape(p5: P5): void {
