@@ -253,13 +253,7 @@ class Drawer {
       this.drawAsteroidTail(asteroid, temperature);
       // const side = asteroid.hitBoxRadius / 3.5;
       const options = {};
-      const drawer = () =>
-        drawAsteroidShape(
-          this.p5,
-          asteroid.hitBoxRadius,
-          asteroid.size,
-          temperature
-        );
+      const drawer = () => drawAsteroidShape(this.p5, asteroid, temperature);
       this.drawGameObject(asteroid, options, drawer);
     }
   }

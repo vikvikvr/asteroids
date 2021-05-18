@@ -1,26 +1,27 @@
 import P5 from 'p5';
-import { AsteroidSize } from '../core/Asteroid';
+import Asteroid from '../core/Asteroid';
 import { GameTemperature } from '../core/GameEngine';
+
+const colorMap: Record<GameTemperature, string[]> = {
+  normal: ['#009688', '#00897b', '#00796b', '#00695c'],
+  high: ['#ff9800', '#f57c00', '#ef6c00', '#e65100'],
+  low: ['#2196f3', '#1e88e5', '#1976d2', '#1565c0']
+};
 
 export function drawAsteroidShape(
   p5: P5,
-  hitBoxRadius: number,
-  size: AsteroidSize,
-  temperature: GameTemperature
+  asteroid: Asteroid,
+  temp: GameTemperature
 ): void {
-  const colorMap: Record<GameTemperature, string[]> = {
-    normal: ['#009688', '#00897b', '#00796b', '#00695c'],
-    high: ['#ff9800', '#f57c00', '#ef6c00', '#e65100'],
-    low: ['#2196f3', '#1e88e5', '#1976d2', '#1565c0']
-  };
+  const { hitBoxRadius, size } = asteroid;
   const offsets = {
     x: [2, 2, -2, -2],
     y: [-2, 2, 2, -2]
   };
   for (let i = 3; i >= 0; i--) {
-    let color = colorMap[temperature][i];
+    let color = colorMap[temp][i];
     let alpha = 255;
-    if (size === 'large' && temperature === 'low') {
+    if (size === 'large' && temp === 'low') {
       alpha = Math.floor((Math.sin(Date.now() / 100) + 2) * 80);
     }
     color += alpha.toString(16);
