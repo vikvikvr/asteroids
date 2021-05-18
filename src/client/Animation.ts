@@ -59,6 +59,12 @@ const shardsCountMap: AsteroidSizeMap = {
   small: 10
 };
 
+const shardSizeMap: AsteroidSizeMap = {
+  large: 15,
+  medium: 12,
+  small: 9
+};
+
 export class ExplosionAnimation extends Animation {
   public temperature: GameTemperature;
   public shards: GameObject[];
@@ -76,13 +82,14 @@ export class ExplosionAnimation extends Animation {
     this.size = size;
     const shardsCount = shardsCountMap[size];
     const minSpeed = shardsCountMap[size] / 10;
+    const shardSize = shardSizeMap[size];
     for (let i = 0; i < shardsCount; i++) {
       const shard = new GameObject({
         speed: minSpeed + Math.random() * 2,
         direction: Math.random() * Math.PI * 2,
         coords: coords,
         world: world,
-        hitBoxRadius: 10 + Math.random() * 15
+        hitBoxRadius: shardSize + (Math.random() * shardSize) / 2
       });
       this.shards.push(shard);
     }
