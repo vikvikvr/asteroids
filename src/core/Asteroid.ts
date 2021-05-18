@@ -68,7 +68,7 @@ class Asteroid extends GameObject {
     super.update(speedMultiplier);
     const canChangeDirection =
       speedMultiplier >= 1 && Date.now() > this.nextDirectionChangeAt;
-    if (canChangeDirection) this.changeDirection();
+    if (canChangeDirection) this.changeDirection(speedMultiplier);
   }
 
   public splitSize(): AsteroidSize | null {
@@ -77,12 +77,14 @@ class Asteroid extends GameObject {
     return null;
   }
 
-  private changeDirection(): void {
+  private changeDirection(speedMultiplier: number): void {
     const angleChange = Math.PI / 3;
     let sign = Math.random() > 0.5 ? 1 : -1;
     let newDirection = this.direction + angleChange * sign;
     this.direction = newDirection;
-    this.nextDirectionChangeAt = Date.now() + directionChangeTimes[this.size];
+    const timeToNextChange =
+      directionChangeTimes[this.size] * (speedMultiplier > 1 ? 0.5 : 1);
+    this.nextDirectionChangeAt = Date.now() + timeToNextChange;
   }
 }
 
