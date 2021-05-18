@@ -57,6 +57,7 @@ class GameEngine {
     this.state.ship.update();
     this.state.ship.fire(this.state.temperature);
     this.updateAsteroids();
+    this.updateShards();
     this.checkCollisions();
     this.checkGameLost();
   }
@@ -100,6 +101,13 @@ class GameEngine {
     for (const asteroid of asteroids) {
       asteroid.update(speedMultiplierMap[temperature]);
     }
+  }
+
+  private updateShards(): void {
+    for (const shard of this.state.shards) {
+      shard.update();
+    }
+    remove(this.state.shards, { isExpired: true });
   }
 
   private checkCollisions(): void {
