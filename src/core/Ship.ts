@@ -4,6 +4,8 @@ import { EntityOptions } from './Entity';
 import Bullet from './Bullet';
 import { GameTemperature } from './GameEngine';
 
+type BulletPosition = 'center' | 'left' | 'right';
+
 class Ship extends GameObject {
   // public
   public bullets: Bullet[] = [];
@@ -61,8 +63,15 @@ class Ship extends GameObject {
     const canFire = Date.now() - this.firedAt > timeToWait;
     if (canFire) {
       this.firedAt = Date.now();
-      const bullet = this.makeBullet();
-      this.bullets.push(bullet);
+      if (temperature !== 'high') {
+        const bullet = this.makeBullet('center');
+        this.bullets.push(bullet);
+      } else {
+        const bullet1 = this.makeBullet('left');
+        this.bullets.push(bullet1);
+        const bullet2 = this.makeBullet('right');
+        this.bullets.push(bullet2);
+      }
     }
   }
 
@@ -82,11 +91,25 @@ class Ship extends GameObject {
     this.direction = targetDirection;
   }
 
-  private makeBullet(): Bullet {
+  private makeBullet(position: BulletPosition): Bullet {
+    const { x, y } = this.coords;
+    const offsetX: Record<BulletPosition, number> = {
+      left: -20 * Math.cos(this.direction + Math.PI / 2),
+      center: 0,
+      right: 20 * Math.cos(this.direction + Math.PI / 2)
+    };
+    const offsetY: Record<BulletPosition, number> = {
+      left: -20 * Math.sin(this.direction + Math.PI / 2),
+      center: 0,
+      right: 20 * Math.sin(this.direction + Math.PI / 2)
+    };
     return new Bullet({
       world: this.world,
       direction: this.direction,
-      coords: this.coords,
+      coords: {
+        x: x + offsetX[position],
+        y: y + offsetY[position]
+      },
       speed: Math.max(this.speed, 0) + 12
     });
   }
