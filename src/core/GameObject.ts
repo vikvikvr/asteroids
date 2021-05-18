@@ -2,7 +2,7 @@ import Entity, { EntityOptions } from './Entity';
 import { v4 as uuidv4 } from 'uuid';
 import { Point } from '../lib/geometry';
 
-export type GameObjectType = 'ship' | 'asteroid' | 'bullet';
+export type GameObjectType = 'ship' | 'asteroid' | 'bullet' | 'shard';
 
 export interface GameObjectOptions extends Partial<EntityOptions> {
   type?: GameObjectType;
