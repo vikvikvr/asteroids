@@ -280,12 +280,17 @@ class Drawer {
       p5.rotate(orientation + offset + direction);
       p5.scale(options.scale || 1);
       drawer();
-      if (this.showHitBoxes) {
-        p5.noFill();
-        p5.stroke(colors.hud);
-        p5.circle(0, 0, side);
-      }
+      this.drawHitBox(side);
       p5.pop();
+    }
+  }
+
+  private drawHitBox(diameter: number) {
+    const { p5 } = this;
+    if (this.showHitBoxes) {
+      p5.noFill();
+      p5.stroke(colors.hud);
+      p5.circle(0, 0, diameter);
     }
   }
 
