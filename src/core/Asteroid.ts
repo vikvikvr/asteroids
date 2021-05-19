@@ -45,8 +45,8 @@ class Asteroid extends GameObject {
   public damage: AsteroidDamage;
   public nextDirectionChangeAt: number;
   constructor(options: AsteroidOptions = {}) {
-    let sign = Math.random() > 0.5 ? 1 : -1;
-    let size = options.size || 'large';
+    const sign = Math.random() > 0.5 ? 1 : -1;
+    const size = options.size || 'large';
     super({
       world: options.world,
       coords: options.coords,
@@ -65,7 +65,7 @@ class Asteroid extends GameObject {
     this.damage = damages[size];
   }
 
-  public update(temperature: GameTemperature) {
+  public update(temperature: GameTemperature): void {
     super.update(temperature);
     const canChangeDirection =
       temperature !== 'low' && Date.now() > this.nextDirectionChangeAt;
@@ -80,8 +80,8 @@ class Asteroid extends GameObject {
 
   private changeDirection(temperature: GameTemperature): void {
     const angleChange = Math.PI / 3;
-    let sign = Math.random() > 0.5 ? 1 : -1;
-    let newDirection = this.direction + angleChange * sign;
+    const sign = Math.random() > 0.5 ? 1 : -1;
+    const newDirection = this.direction + angleChange * sign;
     this.direction = newDirection;
     const timeToNextChange =
       directionChangeTimes[this.size] * (temperature !== 'low' ? 0.5 : 1);

@@ -112,7 +112,7 @@ class Drawer {
   }
 
   private drawGameOverScreen(): void {
-    let { p5, engine } = this;
+    const { p5, engine } = this;
     const ankerX = p5.windowWidth / 2;
     const ankerY = p5.windowHeight / 2;
     p5.background(colors.background.normal);
@@ -229,11 +229,11 @@ class Drawer {
   }
 
   private drawStars(stars: Star[]): void {
-    let { p5 } = this;
+    const { p5 } = this;
     p5.noStroke();
     p5.fill(withAlpha(colors.hud, 1));
     for (const star of stars) {
-      let coords = this.drawableCoords(star);
+      const coords = this.drawableCoords(star);
       if (coords) p5.circle(coords.x, coords.y, star.diameter);
     }
   }
@@ -325,7 +325,7 @@ class Drawer {
   }
 
   private drawShipTail(tail: Point[]) {
-    let { p5 } = this;
+    const { p5 } = this;
     const length = tail.length;
     p5.noStroke();
     for (let i = 0; i < length; i++) {

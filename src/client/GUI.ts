@@ -20,7 +20,7 @@ class GUI {
 
   private drawScore(engine: GameEngine): void {
     const { level, score } = engine.state;
-    let { p5 } = this;
+    const { p5 } = this;
     p5.textAlign(p5.LEFT);
     p5.text(`Level ${level}`, SPACING * 2, SPACING * 2);
     p5.textAlign(p5.RIGHT);

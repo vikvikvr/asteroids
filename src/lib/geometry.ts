@@ -47,14 +47,14 @@ function minDistance(obj1: Point, obj2: Point, world: Rect) {
 }
 
 export function distance(obj1: Point, obj2: Point): number {
-  let deltaX = obj1.x - obj2.x;
-  let deltaY = obj1.y - obj2.y;
+  const deltaX = obj1.x - obj2.x;
+  const deltaY = obj1.y - obj2.y;
   return Math.sqrt(deltaX ** 2 + deltaY ** 2);
 }
 
 export function haveCollided(obj1: Collidable, obj2: Collidable): boolean {
-  let dist = distance(obj1.coords, obj2.coords);
-  let minDistance = obj1.hitBoxRadius + obj2.hitBoxRadius;
+  const dist = distance(obj1.coords, obj2.coords);
+  const minDistance = obj1.hitBoxRadius + obj2.hitBoxRadius;
   return dist < minDistance;
 }
 
@@ -112,12 +112,12 @@ function mostVisibleCoords(
   world: Rect,
   screen: Rect
 ): Point {
-  let bestX = tryPuttingValueInsideRange(
+  const bestX = tryPuttingValueInsideRange(
     screenCoords.x,
     world.width,
     screen.width
   );
-  let bestY = tryPuttingValueInsideRange(
+  const bestY = tryPuttingValueInsideRange(
     screenCoords.y,
     world.height,
     screen.height
@@ -141,15 +141,15 @@ export function drawableCoords(
   world: Rect,
   showAlways?: boolean
 ): Point | undefined {
-  let deltaX = object.x - origin.x;
-  let deltaY = object.y - origin.y;
-  let screenX = screen.width / 2 + deltaX;
-  let screenY = screen.height / 2 + deltaY;
-  let screenCoords = { x: screenX, y: screenY };
+  const deltaX = object.x - origin.x;
+  const deltaY = object.y - origin.y;
+  const screenX = screen.width / 2 + deltaX;
+  const screenY = screen.height / 2 + deltaY;
+  const screenCoords = { x: screenX, y: screenY };
 
   if (showAlways) return screenCoords;
 
-  let result = mostVisibleCoords(screenCoords, world, screen);
+  const result = mostVisibleCoords(screenCoords, world, screen);
   if (!isBetween(result.x, screen.width)) return undefined;
   if (!isBetween(result.y, screen.height)) return undefined;
   return result;

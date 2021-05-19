@@ -28,10 +28,10 @@ class Spawner {
   }
 
   public spawnAsteroid(options: AsteroidSpawnOptions = {}): void {
-    let { asteroids } = this.state;
+    const { asteroids } = this.state;
     for (let i = 0; i < (options.count || 1); i++) {
-      let asteroidOptions = this.makeAsteroidOptions(options);
-      let asteroid = new Asteroid(asteroidOptions);
+      const asteroidOptions = this.makeAsteroidOptions(options);
+      const asteroid = new Asteroid(asteroidOptions);
       asteroids.push(asteroid);
     }
   }

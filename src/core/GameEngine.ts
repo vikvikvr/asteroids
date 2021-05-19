@@ -1,8 +1,8 @@
 import Ship from './Ship';
-import Asteroid, { AsteroidsCount, AsteroidSize } from './Asteroid';
+import Asteroid, { AsteroidSize } from './Asteroid';
 import { haveCollided, Rect, centerOf } from '../lib/geometry';
 import * as ev from './Events';
-import { remove, find, filter } from 'lodash';
+import { remove, find } from 'lodash';
 import Spawner from './Spawner';
 import { bulletHitScore } from './game-rules';
 import Shard from './Shard';
@@ -63,45 +63,37 @@ class GameEngine {
     this.checkGameLost();
   }
 
-  private countAsteroids(size: AsteroidSize): number {
-    return filter(this.state.asteroids, { size }).length;
-  }
-
-  public hasAsteroid(id: string): boolean {
-    return Boolean(find(this.state.asteroids, { id }));
-  }
-
-  public getAsteroidsCount(): AsteroidsCount {
-    return {
-      large: this.countAsteroids('large'),
-      medium: this.countAsteroids('medium'),
-      small: this.countAsteroids('small')
-    };
-  }
-
   private getHighScore(): number {
     const bestScore = localStorage.getItem('asteroids-highscore') || '0';
     return JSON.parse(bestScore);
   }
 
   private saveHighScore(): void {
-    let { score } = this.state;
+    const { score } = this.state;
     if (score > this.highScore) {
       localStorage.setItem('asteroids-highscore', score.toString());
     }
   }
 
   private checkGameLost(): void {
-    let { ship } = this.state;
-    if (ship.life <= 0) {
+    const haveLost = this.state.ship.life <= 0;
+    if (haveLost) {
       this.status = 'lost';
       this.saveHighScore();
-      if (this.updateTimeout) {
-        clearInterval(this.updateTimeout);
-      }
-      if (this.levelTimeout) {
-        clearInterval(this.levelTimeout);
-      }
+      this.stopUpdating();
+      this.stopLevelingUp();
+    }
+  }
+
+  private stopLevelingUp(): void {
+    if (this.levelTimeout) {
+      clearInterval(this.levelTimeout);
+    }
+  }
+
+  private stopUpdating(): void {
+    if (this.updateTimeout) {
+      clearInterval(this.updateTimeout);
     }
   }
 
@@ -125,11 +117,11 @@ class GameEngine {
   }
 
   private checkAsteroidBulletCollisions(): void {
-    let { asteroids, ship, events } = this.state;
+    const { asteroids, ship, events } = this.state;
     for (const asteroid of asteroids) {
       for (const bullet of ship.bullets) {
         if (haveCollided(asteroid, bullet)) {
-          let event = new ev.BulletHit(
+          const event = new ev.BulletHit(
             bullet,
             asteroid,
             this.state.temperature === 'low'
@@ -144,10 +136,10 @@ class GameEngine {
   }
 
   private checkAsteroidShipCollisions(): void {
-    let { asteroids, ship, events } = this.state;
+    const { asteroids, ship, events } = this.state;
     for (const asteroid of asteroids) {
       if (haveCollided(asteroid, ship)) {
-        let event = new ev.ShipHit(asteroid);
+        const event = new ev.ShipHit(asteroid);
         this.createExplosionShards(asteroid);
         events.push(event);
         this.processShipHit(event);
@@ -177,10 +169,10 @@ class GameEngine {
   }
 
   private processBulletHit(event: ev.BulletHit): void {
-    let { asteroids, ship } = this.state;
-    let asteroid = find(asteroids, { id: event.asteroidId });
+    const { asteroids, ship } = this.state;
+    const asteroid = find(asteroids, { id: event.asteroidId });
     if (asteroid) {
-      let nextSize = asteroid.splitSize();
+      const nextSize = asteroid.splitSize();
       const shouldSplit = this.state.temperature !== 'low';
       if (shouldSplit && nextSize) {
         this.spawner.spawnAsteroid({
@@ -213,7 +205,7 @@ class GameEngine {
     this.state.temperature = 'normal';
     this.spawner.spawnAsteroid({ count: 30 + this.state.level });
     if (this.state.level > 0) {
-      let event = new ev.GameEvent('LEVEL_UP', this.state.ship.coords);
+      const event = new ev.GameEvent('LEVEL_UP', this.state.ship.coords);
       this.state.events.push(event);
     }
     this.state.level++;
@@ -232,7 +224,7 @@ class GameEngine {
   }
 
   private processShipHit(event: ev.ShipHit): void {
-    let { asteroids, ship } = this.state;
+    const { asteroids, ship } = this.state;
     remove(asteroids, { id: event.asteroidId });
     ship.life -= event.damage;
   }

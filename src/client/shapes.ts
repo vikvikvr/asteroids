@@ -16,7 +16,7 @@ export function drawAsteroidShape(
   const { hitBoxRadius, size } = asteroid;
   for (let i = 3; i >= 0; i--) {
     const { x, y } = asteroidOffsets;
-    let color = colors.asteroid[temp][i];
+    const color = colors.asteroid[temp][i];
     let alpha = 1;
     const diameter = (hitBoxRadius * 2 * (i + 1)) / 4;
     const isBlinking = size === 'large' && temp === 'low';

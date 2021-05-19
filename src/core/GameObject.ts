@@ -47,7 +47,7 @@ class GameObject extends Entity {
     }
   }
 
-  private updateTail() {
+  private updateTail(): void {
     if (this.tail.length === this.tailLength) {
       this.tail.shift();
     }

@@ -17,7 +17,7 @@ const Sketch = (p5: P5) => {
     setupGlobalStyles(p5);
     p5.frameRate(60);
     setTimeout(() => {
-      let $loading = document.getElementById('loading')!;
+      const $loading = document.getElementById('loading')!;
       document.body.removeChild($loading);
       loaded = true;
       engine = new GameEngine({ width: 4000, height: 2000 });

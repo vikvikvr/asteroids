@@ -27,9 +27,8 @@ export class TextAnimation extends Animation {
   }
 
   public getNextCoords(): Point | false {
-    let next = super.next();
+    const next = super.next();
     if (next) {
-      // const y =
       return {
         x: this.coords.x,
         y: this.coords.y - next
