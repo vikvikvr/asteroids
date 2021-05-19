@@ -39,11 +39,7 @@ class Spawner {
   private makeAsteroidOptions(options: AsteroidSpawnOptions): AsteroidOptions {
     let direction = Math.random() * Math.PI * 2;
     if (options.notDirection) {
-      direction = notDirection(
-        options.notDirection,
-        this.CONE_ANGLE,
-        Math.random
-      );
+      direction = notDirection(options.notDirection, this.CONE_ANGLE);
     }
     return {
       size: options.size,

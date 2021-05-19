@@ -18,10 +18,6 @@ class Bullet extends GameObject {
       tailLength: 15
     });
   }
-
-  public update(): void {
-    super.update();
-  }
 }
 
 export default Bullet;

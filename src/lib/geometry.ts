@@ -1,19 +1,19 @@
 import { DrawableObject } from '../client/Drawer';
 
-export type Point = {
+export interface Point {
   x: number;
   y: number;
-};
+}
 
-export type Rect = {
+export interface Rect {
   width: number;
   height: number;
-};
+}
 
-export type Collidable = {
+export interface Collidable {
   hitBoxRadius: number;
   coords: Point;
-};
+}
 
 export function centerOf(rect: Rect): Point {
   return {
@@ -44,29 +44,29 @@ function makePointMirros(object: Point, world: Rect): Point[] {
   return mirrors;
 }
 
-function minDistance(obj1: Point, obj2: Point, world: Rect) {
+function minSquareDistance(obj1: Point, obj2: Point, world: Rect) {
   let min = Infinity;
   const mirrors1 = makePointMirros(obj1, world);
   const mirrors2 = makePointMirros(obj2, world);
   for (const mirror1 of mirrors1) {
     for (const mirror2 of mirrors2) {
-      const dist = distance(mirror1, mirror2);
+      const dist = squareDistance(mirror1, mirror2);
       if (dist < min) min = dist;
     }
   }
   return min;
 }
 
-export function distance(obj1: Point, obj2: Point): number {
+export function squareDistance(obj1: Point, obj2: Point): number {
   const deltaX = obj1.x - obj2.x;
   const deltaY = obj1.y - obj2.y;
-  return Math.sqrt(deltaX ** 2 + deltaY ** 2);
+  return deltaX ** 2 + deltaY ** 2;
 }
 
 export function haveCollided(obj1: Collidable, obj2: Collidable): boolean {
-  const dist = distance(obj1.coords, obj2.coords);
+  const dist = squareDistance(obj1.coords, obj2.coords);
   const minDistance = obj1.hitBoxRadius + obj2.hitBoxRadius;
-  return dist < minDistance;
+  return dist < minDistance ** 2;
 }
 
 export function randomCoordsFarFrom(
@@ -74,8 +74,9 @@ export function randomCoordsFarFrom(
   world: Rect,
   hitBoxMultiplier = 2
 ): Point {
-  let distFromObject, coords;
+  let squredDistance, coords;
   let tries = 0;
+  const minDistance = object.hitBoxRadius * hitBoxMultiplier;
   do {
     if (tries > 100) throw Error('Could not create randomCoordsFarFrom');
     tries++;
@@ -83,21 +84,17 @@ export function randomCoordsFarFrom(
       x: Math.random() * world.width,
       y: Math.random() * world.height
     };
-    distFromObject = minDistance(coords, object.coords, world);
-  } while (distFromObject < object.hitBoxRadius * hitBoxMultiplier);
+    squredDistance = minSquareDistance(coords, object.coords, world);
+  } while (squredDistance < minDistance ** 2);
 
   return coords;
 }
 
-export function notDirection(
-  direction: number,
-  coneAngle: number,
-  random: () => number
-): number {
+export function notDirection(direction: number, coneAngle: number): number {
   const adjustedDirection = direction + direction < 0 ? Math.PI : 0;
   let dir: number;
   do {
-    dir = random() * Math.PI * 2;
+    dir = Math.random() * Math.PI * 2;
   } while (Math.abs(dir - adjustedDirection) <= coneAngle / 2);
   return dir;
 }
@@ -108,13 +105,9 @@ function tryPuttingValueInsideRange(
   max: number,
   min = 0
 ): number {
-  if (value < min) {
-    return value + adjustment;
-  } else if (value > max) {
-    return value - adjustment;
-  } else {
-    return value;
-  }
+  if (value < min) return value + adjustment;
+  if (value > max) return value - adjustment;
+  return value;
 }
 
 function mostVisibleCoords(
@@ -133,10 +126,7 @@ function mostVisibleCoords(
     screen.height
   );
 
-  return {
-    x: bestX,
-    y: bestY
-  };
+  return { x: bestX, y: bestY };
 }
 
 function isBetween(value: number, max: number, min = 0): boolean {
