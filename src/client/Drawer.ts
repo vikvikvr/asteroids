@@ -1,4 +1,4 @@
-import GameEngine, { GameState, GameTemperature } from '../core/GameEngine';
+import GameEngine, { GameTemperature } from '../core/GameEngine';
 import P5 from 'p5';
 import { drawableCoords, Point, Rect } from '../lib/geometry';
 import GUI, { numberWithSeparators } from './GUI';
@@ -99,7 +99,7 @@ class Drawer {
     this.p5.push();
     this.shakeCamera();
     this.drawEnvironment();
-    this.drawGameObjects(engine);
+    this.drawGameObjects();
     this.addNewAnimations();
     this.drawAnimations();
     this.p5.pop();
@@ -143,11 +143,10 @@ class Drawer {
     this.drawStars(stars);
   }
 
-  private drawGameObjects(engine: GameEngine): void {
-    let { ship, asteroids } = engine.state;
-    this.drawBullets(ship.bullets);
-    this.drawShip(engine.state);
-    this.drawAsteroids(asteroids, engine.state.temperature);
+  private drawGameObjects(): void {
+    this.drawBullets();
+    this.drawShip();
+    this.drawAsteroids();
   }
 
   private addNewAnimations(): void {
@@ -245,10 +244,8 @@ class Drawer {
     }
   }
 
-  private drawAsteroids(
-    asteroids: Asteroid[],
-    temperature: GameTemperature
-  ): void {
+  private drawAsteroids(): void {
+    const { asteroids, temperature } = this.engine.state;
     for (const asteroid of asteroids) {
       this.drawAsteroidTail(asteroid, temperature);
       const drawer = () => drawAsteroidShape(this.p5, asteroid, temperature);
@@ -304,17 +301,19 @@ class Drawer {
     }
   }
 
-  private drawShip(state: GameState): void {
-    this.drawShipTail(state.ship.tail);
+  private drawShip(): void {
+    const { p5 } = this;
+    const { ship, temperature } = this.engine.state;
+    this.drawShipTail(ship.tail);
     const options = {
       rotateDirection: true,
       rotationOffset: Math.PI / 2
     };
     const drawer = () => {
-      drawShipShape(this.p5, state.ship.hitBoxRadius / 2);
-      drawShipLifeArcShape(this.p5, state.ship.life, state.temperature);
+      drawShipShape(p5, ship.hitBoxRadius / 2);
+      drawShipLifeArcShape(p5, ship.life, temperature);
     };
-    this.drawGameObject(state.ship, options, drawer);
+    this.drawGameObject(ship, options, drawer);
   }
 
   private drawAsteroidTail(
@@ -342,17 +341,23 @@ class Drawer {
     }
   }
 
-  private drawBullets(bullets: Bullet[]): void {
+  private drawBullets(): void {
+    const { bullets } = this.engine.state.ship;
     for (const bullet of bullets) {
-      const tailLength = bullet.tailLength;
       this.drawGameObject(bullet, {}, () => drawBulletShape(this.p5));
-      for (let i = 0; i < bullet.tail.length; i++) {
-        const point = bullet.tail[i];
-        const drawable = this.toDrawableObject(point);
-        this.drawGameObject(drawable, {}, () =>
-          drawBulletTailShape(this.p5, i, tailLength)
-        );
-      }
+      this.drawBulletTail(bullet);
+    }
+  }
+
+  private drawBulletTail(bullet: Bullet): void {
+    const tailLength = bullet.tailLength;
+    const tailShapes = bullet.tail.length;
+    for (let i = 0; i < tailShapes; i++) {
+      const point = bullet.tail[i];
+      const drawable = this.toDrawableObject(point);
+      this.drawGameObject(drawable, {}, () =>
+        drawBulletTailShape(this.p5, i, tailLength)
+      );
     }
   }
 }
