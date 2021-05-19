@@ -4,14 +4,13 @@
 
 Jump back to the '80 on board of a spaceship and try to survive the deep space. [Try it now!](https://asteroids-client.netlify.app/)
 
-![Game screenshot](https://imgur.com/AaflIBr.png)
+[![preview.gif](https://s3.gifyu.com/images/asdfg.gif)](https://asteroids-client.netlify.app/)
 
 ## Controls
 
-- Arrows: move your ship
-- Spacebar: fire bullets
+- Left and Right: rotate the ship
+- Spacebar: stop the ship
 
 ## Rules
 
-- Don't die
-- Blow up asteroids
+- Survive
