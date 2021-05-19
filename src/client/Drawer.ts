@@ -1,8 +1,8 @@
-import GameEngine, { GameTemperature } from '../core/GameEngine';
+import GameEngine, { GameStatus, GameTemperature } from '../core/GameEngine';
 import P5 from 'p5';
 import { drawableCoords, Point, Rect } from '../lib/geometry';
 import GUI, { numberWithSeparators } from './GUI';
-import colors, { alphaFromTime, withAlpha } from './colors';
+import colors, { withAlpha } from './colors';
 import Animation, { TextAnimation } from './Animation';
 import { remove } from 'lodash';
 import { bulletHitScore } from '../core/game-rules';
@@ -44,7 +44,7 @@ export interface DrawableObject {
 interface Star {
   x: number;
   y: number;
-  radius: number;
+  diameter: number;
 }
 
 class Drawer {
@@ -76,18 +76,13 @@ class Drawer {
     this.shakeEndTime = -Infinity;
   }
 
-  public drawScreen(engine: GameEngine): void {
-    switch (engine.status) {
-      case 'playing':
-        this.drawGameScreen(engine);
-        break;
-      case 'lost':
-        this.drawGameOverScreen(engine);
-        break;
-      case 'idle':
-        console.log('idle');
-        break;
-    }
+  public drawScreen(): void {
+    const screens: Record<GameStatus, () => void> = {
+      playing: () => this.drawGameScreen(),
+      lost: () => this.drawGameOverScreen(),
+      idle: () => {}
+    };
+    screens[this.engine.status]();
   }
 
   public resizeScreen(width: number, height: number): void {
@@ -95,7 +90,7 @@ class Drawer {
     this.screen = { width, height };
   }
 
-  private drawGameScreen(engine: GameEngine): void {
+  private drawGameScreen(): void {
     this.p5.push();
     this.shakeCamera();
     this.drawEnvironment();
@@ -103,7 +98,7 @@ class Drawer {
     this.addNewAnimations();
     this.drawAnimations();
     this.p5.pop();
-    this.gui.draw(engine);
+    this.gui.draw(this.engine);
   }
 
   private shakeCamera() {
@@ -116,8 +111,8 @@ class Drawer {
     }
   }
 
-  private drawGameOverScreen(engine: GameEngine): void {
-    let { p5 } = this;
+  private drawGameOverScreen(): void {
+    let { p5, engine } = this;
     const ankerX = p5.windowWidth / 2;
     const ankerY = p5.windowHeight / 2;
     p5.background(colors.background.normal);
@@ -137,7 +132,7 @@ class Drawer {
   }
 
   private drawEnvironment(): void {
-    let { p5, stars, engine } = this;
+    const { p5, stars, engine } = this;
     const bgColor = colors.background[engine.state.temperature];
     p5.background(bgColor);
     this.drawStars(stars);
@@ -179,10 +174,10 @@ class Drawer {
   }
 
   private addScoreAnimation(event: GameEvent, temperature: GameTemperature) {
-    const myEvent = event as BulletHit;
-    const score = bulletHitScore(myEvent.size, temperature);
-    const scoreAnimation = new TextAnimation(`+${score}`, myEvent.coords);
-    this.animations.push(scoreAnimation);
+    const bulletHit = event as BulletHit;
+    const score = bulletHitScore(bulletHit.size, temperature);
+    const animation = new TextAnimation(`+${score}`, bulletHit.coords);
+    this.animations.push(animation);
   }
 
   private drawAnimations(): void {
@@ -208,9 +203,8 @@ class Drawer {
   }
 
   private drawExplosionShards() {
-    const { p5 } = this;
     for (const shard of this.engine.state.shards) {
-      const drawer = () => drawExplostionShard(p5, shard);
+      const drawer = () => drawExplostionShard(this.p5, shard);
       this.drawGameObject(shard, {}, drawer);
     }
   }
@@ -220,7 +214,7 @@ class Drawer {
       this.stars.push({
         x: Math.random() * world.width,
         y: Math.random() * world.height,
-        radius: Math.random() > 0.5 ? 2 : 1
+        diameter: Math.random() > 0.5 ? 2 : 1
       });
     }
   }
@@ -237,10 +231,10 @@ class Drawer {
   private drawStars(stars: Star[]): void {
     let { p5 } = this;
     p5.noStroke();
-    p5.fill(withAlpha(colors.hud, alphaFromTime(10)));
+    p5.fill(withAlpha(colors.hud, 1));
     for (const star of stars) {
       let coords = this.drawableCoords(star);
-      coords && p5.circle(coords.x, coords.y, star.radius);
+      if (coords) p5.circle(coords.x, coords.y, star.diameter);
     }
   }
 

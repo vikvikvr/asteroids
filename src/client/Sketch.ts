@@ -40,17 +40,16 @@ const Sketch = (p5: P5) => {
     }, 500);
   };
 
-  // p5.keyPressed = () => {};
-
   p5.windowResized = () => {
-    console.log('resized');
-    loaded && drawer.resizeScreen(p5.windowWidth, p5.windowHeight);
+    if (loaded) {
+      drawer.resizeScreen(p5.windowWidth, p5.windowHeight);
+    }
   };
 
   p5.draw = () => {
     if (loaded) {
       keyController.pressed(p5);
-      drawer.drawScreen(engine);
+      drawer.drawScreen();
     }
   };
 };
