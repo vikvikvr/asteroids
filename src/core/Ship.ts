@@ -67,47 +67,49 @@ class Ship extends GameObject {
     const canFire = Date.now() - this.firedAt > timeToWait;
     if (canFire) {
       this.firedAt = Date.now();
-      if (temperature !== 'high') {
-        const bullet = this.makeBullet('center');
+      let positions: BulletPosition[] = ['center'];
+      if (temperature === 'high') {
+        positions = ['left', 'right'];
+      }
+      for (const pos of positions) {
+        const bullet = this.makeBullet(pos);
         this.bullets.push(bullet);
-      } else {
-        const bullet1 = this.makeBullet('left');
-        this.bullets.push(bullet1);
-        const bullet2 = this.makeBullet('right');
-        this.bullets.push(bullet2);
       }
     }
   }
 
-  public restoreLife(temperature: GameTemperature) {
+  public restoreLife(temperature: GameTemperature): void {
     if (temperature === 'normal') {
       this.life = Math.min(this.life + this.lifeRegenRate, 1);
     }
   }
 
-  private updateBullets() {
+  private updateBullets(): void {
     for (const bullet of this.bullets) {
       bullet.update();
     }
     remove(this.bullets, 'isExpired');
   }
 
-  private changeDirection(direction: 1 | -1) {
+  private changeDirection(direction: 1 | -1): void {
     const targetDirection = this.direction + this.rotationStep * direction;
     this.direction = targetDirection;
   }
 
   private makeBullet(position: BulletPosition): Bullet {
     const { x, y } = this.coords;
-    const offsetX: Record<BulletPosition, number> = {
-      left: -20 * Math.cos(this.direction + Math.PI / 2),
+    const deltaX = Math.cos(this.direction + Math.PI / 2);
+    const deltaY = Math.sin(this.direction + Math.PI / 2);
+    type OffsetMap = Record<BulletPosition, number>;
+    const offsetX: OffsetMap = {
+      left: -20 * deltaX,
       center: 0,
-      right: 20 * Math.cos(this.direction + Math.PI / 2)
+      right: 20 * deltaX
     };
-    const offsetY: Record<BulletPosition, number> = {
-      left: -20 * Math.sin(this.direction + Math.PI / 2),
+    const offsetY: OffsetMap = {
+      left: -20 * deltaY,
       center: 0,
-      right: 20 * Math.sin(this.direction + Math.PI / 2)
+      right: 20 * deltaY
     };
     return new Bullet({
       world: this.world,

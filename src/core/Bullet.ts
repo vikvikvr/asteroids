@@ -1,12 +1,15 @@
-import GameObject, { GameObjectOptions } from './GameObject';
+import { Point, Rect } from '../lib/geometry';
+import GameObject from './GameObject';
 
-type BulletOptions = Omit<
-  GameObjectOptions,
-  'type' | 'hitBoxRadius' | 'duration'
->;
+interface BulletOptions {
+  world: Rect;
+  direction: number;
+  coords: Point;
+  speed: number;
+}
 
 class Bullet extends GameObject {
-  constructor(options: BulletOptions = {}) {
+  constructor(options: BulletOptions) {
     super({
       ...options,
       type: 'bullet',

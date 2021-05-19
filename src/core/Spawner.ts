@@ -27,16 +27,13 @@ class Spawner {
     this.world = world;
   }
 
-  public spawnAsteroid(options: AsteroidSpawnOptions = {}): Asteroid[] {
+  public spawnAsteroid(options: AsteroidSpawnOptions = {}): void {
     let { asteroids } = this.state;
-    let added: Asteroid[] = [];
     for (let i = 0; i < (options.count || 1); i++) {
       let asteroidOptions = this.makeAsteroidOptions(options);
       let asteroid = new Asteroid(asteroidOptions);
       asteroids.push(asteroid);
-      added.push(asteroid);
     }
-    return added;
   }
 
   private makeAsteroidOptions(
