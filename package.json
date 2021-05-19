@@ -35,8 +35,44 @@
   "eslintConfig": {
     "extends": [
       "react-app",
-      "react-app/jest"
-    ]
+      "react-app/jest",
+      "eslint:recommended"
+    ],
+    "env": {
+      "node": true
+    },
+    "rules": {
+      "no-var": "error",
+      "class-methods-use-this": "error",
+      "block-scoped-var": "error",
+      "no-empty-function": "error",
+      "no-invalid-this": "error",
+      "no-lone-blocks": "error",
+      "no-multi-str": "error",
+      "no-param-reassign": "error",
+      "no-use-before-define": "error",
+      "line-comment-position": [
+        "error",
+        {
+          "position": "above"
+        }
+      ],
+      "max-depth": [
+        "error",
+        4
+      ],
+      "max-statements": [
+        "error",
+        10
+      ],
+      "max-params": [
+        "error",
+        4
+      ],
+      "no-mixed-operators": "error",
+      "no-negated-condition": "error",
+      "no-nested-ternary": "error"
+    }
   },
   "browserslist": {
     "production": [
