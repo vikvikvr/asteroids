@@ -17,12 +17,9 @@ export function drawAsteroidShape(
   for (let i = 3; i >= 0; i--) {
     const { x, y } = asteroidOffsets;
     const color = colors.asteroid[temp][i];
-    let alpha = 1;
     const diameter = (hitBoxRadius * 2 * (i + 1)) / 4;
     const isBlinking = size === 'large' && temp === 'low';
-    if (isBlinking) {
-      alpha = (alphaFromTime(100) + 1) / 2;
-    }
+    const alpha = isBlinking ? (alphaFromTime(100) + 1) / 2 : 1;
     p5.fill(withAlpha(color, alpha));
     p5.circle(x[i], y[i], diameter);
   }
@@ -74,22 +71,21 @@ export function drawShipLifeArcShape(
   life: number,
   temperature: GameTemperature
 ) {
+  drawFullShipLifeArcShape(p5);
+  const subtractAngle = ((1 - life) * Math.PI) / 2;
+  const startAngle = subtractAngle;
+  const endAngle = Math.PI - subtractAngle;
+  const isRestoring = life < 1 && temperature === 'normal';
+  const color = isRestoring ? colors.asteroid.normal[0] : colors.ship.dark;
+  const alpha = isRestoring ? alphaFromTime(100) : 1;
+  p5.stroke(withAlpha(color, alpha));
+  p5.arc(0, 0, 100, 100, startAngle, endAngle);
+}
+
+function drawFullShipLifeArcShape(p5: P5) {
   // background white arc
   p5.noFill();
   p5.strokeWeight(4);
   p5.stroke(withAlpha(colors.hud, 1 / 4));
   p5.arc(0, 0, 100, 100, 0, Math.PI);
-  // foreground yellow/green arc
-  const subtractAngle = ((1 - life) * Math.PI) / 2;
-  const startAngle = subtractAngle;
-  const endAngle = Math.PI - subtractAngle;
-  let color = colors.ship.dark;
-  let alpha = 1;
-  const isRestoring = life < 1 && temperature === 'normal';
-  if (isRestoring) {
-    color = colors.asteroid.normal[0];
-    alpha = alphaFromTime(100);
-  }
-  p5.stroke(withAlpha(color, alpha));
-  p5.arc(0, 0, 100, 100, startAngle, endAngle);
 }

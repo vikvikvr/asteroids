@@ -7,7 +7,7 @@ const SCORES: Record<AsteroidSize, number> = {
   small: 200
 };
 
-function bulletHitScore(
+export function bulletHitScore(
   size: AsteroidSize,
   temperature: GameTemperature
 ): number {
@@ -23,4 +23,13 @@ function bulletHitScore(
   return score;
 }
 
-export { bulletHitScore };
+export function getHighScore(): number {
+  const bestScore = localStorage.getItem('asteroids-highscore') || '0';
+  return JSON.parse(bestScore);
+}
+
+export function saveHighScore(score: number, highScore: number): void {
+  if (score > highScore) {
+    localStorage.setItem('asteroids-highscore', score.toString());
+  }
+}

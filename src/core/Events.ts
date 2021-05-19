@@ -10,8 +10,6 @@ export type GameEventType =
   | 'BURN'
   | 'LEVEL_UP';
 
-export type TGameEvent = ShipHit | BulletHit | GameEvent;
-
 export class GameEvent {
   // public
   public type: GameEventType;
@@ -54,3 +52,5 @@ export class BulletHit extends GameEvent {
     this.shattered = shattered;
   }
 }
+
+export type TGameEvent = ShipHit | BulletHit | GameEvent;

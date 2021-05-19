@@ -83,8 +83,8 @@ class Asteroid extends GameObject {
     const sign = Math.random() > 0.5 ? 1 : -1;
     const newDirection = this.direction + angleChange * sign;
     this.direction = newDirection;
-    const timeToNextChange =
-      directionChangeTimes[this.size] * (temperature !== 'low' ? 0.5 : 1);
+    const waitMultiplier = temperature === 'low' ? 1 : 0.5;
+    const timeToNextChange = directionChangeTimes[this.size] * waitMultiplier;
     this.nextDirectionChangeAt = Date.now() + timeToNextChange;
   }
 }

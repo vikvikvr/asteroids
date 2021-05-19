@@ -4,7 +4,7 @@ import { haveCollided, Rect, centerOf } from '../lib/geometry';
 import * as ev from './Events';
 import { remove, find } from 'lodash';
 import Spawner from './Spawner';
-import { bulletHitScore } from './game-rules';
+import { bulletHitScore, getHighScore, saveHighScore } from './game-rules';
 import Shard from './Shard';
 
 export type GameStatus = 'playing' | 'lost' | 'idle';
@@ -29,7 +29,9 @@ class GameEngine {
   public levelDuration = 30_000;
   public highScore: number;
   // private
+  // eslint-disable-next-line no-undef
   private updateTimeout?: NodeJS.Timeout;
+  // eslint-disable-next-line no-undef
   private levelTimeout?: NodeJS.Timeout;
   constructor(world: Rect) {
     this.state = {
@@ -41,7 +43,7 @@ class GameEngine {
       level: 0,
       temperature: 'normal'
     };
-    this.highScore = this.getHighScore();
+    this.highScore = getHighScore();
     this.world = world;
     this.spawner = new Spawner(this.state, this.world);
     this.update = this.update.bind(this);
@@ -63,23 +65,11 @@ class GameEngine {
     this.checkGameLost();
   }
 
-  private getHighScore(): number {
-    const bestScore = localStorage.getItem('asteroids-highscore') || '0';
-    return JSON.parse(bestScore);
-  }
-
-  private saveHighScore(): void {
-    const { score } = this.state;
-    if (score > this.highScore) {
-      localStorage.setItem('asteroids-highscore', score.toString());
-    }
-  }
-
   private checkGameLost(): void {
     const haveLost = this.state.ship.life <= 0;
     if (haveLost) {
       this.status = 'lost';
-      this.saveHighScore();
+      saveHighScore(this.state.score, this.highScore);
       this.stopUpdating();
       this.stopLevelingUp();
     }

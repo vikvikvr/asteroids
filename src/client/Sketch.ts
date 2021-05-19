@@ -8,8 +8,8 @@ export type AnimationType = 'explosion';
 const rootElementId = 'root';
 
 const Sketch = (p5: P5) => {
-  var keyController: KeyController;
-  var drawer: Drawer;
+  let keyController: KeyController;
+  let drawer: Drawer;
   let loaded = false;
   let engine: GameEngine;
 

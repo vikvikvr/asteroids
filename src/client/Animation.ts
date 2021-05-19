@@ -3,8 +3,10 @@ import { Point } from '../lib/geometry';
 class Animation {
   public isExpired: boolean = false;
   public currentFrame: number = 0;
-  constructor(public frameCount: number) {}
-
+  frameCount: number;
+  constructor(frameCount: number) {
+    this.frameCount = frameCount;
+  }
   protected next(): number | false {
     if (this.currentFrame >= this.frameCount - 1) {
       this.isExpired = true;

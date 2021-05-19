@@ -1,3 +1,5 @@
+import { DrawableObject } from '../client/Drawer';
+
 export type Point = {
   x: number;
   y: number;
@@ -17,6 +19,15 @@ export function centerOf(rect: Rect): Point {
   return {
     x: rect.width / 2,
     y: rect.height / 2
+  };
+}
+
+export function toDrawableObject(point: Point): DrawableObject {
+  return {
+    coords: point,
+    hitBoxRadius: 2,
+    orientation: 0,
+    direction: 0
   };
 }
 
@@ -83,12 +94,11 @@ export function notDirection(
   coneAngle: number,
   random: () => number
 ): number {
-  if (direction < 0) direction += Math.PI;
-
+  const adjustedDirection = direction + direction < 0 ? Math.PI : 0;
   let dir: number;
   do {
     dir = random() * Math.PI * 2;
-  } while (Math.abs(dir - direction) <= coneAngle / 2);
+  } while (Math.abs(dir - adjustedDirection) <= coneAngle / 2);
   return dir;
 }
 
@@ -138,17 +148,13 @@ export function drawableCoords(
   object: Point,
   origin: Point,
   screen: Rect,
-  world: Rect,
-  showAlways?: boolean
+  world: Rect
 ): Point | undefined {
   const deltaX = object.x - origin.x;
   const deltaY = object.y - origin.y;
   const screenX = screen.width / 2 + deltaX;
   const screenY = screen.height / 2 + deltaY;
   const screenCoords = { x: screenX, y: screenY };
-
-  if (showAlways) return screenCoords;
-
   const result = mostVisibleCoords(screenCoords, world, screen);
   if (!isBetween(result.x, screen.width)) return undefined;
   if (!isBetween(result.y, screen.height)) return undefined;

@@ -1,6 +1,6 @@
 import GameEngine, { GameStatus, GameTemperature } from '../core/GameEngine';
 import P5 from 'p5';
-import { drawableCoords, Point, Rect } from '../lib/geometry';
+import { drawableCoords, Point, Rect, toDrawableObject } from '../lib/geometry';
 import GUI, { numberWithSeparators } from './GUI';
 import colors, { withAlpha } from './colors';
 import Animation, { TextAnimation } from './Animation';
@@ -80,7 +80,7 @@ class Drawer {
     const screens: Record<GameStatus, () => void> = {
       playing: () => this.drawGameScreen(),
       lost: () => this.drawGameOverScreen(),
-      idle: () => {}
+      idle: () => 0
     };
     screens[this.engine.status]();
   }
@@ -112,23 +112,33 @@ class Drawer {
   }
 
   private drawGameOverScreen(): void {
-    const { p5, engine } = this;
+    const { p5 } = this;
     const ankerX = p5.windowWidth / 2;
     const ankerY = p5.windowHeight / 2;
     p5.background(colors.background.normal);
     p5.fill(colors.hud);
-    p5.textSize(40);
-    p5.textAlign(p5.CENTER);
-    p5.text('GAME OVER', ankerX, ankerY - 60);
+    this.drawGameOverTitle(ankerX, ankerY);
+    this.drawGameOverScore(ankerX, ankerY);
+    p5.textSize(20);
+    p5.text('press F5 to try again', ankerX, ankerY + 90);
+    p5.textAlign(p5.LEFT);
+  }
+
+  private drawGameOverScore(ankerX: number, ankerY: number): void {
+    const { p5, engine } = this;
     p5.textSize(20);
     const scoreText = 'Score: ' + numberWithSeparators(engine.state.score, ',');
     p5.text(scoreText, ankerX, ankerY);
     const bestScoreText =
       'Best: ' + numberWithSeparators(engine.highScore, ',');
     p5.text(bestScoreText, ankerX, ankerY + 30);
-    p5.textSize(20);
-    p5.text('press F5 to try again', ankerX, ankerY + 90);
-    p5.textAlign(p5.LEFT);
+  }
+
+  private drawGameOverTitle(ankerX: number, ankerY: number): void {
+    const { p5 } = this;
+    p5.textSize(40);
+    p5.textAlign(p5.CENTER);
+    p5.text('GAME OVER', ankerX, ankerY - 60);
   }
 
   private drawEnvironment(): void {
@@ -194,7 +204,7 @@ class Drawer {
       if (animation instanceof TextAnimation) {
         const coords = animation.getNextCoords();
         if (coords) {
-          const drawable = this.toDrawableObject(coords);
+          const drawable = toDrawableObject(coords);
           const drawer = () => drawTextAnimation(p5, animation);
           this.drawGameObject(drawable, {}, drawer);
         }
@@ -245,15 +255,6 @@ class Drawer {
       const drawer = () => drawAsteroidShape(this.p5, asteroid, temperature);
       this.drawGameObject(asteroid, {}, drawer);
     }
-  }
-
-  private toDrawableObject(point: Point): DrawableObject {
-    return {
-      coords: point,
-      hitBoxRadius: 2,
-      orientation: 0,
-      direction: 0
-    };
   }
 
   private drawGameObject(
@@ -317,7 +318,7 @@ class Drawer {
     const length = asteroid.tail.length;
     for (let i = 0; i < length; i++) {
       const point = asteroid.tail[i];
-      const drawable = this.toDrawableObject(point);
+      const drawable = toDrawableObject(point);
       this.drawGameObject(drawable, {}, () =>
         drawAsteroidTailShape(this.p5, i, length)
       );
@@ -330,7 +331,7 @@ class Drawer {
     p5.noStroke();
     for (let i = 0; i < length; i++) {
       const point = tail[i];
-      const drawable = this.toDrawableObject(point);
+      const drawable = toDrawableObject(point);
       this.drawGameObject(drawable, {}, () => drawShipTailShape(p5, i, length));
     }
   }
@@ -348,7 +349,7 @@ class Drawer {
     const tailShapes = bullet.tail.length;
     for (let i = 0; i < tailShapes; i++) {
       const point = bullet.tail[i];
-      const drawable = this.toDrawableObject(point);
+      const drawable = toDrawableObject(point);
       this.drawGameObject(drawable, {}, () =>
         drawBulletTailShape(this.p5, i, tailLength)
       );

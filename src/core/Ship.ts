@@ -6,6 +6,12 @@ import { GameTemperature } from './GameEngine';
 
 type BulletPosition = 'center' | 'left' | 'right';
 
+const tempMultiplierMap: Record<GameTemperature, number> = {
+  low: 2,
+  normal: 1,
+  high: 0.5
+};
+
 class Ship extends GameObject {
   // public
   public bullets: Bullet[] = [];
@@ -58,23 +64,22 @@ class Ship extends GameObject {
   }
 
   public fire(temperature: GameTemperature): void {
-    const tempMultiplierMap: Record<GameTemperature, number> = {
-      low: 2,
-      normal: 1,
-      high: 0.5
-    };
     const timeToWait = this.minTimeToFire * tempMultiplierMap[temperature];
     const canFire = Date.now() - this.firedAt > timeToWait;
     if (canFire) {
-      this.firedAt = Date.now();
-      let positions: BulletPosition[] = ['center'];
-      if (temperature === 'high') {
-        positions = ['left', 'right'];
-      }
-      for (const pos of positions) {
-        const bullet = this.makeBullet(pos);
-        this.bullets.push(bullet);
-      }
+      this.fireBullets(temperature);
+    }
+  }
+
+  private fireBullets(temperature: GameTemperature): void {
+    this.firedAt = Date.now();
+    let positions: BulletPosition[] = ['center'];
+    if (temperature === 'high') {
+      positions = ['left', 'right'];
+    }
+    for (const pos of positions) {
+      const bullet = this.makeBullet(pos);
+      this.bullets.push(bullet);
     }
   }
 
