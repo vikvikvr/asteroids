@@ -5,33 +5,15 @@ import Drawer from './Drawer';
 
 export type AnimationType = 'explosion';
 
-const rootElementId = 'root';
+let keyController: KeyController;
+let drawer: Drawer;
+let loaded = false;
+let engine: GameEngine;
 
-const Sketch = (p5: P5) => {
-  let keyController: KeyController;
-  let drawer: Drawer;
-  let loaded = false;
-  let engine: GameEngine;
-
-  p5.setup = async () => {
-    setupGlobalStyles(p5);
-    p5.frameRate(60);
-    setTimeout(() => {
-      const $loading = document.getElementById('loading')!;
-      document.body.removeChild($loading);
-      loaded = true;
-      engine = new GameEngine({ width: 4000, height: 2000 });
-      drawer = new Drawer({
-        p5,
-        engine,
-        rootElementId,
-        showHitBoxes: false
-      });
-      engine.startLevel();
-      keyController = new KeyController(engine.state.ship);
-
-      drawer.createStars(engine.world, 200);
-    }, 500);
+function Sketch(p5: P5) {
+  p5.setup = () => {
+    setupGraphics(p5);
+    setTimeout(() => start(p5), 500);
   };
 
   p5.windowResized = () => {
@@ -46,14 +28,29 @@ const Sketch = (p5: P5) => {
       drawer.drawScreen();
     }
   };
-};
+}
 
-function setupGlobalStyles(p5: P5) {
+function setupGraphics(p5: P5) {
+  p5.frameRate(60);
   p5.pixelDensity(2);
   p5.textFont('Verdana');
   p5.textStyle(p5.BOLD);
   p5.imageMode(p5.CENTER);
   p5.rectMode(p5.CORNER);
+}
+
+function start(p5: P5): void {
+  engine = new GameEngine({ width: 4000, height: 2000 });
+  hideLoadingScreen();
+  drawer = new Drawer(p5, engine);
+  keyController = new KeyController(engine.state.ship);
+  engine.startLevel();
+}
+
+function hideLoadingScreen(): void {
+  const $loading = document.getElementById('loading')!;
+  document.body.removeChild($loading);
+  loaded = true;
 }
 
 export default Sketch;

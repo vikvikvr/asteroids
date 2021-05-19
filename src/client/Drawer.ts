@@ -1,7 +1,7 @@
 import GameEngine, { GameStatus, GameTemperature } from '../core/GameEngine';
 import P5 from 'p5';
 import { drawableCoords, Point, Rect, toDrawableObject } from '../lib/geometry';
-import GUI, { numberWithSeparators } from './GUI';
+import GUI, { prettifyNumber } from './GUI';
 import colors, { withAlpha } from './colors';
 import Animation, { TextAnimation } from './Animation';
 import { remove } from 'lodash';
@@ -9,15 +9,7 @@ import { bulletHitScore } from '../core/game-rules';
 import { BulletHit, GameEvent, GameEventType } from '../core/Events';
 import Asteroid from '../core/Asteroid';
 import Bullet from '../core/Bullet';
-import {
-  drawAsteroidShape,
-  drawAsteroidTailShape,
-  drawBulletShape,
-  drawBulletTailShape,
-  drawShipLifeArcShape,
-  drawShipShape,
-  drawShipTailShape
-} from './shapes';
+import * as shapes from './shapes';
 import { drawExplostionShard, drawTextAnimation } from './animations';
 
 interface DrawGameObjectOptions {
@@ -25,13 +17,6 @@ interface DrawGameObjectOptions {
   ignoreOrientation?: boolean;
   rotationOffset?: number;
   scale?: number;
-}
-
-interface DrawerOptions {
-  p5: P5;
-  engine: GameEngine;
-  rootElementId: string;
-  showHitBoxes?: boolean;
 }
 
 export interface DrawableObject {
@@ -58,22 +43,19 @@ class Drawer {
   private animations: Animation[] = [];
   private shakeEndTime: number;
   // constructor
-  constructor(options: DrawerOptions) {
-    this.p5 = options.p5;
-    const canvas = this.p5.createCanvas(
-      this.p5.windowWidth,
-      this.p5.windowHeight
-    );
-    this.engine = options.engine;
-    canvas.parent(options.rootElementId);
-    this.showHitBoxes = options.showHitBoxes || false;
+  constructor(p5: P5, engine: GameEngine) {
+    this.p5 = p5;
+    const canvas = p5.createCanvas(p5.windowWidth, p5.windowHeight);
+    this.engine = engine;
+    canvas.parent('root');
+    this.showHitBoxes = false;
     this.screen = {
-      width: this.p5.windowWidth,
-      height: this.p5.windowHeight
+      width: p5.windowWidth,
+      height: p5.windowHeight
     };
-    this.gui = new GUI(this.p5);
-    this.p5.textSize(20);
+    this.gui = new GUI(p5);
     this.shakeEndTime = -Infinity;
+    this.createStars(200);
   }
 
   public drawScreen(): void {
@@ -102,50 +84,51 @@ class Drawer {
   }
 
   private shakeCamera() {
+    const { shakeEndTime, p5 } = this;
     const currentTime = Date.now();
-    if (currentTime < this.shakeEndTime) {
+    if (currentTime < shakeEndTime) {
       const shakeSize = 10;
-      const offsetX = this.p5.noise(currentTime) * shakeSize;
-      const offsetY = this.p5.noise(0, currentTime) * shakeSize;
-      this.p5.translate(offsetX, offsetY);
+      const offsetX = p5.noise(currentTime) * shakeSize;
+      const offsetY = p5.noise(0, currentTime) * shakeSize;
+      p5.translate(offsetX, offsetY);
     }
   }
 
   private drawGameOverScreen(): void {
     const { p5 } = this;
-    const ankerX = p5.windowWidth / 2;
-    const ankerY = p5.windowHeight / 2;
+    const x = p5.windowWidth / 2;
+    const y = p5.windowHeight / 2;
     p5.background(colors.background.normal);
     p5.fill(colors.hud);
-    this.drawGameOverTitle(ankerX, ankerY);
-    this.drawGameOverScore(ankerX, ankerY);
+    this.drawGameOverTitle({ x, y });
+    this.drawGameOverScore({ x, y });
     p5.textSize(20);
-    p5.text('press F5 to try again', ankerX, ankerY + 90);
+    p5.text('press F5 to try again', x, y + 90);
     p5.textAlign(p5.LEFT);
   }
 
-  private drawGameOverScore(ankerX: number, ankerY: number): void {
+  private drawGameOverScore(center: Point): void {
     const { p5, engine } = this;
     p5.textSize(20);
-    const scoreText = 'Score: ' + numberWithSeparators(engine.state.score, ',');
-    p5.text(scoreText, ankerX, ankerY);
-    const bestScoreText =
-      'Best: ' + numberWithSeparators(engine.highScore, ',');
-    p5.text(bestScoreText, ankerX, ankerY + 30);
+    const score = 'Score: ' + prettifyNumber(engine.state.score);
+    p5.text(score, center.x, center.y);
+    const bestScore = 'Best: ' + prettifyNumber(engine.highScore);
+    p5.text(bestScore, center.x, center.y + 30);
   }
 
-  private drawGameOverTitle(ankerX: number, ankerY: number): void {
+  private drawGameOverTitle(center: Point): void {
     const { p5 } = this;
     p5.textSize(40);
     p5.textAlign(p5.CENTER);
-    p5.text('GAME OVER', ankerX, ankerY - 60);
+    p5.text('GAME OVER', center.x, center.y - 60);
   }
 
   private drawEnvironment(): void {
-    const { p5, stars, engine } = this;
-    const bgColor = colors.background[engine.state.temperature];
+    const { p5, engine } = this;
+    const { temperature } = engine.state;
+    const bgColor = colors.background[temperature];
     p5.background(bgColor);
-    this.drawStars(stars);
+    this.drawStars();
   }
 
   private drawGameObjects(): void {
@@ -155,7 +138,7 @@ class Drawer {
   }
 
   private addNewAnimations(): void {
-    const { events, temperature } = this.engine.state;
+    const { events } = this.engine.state;
     for (const event of events) {
       if (['LEVEL_UP', 'FREEZE', 'BURN'].includes(event.type)) {
         this.addStageAnimation(event);
@@ -163,11 +146,11 @@ class Drawer {
         if (event.type === 'SHIP_HIT') {
           this.shakeEndTime = Date.now() + 500;
         } else {
-          this.addScoreAnimation(event, temperature);
+          this.addScoreAnimation(event);
         }
       }
     }
-    this.engine.state.events = [];
+    events.length = 0;
   }
 
   private addStageAnimation(event: GameEvent) {
@@ -183,10 +166,11 @@ class Drawer {
     this.animations.push(animation);
   }
 
-  private addScoreAnimation(event: GameEvent, temperature: GameTemperature) {
-    const bulletHit = event as BulletHit;
-    const score = bulletHitScore(bulletHit.size, temperature);
-    const animation = new TextAnimation(`+${score}`, bulletHit.coords);
+  private addScoreAnimation(event: GameEvent) {
+    const { temperature } = this.engine.state;
+    const { size, coords } = event as BulletHit;
+    const score = bulletHitScore(size, temperature);
+    const animation = new TextAnimation(`+${score}`, coords);
     this.animations.push(animation);
   }
 
@@ -219,17 +203,19 @@ class Drawer {
     }
   }
 
-  public createStars(world: Rect, amount: number): void {
+  public createStars(amount: number): void {
+    const { width, height } = this.engine.world;
     for (let i = 0; i < amount; i++) {
-      this.stars.push({
-        x: Math.random() * world.width,
-        y: Math.random() * world.height,
+      const star: Star = {
+        x: Math.random() * width,
+        y: Math.random() * height,
         diameter: Math.random() > 0.5 ? 2 : 1
-      });
+      };
+      this.stars.push(star);
     }
   }
 
-  private drawableCoords(object: Point): Point | undefined {
+  private drawableCoords(object: Point): Point | null {
     return drawableCoords(
       object,
       this.engine.state.ship.coords,
@@ -238,13 +224,15 @@ class Drawer {
     );
   }
 
-  private drawStars(stars: Star[]): void {
-    const { p5 } = this;
+  private drawStars(): void {
+    const { p5, stars } = this;
     p5.noStroke();
     p5.fill(withAlpha(colors.hud, 1));
     for (const star of stars) {
       const coords = this.drawableCoords(star);
-      if (coords) p5.circle(coords.x, coords.y, star.diameter);
+      if (coords) {
+        p5.circle(coords.x, coords.y, star.diameter);
+      }
     }
   }
 
@@ -252,7 +240,7 @@ class Drawer {
     const { asteroids, temperature } = this.engine.state;
     for (const asteroid of asteroids) {
       this.drawAsteroidTail(asteroid, temperature);
-      const drawer = () => drawAsteroidShape(this.p5, asteroid, temperature);
+      const drawer = () => shapes.asteroid(this.p5, asteroid, temperature);
       this.drawGameObject(asteroid, {}, drawer);
     }
   }
@@ -287,7 +275,7 @@ class Drawer {
     p5.scale(options.scale || 1);
   }
 
-  private drawHitBox(hitBoxRadius: number) {
+  private drawHitBox(hitBoxRadius: number): void {
     const { p5 } = this;
     if (this.showHitBoxes) {
       p5.noFill();
@@ -299,14 +287,14 @@ class Drawer {
   private drawShip(): void {
     const { p5 } = this;
     const { ship, temperature } = this.engine.state;
-    this.drawShipTail(ship.tail);
+    this.drawShipTail();
     const options = {
       rotateDirection: true,
       rotationOffset: Math.PI / 2
     };
     const drawer = () => {
-      drawShipShape(p5, ship.hitBoxRadius / 2);
-      drawShipLifeArcShape(p5, ship.life, temperature);
+      shapes.ship(p5, ship.hitBoxRadius / 2);
+      shapes.shipLifeArc(p5, ship.life, temperature);
     };
     this.drawGameObject(ship, options, drawer);
   }
@@ -319,27 +307,29 @@ class Drawer {
     for (let i = 0; i < length; i++) {
       const point = asteroid.tail[i];
       const drawable = toDrawableObject(point);
-      this.drawGameObject(drawable, {}, () =>
-        drawAsteroidTailShape(this.p5, i, length)
-      );
+      const drawer = () => shapes.asteroidTail(this.p5, i, length);
+      this.drawGameObject(drawable, {}, drawer);
     }
   }
 
-  private drawShipTail(tail: Point[]) {
+  private drawShipTail(): void {
     const { p5 } = this;
+    const { tail } = this.engine.state.ship;
     const length = tail.length;
     p5.noStroke();
     for (let i = 0; i < length; i++) {
       const point = tail[i];
       const drawable = toDrawableObject(point);
-      this.drawGameObject(drawable, {}, () => drawShipTailShape(p5, i, length));
+      const drawer = () => shapes.shipTail(p5, i, length);
+      this.drawGameObject(drawable, {}, drawer);
     }
   }
 
   private drawBullets(): void {
     const { bullets } = this.engine.state.ship;
     for (const bullet of bullets) {
-      this.drawGameObject(bullet, {}, () => drawBulletShape(this.p5));
+      const drawer = () => shapes.bullet(this.p5);
+      this.drawGameObject(bullet, {}, drawer);
       this.drawBulletTail(bullet);
     }
   }
@@ -351,7 +341,7 @@ class Drawer {
       const point = bullet.tail[i];
       const drawable = toDrawableObject(point);
       this.drawGameObject(drawable, {}, () =>
-        drawBulletTailShape(this.p5, i, tailLength)
+        shapes.bulletTail(this.p5, i, tailLength)
       );
     }
   }

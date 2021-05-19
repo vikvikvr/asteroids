@@ -149,14 +149,14 @@ export function drawableCoords(
   origin: Point,
   screen: Rect,
   world: Rect
-): Point | undefined {
+): Point | null {
   const deltaX = object.x - origin.x;
   const deltaY = object.y - origin.y;
   const screenX = screen.width / 2 + deltaX;
   const screenY = screen.height / 2 + deltaY;
   const screenCoords = { x: screenX, y: screenY };
   const result = mostVisibleCoords(screenCoords, world, screen);
-  if (!isBetween(result.x, screen.width)) return undefined;
-  if (!isBetween(result.y, screen.height)) return undefined;
+  if (!isBetween(result.x, screen.width)) return null;
+  if (!isBetween(result.y, screen.height)) return null;
   return result;
 }
