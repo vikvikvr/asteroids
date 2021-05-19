@@ -271,18 +271,27 @@ class Drawer {
     const { p5 } = this;
     const coords = this.drawableCoords(object.coords);
     if (coords) {
-      const side = object.hitBoxRadius * 2;
-      const orientation = options.ignoreOrientation ? 0 : object.orientation;
-      const offset = options.rotationOffset || 0;
-      const direction = options.rotateDirection ? object.direction : 0;
+      const diameter = object.hitBoxRadius * 2;
       p5.push();
-      p5.translate(coords.x, coords.y);
-      p5.rotate(orientation + offset + direction);
-      p5.scale(options.scale || 1);
+      this.transformObjectMatrix(object, options, coords);
       drawer();
-      this.drawHitBox(side);
+      this.drawHitBox(diameter);
       p5.pop();
     }
+  }
+
+  private transformObjectMatrix(
+    object: DrawableObject,
+    options: DrawGameObjectOptions,
+    coords: Point
+  ): void {
+    const { p5 } = this;
+    let angle = options.ignoreOrientation ? 0 : object.orientation;
+    angle += options.rotationOffset || 0;
+    angle += options.rotateDirection ? object.direction : 0;
+    p5.translate(coords.x, coords.y);
+    p5.rotate(angle);
+    p5.scale(options.scale || 1);
   }
 
   private drawHitBox(diameter: number) {
