@@ -115,15 +115,18 @@ function mostVisibleCoords(
   world: Rect,
   screen: Rect
 ): Point {
+  const overlap = 100;
   const bestX = tryPuttingValueInsideRange(
     screenCoords.x,
     world.width,
-    screen.width
+    screen.width + overlap,
+    -overlap
   );
   const bestY = tryPuttingValueInsideRange(
     screenCoords.y,
     world.height,
-    screen.height
+    screen.height + overlap,
+    -overlap
   );
 
   return { x: bestX, y: bestY };
@@ -146,7 +149,8 @@ export function drawableCoords(
   const screenY = screen.height / 2 + deltaY;
   const screenCoords = { x: screenX, y: screenY };
   const result = mostVisibleCoords(screenCoords, world, screen);
-  if (!isBetween(result.x, screen.width)) return null;
-  if (!isBetween(result.y, screen.height)) return null;
+  const overlap = 100;
+  if (!isBetween(result.x, screen.width + overlap, -overlap)) return null;
+  if (!isBetween(result.y, screen.height + overlap, -overlap)) return null;
   return result;
 }
