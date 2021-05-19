@@ -13,12 +13,13 @@ export function asteroid(
   asteroid: Asteroid,
   temp: Temperature
 ): void {
-  const { hitBoxRadius, size } = asteroid;
+  const { hitBoxRadius, nextDirectionChangeAt } = asteroid;
   for (let i = 3; i >= 0; i--) {
     const { x, y } = asteroidOffsets;
     const color = colors.asteroid[temp][i];
     const diameter = (hitBoxRadius * 2 * (i + 1)) / 4;
-    const isBlinking = size === 2 && temp === Temperature.Low;
+    const willChangeDirection = nextDirectionChangeAt - Date.now() < 1_000;
+    const isBlinking = willChangeDirection && temp !== Temperature.Low;
     const alpha = isBlinking ? (alphaFromTime(100) + 1) / 2 : 1;
     gr.fill(withAlpha(color, alpha));
     gr.circle(x[i], y[i], diameter);
