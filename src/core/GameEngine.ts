@@ -151,7 +151,6 @@ class GameEngine {
           size: asteroid.size,
           coords: asteroid.coords,
           world: this.world,
-          duration: 350,
           temperature: this.state.temperature
         })
       );
