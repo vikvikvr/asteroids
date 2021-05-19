@@ -34,9 +34,6 @@ function setupGraphics(p5: P5) {
   p5.disableFriendlyErrors = true;
   p5.frameRate(60);
   p5.pixelDensity(2);
-  p5.textFont('Verdana');
-  p5.textStyle(p5.BOLD);
-  // p5.imageMode(p5.CENTER);
   p5.rectMode(p5.CORNER);
 }
 

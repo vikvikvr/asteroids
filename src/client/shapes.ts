@@ -34,7 +34,7 @@ export function ship(gr: P5.Graphics, side: number): void {
 
 export function bullet(gr: P5.Graphics): void {
   gr.fill(colors.ship.dark);
-  gr.circle(0, 0, 4);
+  gr.square(0, 0, 4);
 }
 
 export function bulletTail(
@@ -45,7 +45,7 @@ export function bulletTail(
   const percent = index / length;
   const color = withAlpha(colors.ship.light, percent / 2);
   gr.fill(color);
-  gr.circle(0, 0, 3);
+  gr.square(0, 0, 3);
 }
 
 export function shipTail(gr: P5.Graphics, index: number, length: number): void {
@@ -63,7 +63,7 @@ export function asteroidTail(
 ): void {
   const color = withAlpha(colors.hud, index / length / 2);
   gr.fill(color);
-  gr.circle(0, 0, 4);
+  gr.square(0, 0, 4);
 }
 
 export function shipLifeArc(

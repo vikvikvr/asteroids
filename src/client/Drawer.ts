@@ -46,10 +46,11 @@ class Drawer {
   constructor(p5: P5, engine: GameEngine) {
     this.p5 = p5;
     const canvas = p5.createCanvas(p5.windowWidth, p5.windowHeight);
-    this.gr = p5.createGraphics(p5.windowWidth, p5.windowHeight);
     this.engine = engine;
     canvas.parent('root');
     this.showHitBoxes = false;
+    this.gr = p5.createGraphics(p5.windowWidth, p5.windowHeight);
+    this.setupGraphics();
     this.gui = new GUI(this.gr);
     this.shakeEndTime = -Infinity;
     this.stars = this.createStars(200);
@@ -80,6 +81,12 @@ class Drawer {
     // this.testExtraGraphics();
     this.gui.draw(this.engine);
     this.p5.image(this.gr, 0, 0);
+  }
+
+  private setupGraphics(): void {
+    const { gr } = this;
+    gr.textFont('Verdana');
+    gr.textStyle(gr.BOLD);
   }
 
   private shakeCamera(): void {
@@ -233,7 +240,7 @@ class Drawer {
     for (const star of stars) {
       const coords = this.drawableCoords(star);
       if (coords) {
-        gr.circle(coords.x, coords.y, star.diameter);
+        gr.square(coords.x, coords.y, star.diameter);
       }
     }
   }
