@@ -38,7 +38,7 @@ class Asteroid extends GameObject {
       direction: options.direction ?? Math.random() * Math.PI * 2,
       rotationSpeed: options.rotationSpeed ?? (sign * Math.PI) / 50,
       angularSpeed: Math.PI / 3 / 40,
-      tailLength: 50
+      tailLength: 40
     });
     const toWait = directionChangeTimes[size] * Math.random();
     this.nextDirectionChangeAt = Date.now() + toWait;

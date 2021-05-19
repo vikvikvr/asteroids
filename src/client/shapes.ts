@@ -8,7 +8,11 @@ const asteroidOffsets = {
   y: [-2, 2, 2, -2]
 };
 
-export function asteroid(p5: P5, asteroid: Asteroid, temp: Temperature): void {
+export function asteroid(
+  gr: P5.Graphics,
+  asteroid: Asteroid,
+  temp: Temperature
+): void {
   const { hitBoxRadius, size } = asteroid;
   for (let i = 3; i >= 0; i--) {
     const { x, y } = asteroidOffsets;
@@ -16,46 +20,58 @@ export function asteroid(p5: P5, asteroid: Asteroid, temp: Temperature): void {
     const diameter = (hitBoxRadius * 2 * (i + 1)) / 4;
     const isBlinking = size === 2 && temp === Temperature.Low;
     const alpha = isBlinking ? (alphaFromTime(100) + 1) / 2 : 1;
-    p5.fill(withAlpha(color, alpha));
-    p5.circle(x[i], y[i], diameter);
+    gr.fill(withAlpha(color, alpha));
+    gr.circle(x[i], y[i], diameter);
   }
 }
 
-export function ship(p5: P5, side: number): void {
-  p5.fill(colors.ship.dark);
-  p5.triangle(0, side, -2 * side, side * 2, 0, -2 * side);
-  p5.fill(colors.ship.light);
-  p5.triangle(0, side, 0, -2 * side, 2 * side, 2 * side);
+export function ship(gr: P5.Graphics, side: number): void {
+  gr.fill(colors.ship.dark);
+  gr.triangle(0, side, -2 * side, side * 2, 0, -2 * side);
+  gr.fill(colors.ship.light);
+  gr.triangle(0, side, 0, -2 * side, 2 * side, 2 * side);
 }
 
-export function bullet(p5: P5): void {
-  p5.fill(colors.ship.dark);
-  p5.circle(0, 0, 4);
+export function bullet(gr: P5.Graphics): void {
+  gr.fill(colors.ship.dark);
+  gr.circle(0, 0, 4);
 }
 
-export function bulletTail(p5: P5, index: number, length: number): void {
+export function bulletTail(
+  gr: P5.Graphics,
+  index: number,
+  length: number
+): void {
   const percent = index / length;
   const color = withAlpha(colors.ship.light, percent / 2);
-  p5.fill(color);
-  p5.circle(0, 0, 3);
+  gr.fill(color);
+  gr.circle(0, 0, 3);
 }
 
-export function shipTail(p5: P5, index: number, length: number): void {
+export function shipTail(gr: P5.Graphics, index: number, length: number): void {
   const difference = length - index;
   const alpha = (1 - difference / length) / 4;
   const color = withAlpha(colors.hud, alpha);
-  p5.fill(color);
-  p5.circle(0, 0, difference / 1.5 + 15);
+  gr.fill(color);
+  gr.circle(0, 0, difference / 1.5 + 15);
 }
 
-export function asteroidTail(p5: P5, index: number, length: number): void {
+export function asteroidTail(
+  gr: P5.Graphics,
+  index: number,
+  length: number
+): void {
   const color = withAlpha(colors.hud, index / length / 2);
-  p5.fill(color);
-  p5.circle(0, 0, 4);
+  gr.fill(color);
+  gr.circle(0, 0, 4);
 }
 
-export function shipLifeArc(p5: P5, life: number, temperature: Temperature) {
-  fullShipLifeArc(p5);
+export function shipLifeArc(
+  gr: P5.Graphics,
+  life: number,
+  temperature: Temperature
+) {
+  fullShipLifeArc(gr);
   const subtractAngle = ((1 - life) * Math.PI) / 2;
   const startAngle = subtractAngle;
   const endAngle = Math.PI - subtractAngle;
@@ -64,13 +80,13 @@ export function shipLifeArc(p5: P5, life: number, temperature: Temperature) {
     ? colors.asteroid[Temperature.Normal][0]
     : colors.ship.dark;
   const alpha = isRestoring ? alphaFromTime(100) : 1;
-  p5.stroke(withAlpha(color, alpha));
-  p5.arc(0, 0, 100, 100, startAngle, endAngle);
+  gr.stroke(withAlpha(color, alpha));
+  gr.arc(0, 0, 100, 100, startAngle, endAngle);
 }
 
-function fullShipLifeArc(p5: P5) {
-  p5.noFill();
-  p5.strokeWeight(4);
-  p5.stroke(withAlpha(colors.hud, 1 / 4));
-  p5.arc(0, 0, 100, 100, 0, Math.PI);
+function fullShipLifeArc(gr: P5.Graphics) {
+  gr.noFill();
+  gr.strokeWeight(4);
+  gr.stroke(withAlpha(colors.hud, 1 / 4));
+  gr.arc(0, 0, 100, 100, 0, Math.PI);
 }

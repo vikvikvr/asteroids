@@ -1,6 +1,6 @@
-import GameEngine, { GameStatus, Temperature } from '../core/GameEngine';
+import GameEngine, { Temperature } from '../core/GameEngine';
 import P5 from 'p5';
-import { drawableCoords, Point, Rect, toDrawableObject } from '../lib/geometry';
+import { drawableCoords, Point, toDrawableObject } from '../lib/geometry';
 import GUI, { prettifyNumber } from './GUI';
 import colors, { withAlpha } from './colors';
 import Animation, { TextAnimation } from './Animation';
@@ -37,97 +37,96 @@ class Drawer {
   private p5: P5;
   private stars: Star[] = [];
   private showHitBoxes: boolean;
-  private screen: Rect;
   private engine: GameEngine;
   private gui: GUI;
   private animations: Animation[] = [];
   private shakeEndTime: number;
+  private gr: P5.Graphics;
   // constructor
   constructor(p5: P5, engine: GameEngine) {
     this.p5 = p5;
     const canvas = p5.createCanvas(p5.windowWidth, p5.windowHeight);
+    this.gr = p5.createGraphics(p5.windowWidth, p5.windowHeight);
     this.engine = engine;
     canvas.parent('root');
     this.showHitBoxes = false;
-    this.screen = {
-      width: p5.windowWidth,
-      height: p5.windowHeight
-    };
-    this.gui = new GUI(p5);
+    this.gui = new GUI(this.gr);
     this.shakeEndTime = -Infinity;
-    this.createStars(200);
+    this.stars = this.createStars(200);
   }
 
   public drawScreen(): void {
-    const screens: Record<GameStatus, () => void> = {
-      playing: () => this.drawGameScreen(),
-      lost: () => this.drawGameOverScreen(),
-      idle: () => 0
-    };
-    screens[this.engine.status]();
+    const { status } = this.engine;
+    if (status === 'playing') {
+      this.drawGameScreen();
+    } else if (status === 'lost') {
+      this.drawGameOverScreen();
+    }
   }
 
   public resizeScreen(width: number, height: number): void {
     this.p5.resizeCanvas(width, height);
-    this.screen = { width, height };
+    this.gr.resizeCanvas(width, height);
   }
 
   private drawGameScreen(): void {
-    this.p5.push();
+    this.gr.push();
     this.shakeCamera();
     this.drawEnvironment();
     this.drawGameObjects();
     this.addNewAnimations();
     this.drawAnimations();
-    this.p5.pop();
+    this.gr.pop();
+    // this.testExtraGraphics();
     this.gui.draw(this.engine);
+    this.p5.image(this.gr, 0, 0);
   }
 
-  private shakeCamera() {
-    const { shakeEndTime, p5 } = this;
+  private shakeCamera(): void {
+    const { shakeEndTime, gr } = this;
     const currentTime = Date.now();
     if (currentTime < shakeEndTime) {
       const shakeSize = 10;
-      const offsetX = p5.noise(currentTime) * shakeSize;
-      const offsetY = p5.noise(0, currentTime) * shakeSize;
-      p5.translate(offsetX, offsetY);
+      const offsetX = gr.noise(currentTime) * shakeSize;
+      const offsetY = gr.noise(0, currentTime) * shakeSize;
+      gr.translate(offsetX, offsetY);
     }
   }
 
   private drawGameOverScreen(): void {
-    const { p5 } = this;
-    const x = p5.windowWidth / 2;
-    const y = p5.windowHeight / 2;
-    p5.background(colors.background[Temperature.Normal]);
-    p5.fill(colors.hud);
+    const { gr } = this;
+    const x = gr.windowWidth / 2;
+    const y = gr.windowHeight / 2;
+    gr.background(colors.background[Temperature.Normal]);
+    gr.fill(colors.hud);
     this.drawGameOverTitle({ x, y });
     this.drawGameOverScore({ x, y });
-    p5.textSize(20);
-    p5.text('press F5 to try again', x, y + 90);
-    p5.textAlign(p5.LEFT);
+    gr.textSize(20);
+    gr.text('press F5 to try again', x, y + 90);
+    gr.textAlign(gr.LEFT);
   }
 
   private drawGameOverScore(center: Point): void {
-    const { p5, engine } = this;
-    p5.textSize(20);
+    const { gr, engine } = this;
+    gr.textSize(20);
     const score = 'Score: ' + prettifyNumber(engine.state.score);
-    p5.text(score, center.x, center.y);
+    gr.text(score, center.x, center.y);
     const bestScore = 'Best: ' + prettifyNumber(engine.highScore);
-    p5.text(bestScore, center.x, center.y + 30);
+    gr.text(bestScore, center.x, center.y + 30);
   }
 
   private drawGameOverTitle(center: Point): void {
-    const { p5 } = this;
-    p5.textSize(40);
-    p5.textAlign(p5.CENTER);
-    p5.text('GAME OVER', center.x, center.y - 60);
+    const { gr } = this;
+    gr.textSize(40);
+    gr.textAlign(gr.CENTER);
+    gr.text('GAME OVER', center.x, center.y - 60);
   }
 
   private drawEnvironment(): void {
-    const { p5, engine } = this;
+    const { gr, engine } = this;
     const { temperature } = engine.state;
     const bgColor = colors.background[temperature];
-    p5.background(bgColor);
+    gr.background(bgColor);
     this.drawStars();
   }
 
@@ -181,15 +180,15 @@ class Drawer {
   }
 
   private drawTextAnimations() {
-    const { p5 } = this;
-    p5.textSize(30);
-    p5.noStroke();
+    const { gr } = this;
+    gr.textSize(30);
+    gr.noStroke();
     for (const animation of this.animations) {
       if (animation instanceof TextAnimation) {
         const coords = animation.getNextCoords();
         if (coords) {
           const drawable = toDrawableObject(coords);
-          const drawer = () => drawTextAnimation(p5, animation);
+          const drawer = () => drawTextAnimation(gr, animation);
           this.drawGameObject(drawable, {}, drawer);
         }
       }
@@ -198,40 +197,43 @@ class Drawer {
 
   private drawExplosionShards() {
     for (const shard of this.engine.state.shards) {
-      const drawer = () => drawExplostionShard(this.p5, shard);
+      const drawer = () => drawExplostionShard(this.gr, shard);
       this.drawGameObject(shard, {}, drawer);
     }
   }
 
-  public createStars(amount: number): void {
+  public createStars(amount: number): Star[] {
     const { width, height } = this.engine.world;
+    const stars = [];
     for (let i = 0; i < amount; i++) {
       const star: Star = {
         x: Math.random() * width,
         y: Math.random() * height,
         diameter: Math.random() > 0.5 ? 2 : 1
       };
-      this.stars.push(star);
+      stars.push(star);
     }
+    return stars;
   }
 
   private drawableCoords(object: Point): Point | null {
+    const screen = { width: this.gr.width, height: this.gr.height };
     return drawableCoords(
       object,
       this.engine.state.ship.coords,
-      this.screen,
+      screen,
       this.engine.world
     );
   }
 
   private drawStars(): void {
-    const { p5, stars } = this;
-    p5.noStroke();
-    p5.fill(withAlpha(colors.hud, 1));
+    const { gr, stars } = this;
+    gr.noStroke();
+    gr.fill(withAlpha(colors.hud, 1));
     for (const star of stars) {
       const coords = this.drawableCoords(star);
       if (coords) {
-        p5.circle(coords.x, coords.y, star.diameter);
+        gr.circle(coords.x, coords.y, star.diameter);
       }
     }
   }
@@ -240,7 +242,7 @@ class Drawer {
     const { asteroids, temperature } = this.engine.state;
     for (const asteroid of asteroids) {
       this.drawAsteroidTail(asteroid, temperature);
-      const drawer = () => shapes.asteroid(this.p5, asteroid, temperature);
+      const drawer = () => shapes.asteroid(this.gr, asteroid, temperature);
       this.drawGameObject(asteroid, {}, drawer);
     }
   }
@@ -250,14 +252,14 @@ class Drawer {
     options: DrawGameObjectOptions,
     drawer: () => void
   ): void {
-    const { p5 } = this;
+    const { gr } = this;
     const coords = this.drawableCoords(object.coords);
     if (coords) {
-      p5.push();
+      gr.push();
       this.transformObjectMatrix(object, options, coords);
       drawer();
       this.drawHitBox(object.hitBoxRadius);
-      p5.pop();
+      gr.pop();
     }
   }
 
@@ -266,26 +268,26 @@ class Drawer {
     options: DrawGameObjectOptions,
     coords: Point
   ): void {
-    const { p5 } = this;
+    const { gr } = this;
     let angle = options.ignoreOrientation ? 0 : object.orientation;
     angle += options.rotationOffset || 0;
     angle += options.rotateDirection ? object.direction : 0;
-    p5.translate(coords.x, coords.y);
-    p5.rotate(angle);
-    p5.scale(options.scale || 1);
+    gr.translate(coords.x, coords.y);
+    gr.rotate(angle);
+    gr.scale(options.scale || 1);
   }
 
   private drawHitBox(hitBoxRadius: number): void {
-    const { p5 } = this;
+    const { gr } = this;
     if (this.showHitBoxes) {
-      p5.noFill();
-      p5.stroke(colors.hud);
-      p5.circle(0, 0, hitBoxRadius * 2);
+      gr.noFill();
+      gr.stroke(colors.hud);
+      gr.circle(0, 0, hitBoxRadius * 2);
     }
   }
 
   private drawShip(): void {
-    const { p5 } = this;
+    const { gr } = this;
     const { ship, temperature } = this.engine.state;
     this.drawShipTail();
     const options = {
@@ -293,8 +295,8 @@ class Drawer {
       rotationOffset: Math.PI / 2
     };
     const drawer = () => {
-      shapes.ship(p5, ship.hitBoxRadius / 2);
-      shapes.shipLifeArc(p5, ship.life, temperature);
+      shapes.ship(gr, ship.hitBoxRadius / 2);
+      shapes.shipLifeArc(gr, ship.life, temperature);
     };
     this.drawGameObject(ship, options, drawer);
   }
@@ -304,20 +306,20 @@ class Drawer {
     for (let i = 0; i < length; i++) {
       const point = asteroid.tail[i];
       const drawable = toDrawableObject(point);
-      const drawer = () => shapes.asteroidTail(this.p5, i, length);
+      const drawer = () => shapes.asteroidTail(this.gr, i, length);
       this.drawGameObject(drawable, {}, drawer);
     }
   }
 
   private drawShipTail(): void {
-    const { p5 } = this;
+    const { gr } = this;
     const { tail } = this.engine.state.ship;
     const length = tail.length;
-    p5.noStroke();
+    gr.noStroke();
     for (let i = 0; i < length; i++) {
       const point = tail[i];
       const drawable = toDrawableObject(point);
-      const drawer = () => shapes.shipTail(p5, i, length);
+      const drawer = () => shapes.shipTail(gr, i, length);
       this.drawGameObject(drawable, {}, drawer);
     }
   }
@@ -325,7 +327,7 @@ class Drawer {
   private drawBullets(): void {
     const { bullets } = this.engine.state.ship;
     for (const bullet of bullets) {
-      const drawer = () => shapes.bullet(this.p5);
+      const drawer = () => shapes.bullet(this.gr);
       this.drawGameObject(bullet, {}, drawer);
       this.drawBulletTail(bullet);
     }
@@ -338,7 +340,7 @@ class Drawer {
       const point = bullet.tail[i];
       const drawable = toDrawableObject(point);
       this.drawGameObject(drawable, {}, () =>
-        shapes.bulletTail(this.p5, i, tailLength)
+        shapes.bulletTail(this.gr, i, tailLength)
       );
     }
   }

@@ -5,37 +5,37 @@ import GameEngine from '../core/GameEngine';
 const SPACING = 40;
 
 class GUI {
-  constructor(private p5: P5) {
-    this.p5 = p5;
+  constructor(private gr: P5.Graphics) {
+    this.gr = gr;
   }
 
   public draw(engine: GameEngine): void {
     const { level, score } = engine.state;
-    this.p5.textSize(30);
-    this.p5.fill(colors.hud);
+    this.gr.textSize(30);
+    this.gr.fill(colors.hud);
     this.drawLevel(level);
     this.drawCurrentScore(score);
     this.drawHighScore(engine.highScore);
   }
 
   private drawLevel(level: number): void {
-    const { p5 } = this;
-    p5.textAlign(p5.LEFT);
-    p5.text(`Level ${level}`, SPACING, SPACING);
+    const { gr } = this;
+    gr.textAlign(gr.LEFT);
+    gr.text(`Level ${level}`, SPACING, SPACING);
   }
 
   private drawHighScore(highScore: number): void {
-    const { p5 } = this;
-    p5.textSize(20);
+    const { gr } = this;
+    gr.textSize(20);
     const text = prettifyNumber(highScore);
-    p5.text(text, p5.windowWidth - SPACING, SPACING * 2);
+    gr.text(text, gr.windowWidth - SPACING, SPACING * 2);
   }
 
   private drawCurrentScore(score: number): void {
-    const { p5 } = this;
-    p5.textAlign(p5.RIGHT);
+    const { gr } = this;
+    gr.textAlign(gr.RIGHT);
     const text = prettifyNumber(score);
-    p5.text(text, p5.windowWidth - SPACING, SPACING);
+    gr.text(text, gr.windowWidth - SPACING, SPACING);
   }
 }
 

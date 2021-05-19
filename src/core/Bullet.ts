@@ -14,7 +14,7 @@ class Bullet extends GameObject {
       ...options,
       type: 'bullet',
       hitBoxRadius: 3,
-      duration: 2000,
+      duration: 1500,
       tailLength: 15
     });
   }

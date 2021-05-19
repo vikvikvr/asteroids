@@ -11,8 +11,8 @@ interface ShardOptions {
   temperature: Temperature;
 }
 
-const shardsCounts = [10, 20, 30];
 const shardSizes = [9, 12, 15];
+const shardSpeeds = [2, 3, 4];
 
 class Shard extends GameObject {
   public colorIndex: number;
@@ -20,13 +20,13 @@ class Shard extends GameObject {
   public creationTime: number;
   private duration: number;
   constructor(options: ShardOptions) {
-    const minSpeed = shardsCounts[options.size] / 10;
+    const minSpeed = shardSpeeds[options.size];
     const shardSize = shardSizes[options.size];
-    const duration = 250 + 150 * Math.random();
+    const duration = 200 + 100 * Math.random();
     // const duration = 1000;
     super({
       type: 'shard',
-      speed: minSpeed + Math.random() * 2,
+      speed: minSpeed + Math.random() * 3,
       direction: Math.random() * Math.PI * 2,
       hitBoxRadius: shardSize + (Math.random() * shardSize) / 2,
       duration: duration,
