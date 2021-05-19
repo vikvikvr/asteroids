@@ -158,7 +158,7 @@ class GameEngine {
   }
 
   private processBulletHit(event: ev.BulletHit): void {
-    const { asteroids, ship } = this.state;
+    const { asteroids } = this.state;
     const asteroid = find(asteroids, { id: event.asteroidId });
     if (asteroid) {
       const nextSize = asteroid.splitSize();
@@ -175,7 +175,22 @@ class GameEngine {
     } else {
       console.log('ship has collided with asteroid at previous update');
     }
-    remove(ship.bullets, { id: event.bulletId });
+    this.removeBullet(event.bulletId);
+  }
+
+  private removeBullet(bulletId: string): void {
+    const { bullets } = this.state.ship;
+    let shouldRemove = true;
+    if (this.state.temperature === Temperature.Low) {
+      const bullet = find(bullets, { id: bulletId })!;
+      if (bullet.piercesCount === 0) {
+        shouldRemove = false;
+        bullet.piercesCount++;
+      }
+    }
+    if (shouldRemove) {
+      remove(bullets, { id: bulletId });
+    }
   }
 
   private assignScore(event: ev.BulletHit): void {

@@ -9,6 +9,7 @@ interface BulletOptions {
 }
 
 class Bullet extends GameObject {
+  public piercesCount: number;
   constructor(options: BulletOptions) {
     super({
       ...options,
@@ -17,6 +18,7 @@ class Bullet extends GameObject {
       duration: 1500,
       tailLength: 15
     });
+    this.piercesCount = 0;
   }
 }
 
