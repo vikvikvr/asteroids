@@ -1,19 +1,19 @@
 import { AsteroidSize } from './Asteroid';
-import { GameTemperature } from './GameEngine';
+import { Temperature } from './GameEngine';
 
 const SCORES = [200, 100, 50];
 
 export function bulletHitScore(
   size: AsteroidSize,
-  temperature: GameTemperature
+  temperature: Temperature
 ): number {
   const [small, medium, large] = SCORES;
   let score = SCORES[size];
-  if (temperature === 'low') {
+  if (temperature === Temperature.Low) {
     if (size === 2) return large + medium * 2 + small * 4;
     if (size === 1) return medium + small * 2;
     return small;
-  } else if (temperature === 'high') {
+  } else if (temperature === Temperature.High) {
     return score * 2;
   }
   return score;

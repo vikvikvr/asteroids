@@ -1,7 +1,7 @@
 import Entity, { EntityOptions } from './Entity';
 import { v4 as uuidv4 } from 'uuid';
 import { Point } from '../lib/geometry';
-import { GameTemperature } from './GameEngine';
+import { Temperature } from './GameEngine';
 
 export type GameObjectType = 'ship' | 'asteroid' | 'bullet' | 'shard';
 
@@ -39,7 +39,7 @@ class GameObject extends Entity {
     this.tailLength = options.tailLength || 20;
   }
 
-  public update(temperature: GameTemperature): void {
+  public update(temperature: Temperature=Temperature.Normal): void {
     super.update(temperature);
     this.isExpired = Date.now() > this.expiresAt;
     if (this.hasTail) {

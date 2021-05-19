@@ -1,4 +1,4 @@
-import GameEngine, { GameStatus, GameTemperature } from '../core/GameEngine';
+import GameEngine, { GameStatus, Temperature } from '../core/GameEngine';
 import P5 from 'p5';
 import { drawableCoords, Point, Rect, toDrawableObject } from '../lib/geometry';
 import GUI, { prettifyNumber } from './GUI';
@@ -98,7 +98,7 @@ class Drawer {
     const { p5 } = this;
     const x = p5.windowWidth / 2;
     const y = p5.windowHeight / 2;
-    p5.background(colors.background.normal);
+    p5.background(colors.background[Temperature.Normal]);
     p5.fill(colors.hud);
     this.drawGameOverTitle({ x, y });
     this.drawGameOverScore({ x, y });
@@ -299,10 +299,7 @@ class Drawer {
     this.drawGameObject(ship, options, drawer);
   }
 
-  private drawAsteroidTail(
-    asteroid: Asteroid,
-    temperature: GameTemperature
-  ): void {
+  private drawAsteroidTail(asteroid: Asteroid, temperature: Temperature): void {
     const length = asteroid.tail.length;
     for (let i = 0; i < length; i++) {
       const point = asteroid.tail[i];

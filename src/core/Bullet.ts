@@ -20,7 +20,7 @@ class Bullet extends GameObject {
   }
 
   public update(): void {
-    super.update('normal');
+    super.update();
   }
 }
 

@@ -1,6 +1,6 @@
 import P5 from 'p5';
 import Asteroid from '../core/Asteroid';
-import { GameTemperature } from '../core/GameEngine';
+import { Temperature } from '../core/GameEngine';
 import colors, { withAlpha, alphaFromTime } from './colors';
 
 const asteroidOffsets = {
@@ -8,17 +8,13 @@ const asteroidOffsets = {
   y: [-2, 2, 2, -2]
 };
 
-export function asteroid(
-  p5: P5,
-  asteroid: Asteroid,
-  temp: GameTemperature
-): void {
+export function asteroid(p5: P5, asteroid: Asteroid, temp: Temperature): void {
   const { hitBoxRadius, size } = asteroid;
   for (let i = 3; i >= 0; i--) {
     const { x, y } = asteroidOffsets;
     const color = colors.asteroid[temp][i];
     const diameter = (hitBoxRadius * 2 * (i + 1)) / 4;
-    const isBlinking = size === 2 && temp === 'low';
+    const isBlinking = size === 2 && temp === Temperature.Low;
     const alpha = isBlinking ? (alphaFromTime(100) + 1) / 2 : 1;
     p5.fill(withAlpha(color, alpha));
     p5.circle(x[i], y[i], diameter);
@@ -58,17 +54,15 @@ export function asteroidTail(p5: P5, index: number, length: number): void {
   p5.circle(0, 0, 4);
 }
 
-export function shipLifeArc(
-  p5: P5,
-  life: number,
-  temperature: GameTemperature
-) {
+export function shipLifeArc(p5: P5, life: number, temperature: Temperature) {
   fullShipLifeArc(p5);
   const subtractAngle = ((1 - life) * Math.PI) / 2;
   const startAngle = subtractAngle;
   const endAngle = Math.PI - subtractAngle;
-  const isRestoring = life < 1 && temperature === 'normal';
-  const color = isRestoring ? colors.asteroid.normal[0] : colors.ship.dark;
+  const isRestoring = life < 1 && temperature === Temperature.Normal;
+  const color = isRestoring
+    ? colors.asteroid[Temperature.Normal][0]
+    : colors.ship.dark;
   const alpha = isRestoring ? alphaFromTime(100) : 1;
   p5.stroke(withAlpha(color, alpha));
   p5.arc(0, 0, 100, 100, startAngle, endAngle);

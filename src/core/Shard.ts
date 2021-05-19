@@ -1,6 +1,6 @@
 import { Point, Rect } from '../lib/geometry';
 import { AsteroidSize } from './Asteroid';
-import { GameTemperature } from './GameEngine';
+import { Temperature } from './GameEngine';
 import GameObject from './GameObject';
 
 interface ShardOptions {
@@ -9,7 +9,7 @@ interface ShardOptions {
   coords: Point;
   world: Rect;
   duration: number;
-  temperature: GameTemperature;
+  temperature: Temperature;
 }
 
 const shardsCounts = [10, 20, 30];
@@ -17,7 +17,7 @@ const shardSizes = [9, 12, 15];
 
 class Shard extends GameObject {
   public colorIndex: number;
-  public temperature: GameTemperature;
+  public temperature: Temperature;
   constructor(options: ShardOptions) {
     const minSpeed = shardsCounts[options.size] / 10;
     const shardSize = shardSizes[options.size];
@@ -35,7 +35,7 @@ class Shard extends GameObject {
   }
 
   public update() {
-    super.update('normal');
+    super.update();
   }
 }
 

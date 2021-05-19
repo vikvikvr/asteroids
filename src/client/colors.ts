@@ -1,3 +1,4 @@
+import { Temperature } from '../core/GameEngine';
 import palette from './palette';
 
 type RGB = [number, number, number];
@@ -22,25 +23,25 @@ export function withAlpha(hexColor = '#ffffff', percent = 1): string {
 
 const colors = {
   background: {
-    high: palette.deepPurple[900],
-    normal: palette.indigo[900],
-    low: palette.blue[900]
+    [Temperature.High]: palette.deepPurple[900],
+    [Temperature.Normal]: palette.indigo[900],
+    [Temperature.Low]: palette.blue[900]
   },
   hud: palette.grey[50],
   asteroid: {
-    high: [
+    [Temperature.High]: [
       palette.orange[500],
       palette.orange[700],
       palette.orange[800],
       palette.orange[900]
     ],
-    normal: [
+    [Temperature.Normal]: [
       palette.teal[500],
       palette.teal[600],
       palette.teal[700],
       palette.teal[800]
     ],
-    low: [
+    [Temperature.Low]: [
       palette.blue[500],
       palette.blue[600],
       palette.blue[700],

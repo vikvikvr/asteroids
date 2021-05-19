@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import Ship from './Ship';
 import Asteroid from './Asteroid';
 import { haveCollided, Rect, centerOf } from '../lib/geometry';
@@ -8,7 +9,11 @@ import { bulletHitScore, getHighScore, saveHighScore } from './game-rules';
 import Shard from './Shard';
 
 export type GameStatus = 'playing' | 'lost' | 'idle';
-export type GameTemperature = 'low' | 'high' | 'normal';
+export enum Temperature {
+  Low = 0,
+  Normal = 1,
+  High = 2
+}
 
 export interface GameState {
   score: number;
@@ -17,7 +22,7 @@ export interface GameState {
   asteroids: Asteroid[];
   shards: Shard[];
   events: ev.TGameEvent[];
-  temperature: GameTemperature;
+  temperature: Temperature;
 }
 
 class GameEngine {
@@ -41,7 +46,7 @@ class GameEngine {
       ship: new Ship({ world, coords: centerOf(world) }),
       score: 0,
       level: 0,
-      temperature: 'normal'
+      temperature: Temperature.Normal
     };
     this.highScore = getHighScore();
     this.world = world;
@@ -114,7 +119,7 @@ class GameEngine {
           const event = new ev.BulletHit(
             bullet,
             asteroid,
-            this.state.temperature === 'low'
+            this.state.temperature === Temperature.Low
           );
           this.createExplosionShards(asteroid);
           events.push(event);
@@ -158,7 +163,7 @@ class GameEngine {
     const asteroid = find(asteroids, { id: event.asteroidId });
     if (asteroid) {
       const nextSize = asteroid.splitSize();
-      const shouldSplit = this.state.temperature !== 'low';
+      const shouldSplit = this.state.temperature !== Temperature.Low;
       if (shouldSplit && nextSize !== null) {
         this.spawner.spawnAsteroid({
           count: 2,
@@ -187,7 +192,7 @@ class GameEngine {
   }
 
   private levelUp() {
-    this.state.temperature = 'normal';
+    this.state.temperature = Temperature.Normal;
     this.spawner.spawnAsteroid({ count: 30 + this.state.level, size: 2 });
     if (this.state.level > 0) {
       const event = new ev.GameEvent('LEVEL_UP', this.state.ship.coords);
@@ -197,13 +202,13 @@ class GameEngine {
   }
 
   private startBurningStage() {
-    this.state.temperature = 'high';
+    this.state.temperature = Temperature.High;
     const event = new ev.GameEvent('BURN', this.state.ship.coords);
     this.state.events.push(event);
   }
 
   private startFrozenStage() {
-    this.state.temperature = 'low';
+    this.state.temperature = Temperature.Low;
     const event = new ev.GameEvent('FREEZE', this.state.ship.coords);
     this.state.events.push(event);
   }

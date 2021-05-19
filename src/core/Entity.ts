@@ -1,5 +1,5 @@
 import { Point, Rect } from '../lib/geometry';
-import { GameTemperature } from './GameEngine';
+import { Temperature } from './GameEngine';
 
 export type EntityOptions = {
   world: Rect;
@@ -37,13 +37,9 @@ class Entity {
     this.rotationSpeed *= -1;
   }
 
-  protected update(temperature: GameTemperature): void {
-    const speedMultiplierMap: Record<GameTemperature, number> = {
-      normal: 1,
-      low: 0.05,
-      high: 2
-    };
-    const speedMultiplier = speedMultiplierMap[temperature];
+  protected update(temperature: Temperature): void {
+    const speedMultipliers = [0.05, 1, 2];
+    const speedMultiplier = speedMultipliers[temperature];
     this.updatePosition(speedMultiplier);
     const rotSpeed = this.rotationSpeed * (speedMultiplier > 1 ? 2 : 1);
     this.orientation += rotSpeed * speedMultiplier;

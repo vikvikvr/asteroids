@@ -2,15 +2,9 @@ import GameObject from './GameObject';
 import { remove } from 'lodash';
 import { EntityOptions } from './Entity';
 import Bullet from './Bullet';
-import { GameTemperature } from './GameEngine';
+import { Temperature } from './GameEngine';
 
 type BulletPosition = 'center' | 'left' | 'right';
-
-const tempMultiplierMap: Record<GameTemperature, number> = {
-  low: 2,
-  normal: 1,
-  high: 0.5
-};
 
 class Ship extends GameObject {
   // public
@@ -37,8 +31,8 @@ class Ship extends GameObject {
     });
   }
 
-  public update(temperature: GameTemperature): void {
-    super.update('normal');
+  public update(temperature: Temperature): void {
+    super.update();
     this.fire(temperature);
     this.updateBullets();
     this.accelerate();
@@ -63,18 +57,19 @@ class Ship extends GameObject {
     this.speed = Math.max(0, newSpeed);
   }
 
-  public fire(temperature: GameTemperature): void {
-    const timeToWait = this.minTimeToFire * tempMultiplierMap[temperature];
+  public fire(temperature: Temperature): void {
+    const waitMultipliers = [2, 1, 0.5];
+    const timeToWait = this.minTimeToFire * waitMultipliers[temperature];
     const canFire = Date.now() - this.firedAt > timeToWait;
     if (canFire) {
       this.fireBullets(temperature);
     }
   }
 
-  private fireBullets(temperature: GameTemperature): void {
+  private fireBullets(temperature: Temperature): void {
     this.firedAt = Date.now();
     let positions: BulletPosition[] = ['center'];
-    if (temperature === 'high') {
+    if (temperature === Temperature.High) {
       positions = ['left', 'right'];
     }
     for (const pos of positions) {
@@ -83,8 +78,8 @@ class Ship extends GameObject {
     }
   }
 
-  public restoreLife(temperature: GameTemperature): void {
-    if (temperature === 'normal') {
+  public restoreLife(temperature: Temperature): void {
+    if (temperature === Temperature.Normal) {
       this.life = Math.min(this.life + this.lifeRegenRate, 1);
     }
   }
