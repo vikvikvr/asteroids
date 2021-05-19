@@ -22,6 +22,7 @@ class GameObject extends Entity {
   public tail: Point[] = [];
   public tailLength: number;
   // private
+  private updatesCount: number;
   private expiresAt: number;
   // constructor
   constructor(options: GameObjectOptions) {
@@ -33,6 +34,7 @@ class GameObject extends Entity {
     this.life = 1;
     this.expiresAt = Date.now() + (options.duration || Infinity);
     this.tailLength = options.tailLength || 0;
+    this.updatesCount = 0;
   }
 
   public update(temperature: Temperature = Temperature.Normal): void {
@@ -41,13 +43,17 @@ class GameObject extends Entity {
     if (this.tailLength) {
       this.updateTail();
     }
+    this.updatesCount++;
   }
 
   private updateTail(): void {
-    if (this.tail.length === this.tailLength) {
-      this.tail.shift();
+    const shouldUpdate = this.updatesCount % 2 === 0;
+    if (shouldUpdate) {
+      if (this.tail.length === this.tailLength) {
+        this.tail.shift();
+      }
+      this.tail.push({ ...this.coords });
     }
-    this.tail.push({ ...this.coords });
   }
 }
 

@@ -30,7 +30,7 @@ class Ship extends GameObject {
       hitBoxRadius: 30,
       direction: -Math.PI / 2,
       angularSpeed: Math.PI / 3 / 20,
-      tailLength: 20
+      tailLength: 7
     });
   }
 

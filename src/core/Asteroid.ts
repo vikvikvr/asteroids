@@ -20,7 +20,7 @@ export interface AsteroidOptions {
 export const speeds = [5, 3, 1.5];
 export const damages = [0.1, 0.15, 0.2];
 export const hitBoxes = [25, 35, 45];
-export const directionChangeTimes = [3_000, 4_000, 5_000];
+export const directionChangeTimes = [4_000, 5_000, 6_000];
 
 class Asteroid extends GameObject {
   public size: AsteroidSize;
@@ -38,7 +38,7 @@ class Asteroid extends GameObject {
       direction: options.direction ?? Math.random() * Math.PI * 2,
       rotationSpeed: options.rotationSpeed ?? (sign * Math.PI) / 50,
       angularSpeed: Math.PI / 3 / 40,
-      tailLength: 40
+      tailLength: 10
     });
     const toWait = directionChangeTimes[size] * Math.random();
     this.nextDirectionChangeAt = Date.now() + toWait;
