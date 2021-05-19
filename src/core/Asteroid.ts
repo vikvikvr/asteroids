@@ -1,8 +1,14 @@
+/* eslint-disable no-unused-vars */
 import { Temperature } from './GameEngine';
 import GameObject, { GameObjectOptions } from './GameObject';
 
 // aliases
-export type AsteroidSize = 0 | 1 | 2;
+export enum AsteroidSize {
+  Small = 0,
+  Medium = 1,
+  Large = 2
+}
+// export type AsteroidSize = 0 | 1 | 2;
 
 export type AsteroidSplit = null | 0 | 1;
 
@@ -22,7 +28,7 @@ class Asteroid extends GameObject {
   public nextDirectionChangeAt: number;
   constructor(options: AsteroidOptions) {
     const sign = Math.random() > 0.5 ? 1 : -1;
-    const size = options.size ?? 2;
+    const size = options.size;
     super({
       world: options.world,
       coords: options.coords,
@@ -48,9 +54,9 @@ class Asteroid extends GameObject {
     if (canChangeDirection) this.changeDirection(temperature);
   }
 
-  public splitSize(): AsteroidSplit {
-    if (this.size > 1) return 1;
-    if (this.size > 0) return 0;
+  public splitSize(): AsteroidSize | null {
+    if (this.size === AsteroidSize.Large) return AsteroidSize.Medium;
+    if (this.size === AsteroidSize.Medium) return AsteroidSize.Small;
     return null;
   }
 

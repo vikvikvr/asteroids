@@ -10,8 +10,8 @@ export function bulletHitScore(
   const [small, medium, large] = SCORES;
   let score = SCORES[size];
   if (temperature === Temperature.Low) {
-    if (size === 2) return large + medium * 2 + small * 4;
-    if (size === 1) return medium + small * 2;
+    if (size === AsteroidSize.Large) return large + medium * 2 + small * 4;
+    if (size === AsteroidSize.Medium) return medium + small * 2;
     return small;
   } else if (temperature === Temperature.High) {
     return score * 2;
