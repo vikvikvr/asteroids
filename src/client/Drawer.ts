@@ -271,11 +271,10 @@ class Drawer {
     const { p5 } = this;
     const coords = this.drawableCoords(object.coords);
     if (coords) {
-      const diameter = object.hitBoxRadius * 2;
       p5.push();
       this.transformObjectMatrix(object, options, coords);
       drawer();
-      this.drawHitBox(diameter);
+      this.drawHitBox(object.hitBoxRadius);
       p5.pop();
     }
   }
@@ -294,12 +293,12 @@ class Drawer {
     p5.scale(options.scale || 1);
   }
 
-  private drawHitBox(diameter: number) {
+  private drawHitBox(hitBoxRadius: number) {
     const { p5 } = this;
     if (this.showHitBoxes) {
       p5.noFill();
       p5.stroke(colors.hud);
-      p5.circle(0, 0, diameter);
+      p5.circle(0, 0, hitBoxRadius * 2);
     }
   }
 
