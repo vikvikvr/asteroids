@@ -78,7 +78,6 @@ class Drawer {
     this.addNewAnimations();
     this.drawAnimations();
     this.gr.pop();
-    // this.testExtraGraphics();
     this.gui.draw(this.engine);
     this.p5.image(this.gr, 0, 0);
   }
@@ -110,7 +109,8 @@ class Drawer {
     this.drawGameOverScore({ x, y });
     gr.textSize(20);
     gr.text('press F5 to try again', x, y + 90);
-    gr.textAlign(gr.LEFT);
+    // gr.textAlign(gr.LEFT);
+    this.p5.image(this.gr, 0, 0);
   }
 
   private drawGameOverScore(center: Point): void {
