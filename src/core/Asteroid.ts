@@ -20,7 +20,7 @@ export interface AsteroidOptions {
 export const speeds = [5, 3, 1.5];
 export const damages = [0.1, 0.15, 0.2];
 export const hitBoxes = [25, 35, 45];
-export const directionChangeTimes = [4_000, 5_000, 6_000];
+export const directionChangeTimes = [6_000, 8_000, 10_000];
 
 class Asteroid extends GameObject {
   public size: AsteroidSize;

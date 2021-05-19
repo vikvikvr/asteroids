@@ -18,9 +18,9 @@ export function asteroid(
     const { x, y } = asteroidOffsets;
     const color = colors.asteroid[temp][i];
     const diameter = (hitBoxRadius * 2 * (i + 1)) / 4;
-    const willChangeDirection = nextDirectionChangeAt - Date.now() < 1_000;
+    const willChangeDirection = nextDirectionChangeAt - Date.now() < 1_500;
     const isBlinking = willChangeDirection && temp !== Temperature.Low;
-    const alpha = isBlinking ? (alphaFromTime(100) + 1) / 2 : 1;
+    const alpha = isBlinking ? (alphaFromTime(50) + 1) / 2 : 1;
     gr.fill(withAlpha(color, alpha));
     gr.circle(x[i], y[i], diameter);
   }
