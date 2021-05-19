@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import Ship from './Ship';
-import Asteroid from './Asteroid';
+import Asteroid, { AsteroidSize } from './Asteroid';
 import { haveCollided, Rect, centerOf } from '../lib/geometry';
 import * as ev from './Events';
 import { remove, find } from 'lodash';
@@ -207,7 +207,8 @@ class GameEngine {
 
   private levelUp() {
     this.state.temperature = Temperature.Normal;
-    this.spawner.spawnAsteroid({ count: 30 + this.state.level, size: 2 });
+    const count = Math.floor(20 + this.state.level * 1.5);
+    this.spawner.spawnAsteroid({ count, size: AsteroidSize.Large });
     if (this.state.level > 0) {
       const event = new ev.GameEvent('LEVEL_UP', this.state.ship.coords);
       this.state.events.push(event);
