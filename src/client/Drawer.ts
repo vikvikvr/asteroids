@@ -100,7 +100,7 @@ class Drawer {
     this.shakeCamera();
     this.drawEnvironment();
     this.drawGameObjects(engine);
-    this.addNewAnimations(engine);
+    this.addNewAnimations();
     this.drawAnimations();
     this.p5.pop();
     this.gui.draw(engine);
@@ -150,28 +150,33 @@ class Drawer {
     this.drawAsteroids(asteroids, engine.state.temperature);
   }
 
-  private addNewAnimations(engine: GameEngine): void {
-    for (const event of engine.state.events) {
+  private addNewAnimations(): void {
+    const { events, temperature } = this.engine.state;
+    for (const event of events) {
       if (['LEVEL_UP', 'FREEZE', 'BURN'].includes(event.type)) {
-        const textMap: Partial<Record<GameEventType, string>> = {
-          LEVEL_UP: 'level up!',
-          FREEZE: 'frozen!',
-          BURN: 'on fire!'
-        };
-        const textAnimation = new TextAnimation(
-          textMap[event.type] as string,
-          engine.state.ship.coords
-        );
-        this.animations.push(textAnimation);
+        this.addStageAnimation(event);
       } else {
         if (event.type === 'SHIP_HIT') {
           this.shakeEndTime = Date.now() + 500;
         } else {
-          this.addScoreAnimation(event, engine.state.temperature);
+          this.addScoreAnimation(event, temperature);
         }
       }
     }
-    engine.state.events = [];
+    this.engine.state.events = [];
+  }
+
+  private addStageAnimation(event: GameEvent) {
+    const textMap: Partial<Record<GameEventType, string>> = {
+      LEVEL_UP: 'level up!',
+      FREEZE: 'frozen!',
+      BURN: 'on fire!'
+    };
+    const animation = new TextAnimation(
+      textMap[event.type] as string,
+      this.engine.state.ship.coords
+    );
+    this.animations.push(animation);
   }
 
   private addScoreAnimation(event: GameEvent, temperature: GameTemperature) {
@@ -184,7 +189,7 @@ class Drawer {
   private drawAnimations(): void {
     this.drawExplosionShards();
     this.drawTextAnimations();
-    remove(this.animations, { isExpired: true });
+    remove(this.animations, 'isExpired');
   }
 
   private drawTextAnimations() {
@@ -196,9 +201,8 @@ class Drawer {
         const coords = animation.getNextCoords();
         if (coords) {
           const drawable = this.toDrawableObject(coords);
-          this.drawGameObject(drawable, {}, () =>
-            drawTextAnimation(p5, animation)
-          );
+          const drawer = () => drawTextAnimation(p5, animation);
+          this.drawGameObject(drawable, {}, drawer);
         }
       }
     }
@@ -247,10 +251,8 @@ class Drawer {
   ): void {
     for (const asteroid of asteroids) {
       this.drawAsteroidTail(asteroid, temperature);
-      // const side = asteroid.hitBoxRadius / 3.5;
-      const options = {};
       const drawer = () => drawAsteroidShape(this.p5, asteroid, temperature);
-      this.drawGameObject(asteroid, options, drawer);
+      this.drawGameObject(asteroid, {}, drawer);
     }
   }
 

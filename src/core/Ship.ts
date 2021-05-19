@@ -89,7 +89,7 @@ class Ship extends GameObject {
     for (const bullet of this.bullets) {
       bullet.update();
     }
-    remove(this.bullets, { isExpired: true });
+    remove(this.bullets, 'isExpired');
   }
 
   private changeDirection(direction: 1 | -1) {

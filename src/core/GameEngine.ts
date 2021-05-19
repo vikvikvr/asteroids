@@ -116,7 +116,7 @@ class GameEngine {
     for (const shard of this.state.shards) {
       shard.update();
     }
-    remove(this.state.shards, { isExpired: true });
+    remove(this.state.shards, 'isExpired');
   }
 
   private checkCollisions(): void {
