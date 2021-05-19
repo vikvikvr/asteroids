@@ -13,14 +13,8 @@ const Sketch = (p5: P5) => {
   let loaded = false;
   let engine: GameEngine;
 
-  p5.preload = async () => {};
-
   p5.setup = async () => {
-    p5.pixelDensity(2);
-    p5.textFont('Verdana');
-    p5.textStyle(p5.BOLD);
-    p5.imageMode(p5.CENTER);
-    p5.rectMode(p5.CORNER);
+    setupGlobalStyles(p5);
     p5.frameRate(60);
     setTimeout(() => {
       let $loading = document.getElementById('loading')!;
@@ -34,7 +28,7 @@ const Sketch = (p5: P5) => {
         showHitBoxes: false
       });
       engine.startLevel();
-      keyController = new KeyController(engine.state);
+      keyController = new KeyController(engine.state.ship);
 
       drawer.createStars(engine.world, 200);
     }, 500);
@@ -53,5 +47,13 @@ const Sketch = (p5: P5) => {
     }
   };
 };
+
+function setupGlobalStyles(p5: P5) {
+  p5.pixelDensity(2);
+  p5.textFont('Verdana');
+  p5.textStyle(p5.BOLD);
+  p5.imageMode(p5.CENTER);
+  p5.rectMode(p5.CORNER);
+}
 
 export default Sketch;

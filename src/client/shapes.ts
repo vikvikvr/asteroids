@@ -3,24 +3,28 @@ import Asteroid from '../core/Asteroid';
 import { GameTemperature } from '../core/GameEngine';
 import colors, { withAlpha, alphaFromTime } from './colors';
 
+const asteroidOffsets = {
+  x: [2, 2, -2, -2],
+  y: [-2, 2, 2, -2]
+};
+
 export function drawAsteroidShape(
   p5: P5,
   asteroid: Asteroid,
   temp: GameTemperature
 ): void {
   const { hitBoxRadius, size } = asteroid;
-  const offsets = {
-    x: [2, 2, -2, -2],
-    y: [-2, 2, 2, -2]
-  };
   for (let i = 3; i >= 0; i--) {
+    const { x, y } = asteroidOffsets;
     let color = colors.asteroid[temp][i];
     let alpha = 1;
-    if (size === 'large' && temp === 'low') {
+    const diameter = (hitBoxRadius * 2 * (i + 1)) / 4;
+    const isBlinking = size === 'large' && temp === 'low';
+    if (isBlinking) {
       alpha = (alphaFromTime(100) + 1) / 2;
     }
     p5.fill(withAlpha(color, alpha));
-    p5.circle(offsets.x[i], offsets.y[i], (hitBoxRadius * 2 * (i + 1)) / 4);
+    p5.circle(x[i], y[i], diameter);
   }
 }
 
