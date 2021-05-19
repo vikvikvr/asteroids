@@ -4,7 +4,7 @@
 
 Jump back to the '80 on board of a spaceship and try to survive the deep space. [Try it now!](https://asteroids-client.netlify.app/)
 
-[![preview.gif](https://s3.gifyu.com/images/asdfg.gif)](https://asteroids-client.netlify.app/)
+[![preview.gif](https://media.giphy.com/media/bvgScptnWIB8jWlSox/source.gif)](https://asteroids-client.netlify.app/)
 
 ## Controls
 
