@@ -8,9 +8,9 @@ import {
 import Asteroid, { AsteroidOptions, AsteroidSize } from './Asteroid';
 
 export interface AsteroidSpawnOptions {
+  size: AsteroidSize;
   count?: number;
   coords?: Point;
-  size?: AsteroidSize;
   notDirection?: number;
 }
 
@@ -27,7 +27,7 @@ class Spawner {
     this.world = world;
   }
 
-  public spawnAsteroid(options: AsteroidSpawnOptions = {}): void {
+  public spawnAsteroid(options: AsteroidSpawnOptions): void {
     const { asteroids } = this.state;
     for (let i = 0; i < (options.count || 1); i++) {
       const asteroidOptions = this.makeAsteroidOptions(options);
@@ -36,9 +36,7 @@ class Spawner {
     }
   }
 
-  private makeAsteroidOptions(
-    options: AsteroidSpawnOptions = {}
-  ): AsteroidOptions {
+  private makeAsteroidOptions(options: AsteroidSpawnOptions): AsteroidOptions {
     let direction = Math.random() * Math.PI * 2;
     if (options.notDirection) {
       direction = notDirection(
@@ -48,7 +46,7 @@ class Spawner {
       );
     }
     return {
-      size: options.size || 'large',
+      size: options.size,
       world: this.world,
       coords:
         options.coords ||

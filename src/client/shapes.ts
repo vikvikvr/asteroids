@@ -18,7 +18,7 @@ export function asteroid(
     const { x, y } = asteroidOffsets;
     const color = colors.asteroid[temp][i];
     const diameter = (hitBoxRadius * 2 * (i + 1)) / 4;
-    const isBlinking = size === 'large' && temp === 'low';
+    const isBlinking = size === 2 && temp === 'low';
     const alpha = isBlinking ? (alphaFromTime(100) + 1) / 2 : 1;
     p5.fill(withAlpha(color, alpha));
     p5.circle(x[i], y[i], diameter);

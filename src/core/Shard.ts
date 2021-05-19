@@ -12,26 +12,15 @@ interface ShardOptions {
   temperature: GameTemperature;
 }
 
-type AsteroidSizeMap = Record<AsteroidSize, number>;
-
-const shardsCountMap: AsteroidSizeMap = {
-  large: 30,
-  medium: 20,
-  small: 10
-};
-
-const shardSizeMap: AsteroidSizeMap = {
-  large: 15,
-  medium: 12,
-  small: 9
-};
+const shardsCounts = [10, 20, 30];
+const shardSizes = [9, 12, 15];
 
 class Shard extends GameObject {
   public colorIndex: number;
   public temperature: GameTemperature;
   constructor(options: ShardOptions) {
-    const minSpeed = shardsCountMap[options.size] / 10;
-    const shardSize = shardSizeMap[options.size];
+    const minSpeed = shardsCounts[options.size] / 10;
+    const shardSize = shardSizes[options.size];
     super({
       type: 'shard',
       speed: minSpeed + Math.random() * 2,

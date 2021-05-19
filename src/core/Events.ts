@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Point } from '../lib/geometry';
-import Asteroid, { AsteroidDamage, AsteroidSize } from './Asteroid';
+import Asteroid, { AsteroidSize } from './Asteroid';
 import Bullet from './Bullet';
 
 export type GameEventType =
@@ -26,7 +26,7 @@ export class GameEvent {
 export class ShipHit extends GameEvent {
   // public
   public asteroidId: string;
-  public damage: AsteroidDamage;
+  public damage: number;
   public size: AsteroidSize;
   // constructor
   constructor(asteroid: Asteroid) {

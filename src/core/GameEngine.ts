@@ -1,5 +1,5 @@
 import Ship from './Ship';
-import Asteroid, { AsteroidSize } from './Asteroid';
+import Asteroid from './Asteroid';
 import { haveCollided, Rect, centerOf } from '../lib/geometry';
 import * as ev from './Events';
 import { remove, find } from 'lodash';
@@ -138,12 +138,7 @@ class GameEngine {
   }
 
   private createExplosionShards(asteroid: Asteroid) {
-    const shardsCountMap: Record<AsteroidSize, number> = {
-      large: 30,
-      medium: 20,
-      small: 10
-    };
-    const shardsCount = shardsCountMap[asteroid.size];
+    const shardsCount = asteroid.size * 10 + 10;
     for (let i = 0; i < shardsCount; i++) {
       this.state.shards.push(
         new Shard({
@@ -164,7 +159,7 @@ class GameEngine {
     if (asteroid) {
       const nextSize = asteroid.splitSize();
       const shouldSplit = this.state.temperature !== 'low';
-      if (shouldSplit && nextSize) {
+      if (shouldSplit && nextSize !== null) {
         this.spawner.spawnAsteroid({
           count: 2,
           size: nextSize,
@@ -193,7 +188,7 @@ class GameEngine {
 
   private levelUp() {
     this.state.temperature = 'normal';
-    this.spawner.spawnAsteroid({ count: 30 + this.state.level });
+    this.spawner.spawnAsteroid({ count: 30 + this.state.level, size: 2 });
     if (this.state.level > 0) {
       const event = new ev.GameEvent('LEVEL_UP', this.state.ship.coords);
       this.state.events.push(event);
