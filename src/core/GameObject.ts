@@ -6,12 +6,10 @@ import { Temperature } from './GameEngine';
 export type GameObjectType = 'ship' | 'asteroid' | 'bullet' | 'shard';
 
 export interface GameObjectOptions extends Partial<EntityOptions> {
-  type?: GameObjectType;
-  hitBoxRadius?: number;
+  type: GameObjectType;
+  hitBoxRadius: number;
   duration?: number;
-  hasTail?: boolean;
   tailLength?: number;
-  life?: number;
 }
 
 class GameObject extends Entity {
@@ -22,27 +20,25 @@ class GameObject extends Entity {
   public life: number;
   public isExpired: boolean;
   public tail: Point[] = [];
-  public hasTail: boolean;
   public tailLength: number;
   // private
   private expiresAt: number;
   // constructor
-  constructor(options: GameObjectOptions = {}) {
+  constructor(options: GameObjectOptions) {
     super({ ...options });
     this.id = uuidv4();
-    this.type = options.type || 'asteroid';
-    this.hitBoxRadius = options.hitBoxRadius || 50;
+    this.type = options.type;
+    this.hitBoxRadius = options.hitBoxRadius;
     this.isExpired = false;
-    this.life = options.life || 1;
+    this.life = 1;
     this.expiresAt = Date.now() + (options.duration || Infinity);
-    this.hasTail = options.hasTail || false;
-    this.tailLength = options.tailLength || 20;
+    this.tailLength = options.tailLength || 0;
   }
 
-  public update(temperature: Temperature=Temperature.Normal): void {
+  public update(temperature: Temperature = Temperature.Normal): void {
     super.update(temperature);
     this.isExpired = Date.now() > this.expiresAt;
-    if (this.hasTail) {
+    if (this.tailLength) {
       this.updateTail();
     }
   }

@@ -1,20 +1,20 @@
 /* eslint-disable no-unused-vars */
+import { Point, Rect } from '../lib/geometry';
 import { Temperature } from './GameEngine';
-import GameObject, { GameObjectOptions } from './GameObject';
+import GameObject from './GameObject';
 
-// aliases
 export enum AsteroidSize {
   Small = 0,
   Medium = 1,
   Large = 2
 }
-// export type AsteroidSize = 0 | 1 | 2;
 
-export type AsteroidSplit = null | 0 | 1;
-
-// interfaces
-export interface AsteroidOptions extends Omit<GameObjectOptions, 'type'> {
+export interface AsteroidOptions {
   size: AsteroidSize;
+  world: Rect;
+  coords: Point;
+  direction: number;
+  rotationSpeed?: number;
 }
 
 export const speeds = [5, 3, 1.5];
@@ -38,7 +38,6 @@ class Asteroid extends GameObject {
       direction: options.direction ?? Math.random() * Math.PI * 2,
       rotationSpeed: options.rotationSpeed ?? (sign * Math.PI) / 50,
       angularSpeed: Math.PI / 3 / 40,
-      hasTail: true,
       tailLength: 50
     });
     const toWait = directionChangeTimes[size] * Math.random();

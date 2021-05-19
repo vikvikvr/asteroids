@@ -1,10 +1,15 @@
 import GameObject from './GameObject';
 import { remove } from 'lodash';
-import { EntityOptions } from './Entity';
 import Bullet from './Bullet';
 import { Temperature } from './GameEngine';
+import { Point, Rect } from '../lib/geometry';
 
 type BulletPosition = 'center' | 'left' | 'right';
+
+export interface ShipOptions {
+  world: Rect;
+  coords: Point;
+}
 
 class Ship extends GameObject {
   // public
@@ -18,16 +23,14 @@ class Ship extends GameObject {
   // readonly
   readonly MAX_SPEED = 4;
   // constructor
-  constructor(options: Partial<EntityOptions> = {}) {
+  constructor(options: ShipOptions) {
     super({
       ...options,
       type: 'ship',
       hitBoxRadius: 30,
       direction: -Math.PI / 2,
       angularSpeed: Math.PI / 3 / 20,
-      hasTail: true,
-      tailLength: 20,
-      life: 1
+      tailLength: 20
     });
   }
 
