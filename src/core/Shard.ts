@@ -1,13 +1,15 @@
 import { Point, Rect } from '../lib/geometry';
 import { AsteroidSize } from './Asteroid';
+import { GameTemperature } from './GameEngine';
 import GameObject from './GameObject';
 
 interface ShardOptions {
-  color: string;
+  colorIndex: number;
   size: AsteroidSize;
   coords: Point;
   world: Rect;
   duration: number;
+  temperature: GameTemperature;
 }
 
 type AsteroidSizeMap = Record<AsteroidSize, number>;
@@ -25,7 +27,8 @@ const shardSizeMap: AsteroidSizeMap = {
 };
 
 class Shard extends GameObject {
-  public color: string;
+  public colorIndex: number;
+  public temperature: GameTemperature;
   constructor(options: ShardOptions) {
     const minSpeed = shardsCountMap[options.size] / 10;
     const shardSize = shardSizeMap[options.size];
@@ -38,7 +41,8 @@ class Shard extends GameObject {
       world: options.world,
       duration: options.duration
     });
-    this.color = options.color;
+    this.colorIndex = options.colorIndex;
+    this.temperature = options.temperature;
   }
 
   public update() {

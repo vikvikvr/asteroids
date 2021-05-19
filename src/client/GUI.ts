@@ -1,5 +1,5 @@
 import P5 from 'p5';
-import { ColorsMap } from './colors';
+import colors from './colors';
 import GameEngine from '../core/GameEngine';
 
 const SPACING = 20;
@@ -7,16 +7,14 @@ const SPACING = 20;
 class GUI {
   // private
   private p5: P5;
-  private colors: ColorsMap;
   // constructor
-  constructor(p5: P5, colors: ColorsMap) {
+  constructor(p5: P5) {
     this.p5 = p5;
-    this.colors = colors;
   }
 
   public draw(engine: GameEngine) {
     this.p5.textSize(30);
-    this.p5.fill('white');
+    this.p5.fill(colors.hud);
     this.drawScore(engine);
   }
 

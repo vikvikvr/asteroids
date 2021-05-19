@@ -2,7 +2,7 @@ import GameEngine, { GameState, GameTemperature } from '../core/GameEngine';
 import P5 from 'p5';
 import { drawableCoords, Point, Rect } from '../lib/geometry';
 import GUI, { numberWithSeparators } from './GUI';
-import COLORS from './colors';
+import colors, { alphaFromTime, withAlpha } from './colors';
 import Animation, { TextAnimation } from './Animation';
 import { remove } from 'lodash';
 import { bulletHitScore } from '../core/game-rules';
@@ -71,7 +71,7 @@ class Drawer {
       width: this.p5.windowWidth,
       height: this.p5.windowHeight
     };
-    this.gui = new GUI(this.p5, COLORS);
+    this.gui = new GUI(this.p5);
     this.p5.textSize(20);
     this.shakeEndTime = -Infinity;
   }
@@ -120,8 +120,8 @@ class Drawer {
     let { p5 } = this;
     const ankerX = p5.windowWidth / 2;
     const ankerY = p5.windowHeight / 2;
-    p5.background(COLORS.space);
-    p5.fill('white');
+    p5.background(colors.background.normal);
+    p5.fill(colors.hud);
     p5.textSize(40);
     p5.textAlign(p5.CENTER);
     p5.text('GAME OVER', ankerX, ankerY - 60);
@@ -138,12 +138,8 @@ class Drawer {
 
   private drawEnvironment(): void {
     let { p5, stars, engine } = this;
-    const bgColorMap: Record<GameTemperature, string> = {
-      high: '#311b92',
-      normal: '#1a237e',
-      low: '#0d47a1'
-    };
-    p5.background(bgColorMap[engine.state.temperature]);
+    const bgColor = colors.background[engine.state.temperature];
+    p5.background(bgColor);
     this.drawStars(stars);
   }
 
@@ -238,7 +234,7 @@ class Drawer {
   private drawStars(stars: Star[]): void {
     let { p5 } = this;
     p5.noStroke();
-    p5.fill(`rgba(255,255,255,${(Date.now() / 10) % 255})`);
+    p5.fill(withAlpha(colors.hud, alphaFromTime(10)));
     for (const star of stars) {
       let coords = this.drawableCoords(star);
       coords && p5.circle(coords.x, coords.y, star.radius);
@@ -286,7 +282,7 @@ class Drawer {
       drawer();
       if (this.showHitBoxes) {
         p5.noFill();
-        p5.stroke('red');
+        p5.stroke(colors.hud);
         p5.circle(0, 0, side);
       }
       p5.pop();

@@ -1,12 +1,7 @@
 import P5 from 'p5';
 import Asteroid from '../core/Asteroid';
 import { GameTemperature } from '../core/GameEngine';
-
-const colorMap: Record<GameTemperature, string[]> = {
-  normal: ['#009688', '#00897b', '#00796b', '#00695c'],
-  high: ['#ff9800', '#f57c00', '#ef6c00', '#e65100'],
-  low: ['#2196f3', '#1e88e5', '#1976d2', '#1565c0']
-};
+import colors, { withAlpha, alphaFromTime } from './colors';
 
 export function drawAsteroidShape(
   p5: P5,
@@ -19,26 +14,25 @@ export function drawAsteroidShape(
     y: [-2, 2, 2, -2]
   };
   for (let i = 3; i >= 0; i--) {
-    let color = colorMap[temp][i];
-    let alpha = 255;
+    let color = colors.asteroid[temp][i];
+    let alpha = 1;
     if (size === 'large' && temp === 'low') {
-      alpha = Math.floor((Math.sin(Date.now() / 100) + 2) * 80);
+      alpha = (alphaFromTime(100) + 1) / 2;
     }
-    color += alpha.toString(16);
-    p5.fill(color);
+    p5.fill(withAlpha(color, alpha));
     p5.circle(offsets.x[i], offsets.y[i], (hitBoxRadius * 2 * (i + 1)) / 4);
   }
 }
 
 export function drawShipShape(p5: P5, side: number): void {
-  p5.fill('#fdd835');
+  p5.fill(colors.ship.dark);
   p5.triangle(0, side, -2 * side, side * 2, 0, -2 * side);
-  p5.fill('#ffee58');
+  p5.fill(colors.ship.light);
   p5.triangle(0, side, 0, -2 * side, 2 * side, 2 * side);
 }
 
 export function drawBulletShape(p5: P5): void {
-  p5.fill('#ffeb3b');
+  p5.fill(colors.ship.dark);
   p5.circle(0, 0, 4);
 }
 
@@ -47,15 +41,17 @@ export function drawBulletTailShape(
   index: number,
   length: number
 ): void {
-  const alpha = (index / length) * 125;
-  p5.fill(255, 255, 0, alpha);
+  const percent = index / length;
+  const color = withAlpha(colors.ship.light, percent / 2);
+  p5.fill(color);
   p5.circle(0, 0, 3);
 }
 
 export function drawShipTailShape(p5: P5, index: number, length: number): void {
   const difference = length - index;
-  const alpha = (1 - (length - index) / length) * 50;
-  p5.fill(255, 255, 255, alpha);
+  const alpha = (1 - difference / length) / 4;
+  const color = withAlpha(colors.hud, alpha);
+  p5.fill(color);
   p5.circle(0, 0, difference / 1.5 + 15);
 }
 
@@ -64,8 +60,8 @@ export function drawAsteroidTailShape(
   index: number,
   length: number
 ): void {
-  const alpha = (index / length) * 50;
-  p5.fill(255, 255, 255, alpha);
+  const color = withAlpha(colors.hud, index / length / 2);
+  p5.fill(color);
   p5.circle(0, 0, 4);
 }
 
@@ -74,20 +70,22 @@ export function drawShipLifeArcShape(
   life: number,
   temperature: GameTemperature
 ) {
-  const isRestoring = life < 1 && temperature === 'normal';
+  // background white arc
   p5.noFill();
   p5.strokeWeight(4);
-  p5.stroke(207, 216, 220, 75);
+  p5.stroke(withAlpha(colors.hud, 1 / 4));
+  p5.arc(0, 0, 100, 100, 0, Math.PI);
+  // foreground yellow/green arc
   const subtractAngle = ((1 - life) * Math.PI) / 2;
   const startAngle = subtractAngle;
   const endAngle = Math.PI - subtractAngle;
-  p5.arc(0, 0, 100, 100, 0, Math.PI);
-  const alpha = isRestoring ? (Math.sin(Date.now() / 100) + 1) * 125 : 255;
+  let color = colors.ship.dark;
+  let alpha = 1;
+  const isRestoring = life < 1 && temperature === 'normal';
   if (isRestoring) {
-    p5.stroke(0, 150, 136, alpha);
-  } else {
-    p5.stroke(255, 235, 59, alpha);
-    // p5.stroke(244, 67, 54, alpha);
+    color = colors.asteroid.normal[0];
+    alpha = alphaFromTime(100);
   }
+  p5.stroke(withAlpha(color, alpha));
   p5.arc(0, 0, 100, 100, startAngle, endAngle);
 }
