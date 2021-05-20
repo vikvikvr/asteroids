@@ -1,10 +1,15 @@
+/* eslint-disable no-unused-vars */
 import GameObject from './GameObject';
 import { remove } from 'lodash';
 import Bullet from './Bullet';
 import { Temperature } from './GameEngine';
 import { circleFraction, Point, Rect } from '../lib/geometry';
 
-type BulletPosition = 'center' | 'left' | 'right';
+enum BulletPosition {
+  Center,
+  Left,
+  Right
+}
 
 export interface ShipOptions {
   world: Rect;
@@ -71,12 +76,12 @@ class Ship extends GameObject {
 
   private fireBullets(temperature: Temperature): void {
     this.firedAt = Date.now();
-    let positions: BulletPosition[] = ['center'];
+    let positions: BulletPosition[] = [BulletPosition.Center];
     if (temperature === Temperature.High) {
-      positions = ['left', 'right'];
+      positions = [BulletPosition.Left, BulletPosition.Right];
     }
-    for (const pos of positions) {
-      const bullet = this.makeBullet(pos);
+    for (const position of positions) {
+      const bullet = this.makeBullet(position);
       this.bullets.push(bullet);
     }
   }
@@ -103,25 +108,16 @@ class Ship extends GameObject {
     const { x, y } = this.coords;
     const deltaX = Math.cos(circleFraction(4, this.direction));
     const deltaY = Math.sin(circleFraction(4, this.direction));
-    type OffsetMap = Record<BulletPosition, number>;
-    const offsetX: OffsetMap = {
-      left: -20 * deltaX,
-      center: 0,
-      right: 20 * deltaX
-    };
-    const offsetY: OffsetMap = {
-      left: -20 * deltaY,
-      center: 0,
-      right: 20 * deltaY
+    const offsets = [0, -20, 20];
+    const coords = {
+      x: x + offsets[position] * deltaX,
+      y: y + offsets[position] * deltaY
     };
     return new Bullet({
       world: this.world,
       direction: this.direction,
-      coords: {
-        x: x + offsetX[position],
-        y: y + offsetY[position]
-      },
-      speed: Math.max(this.speed, 0) + 12
+      speed: Math.max(this.speed, 0) + 12,
+      coords
     });
   }
 }
