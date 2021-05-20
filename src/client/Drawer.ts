@@ -71,9 +71,10 @@ class Drawer {
     }
   }
 
-  public resizeScreen(width: number, height: number): void {
-    this.p5.resizeCanvas(width, height);
-    this.gr.resizeCanvas(width, height);
+  public resizeScreen(): void {
+    const { windowWidth, windowHeight } = this.p5;
+    this.p5.resizeCanvas(windowWidth, windowHeight);
+    this.gr.resizeCanvas(windowWidth, windowHeight);
   }
 
   private drawGameScreen(): void {

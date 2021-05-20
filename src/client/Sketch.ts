@@ -16,11 +16,7 @@ function Sketch(p5: P5) {
     setTimeout(() => start(p5), 500);
   };
 
-  p5.windowResized = () => {
-    if (loaded) {
-      drawer.resizeScreen(p5.windowWidth, p5.windowHeight);
-    }
-  };
+  p5.windowResized = () => drawer?.resizeScreen();
 
   p5.draw = () => {
     if (loaded) {
