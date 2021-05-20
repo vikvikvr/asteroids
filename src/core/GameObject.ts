@@ -5,7 +5,7 @@ import { Temperature } from './GameEngine';
 
 export type GameObjectType = 'ship' | 'asteroid' | 'bullet' | 'shard';
 
-export interface GameObjectOptions extends Partial<EntityOptions> {
+export interface GameObjectOptions extends EntityOptions {
   type: GameObjectType;
   hitBoxRadius: number;
   duration?: number;

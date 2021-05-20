@@ -21,7 +21,6 @@ export interface AsteroidOptions {
   world: Rect;
   coords: Point;
   direction: number;
-  rotationSpeed?: number;
 }
 
 export const speeds = [5, 3, 1.5];
@@ -43,7 +42,7 @@ class Asteroid extends GameObject {
       speed: speeds[size],
       type: 'asteroid',
       direction: options.direction ?? randomAngle(),
-      rotationSpeed: options.rotationSpeed ?? sign * circleFraction(100),
+      rotationSpeed: sign * circleFraction(100),
       angularSpeed: circleFraction(240),
       tailLength: 10
     });
@@ -57,7 +56,10 @@ class Asteroid extends GameObject {
     super.update(temperature);
     const waitedEnough = Date.now() > this.nextDirectionChangeAt;
     const canChangeDirection = waitedEnough && temperature !== Temperature.Low;
-    if (canChangeDirection) this.changeDirection(temperature);
+    if (canChangeDirection) {
+      this.direction = this.direction + circleFraction(6) * randomSign();
+      this.updateNextDirectionChangeTime(temperature);
+    }
   }
 
   public splitSize(): AsteroidSize | null {
@@ -66,11 +68,7 @@ class Asteroid extends GameObject {
     return null;
   }
 
-  private changeDirection(temperature: Temperature): void {
-    const angleChange = circleFraction(6);
-    const sign = randomSign();
-    const newDirection = this.direction + angleChange * sign;
-    this.direction = newDirection;
+  private updateNextDirectionChangeTime(temperature: Temperature): void {
     const waitMultiplier = temperature === Temperature.Low ? 1 : 0.5;
     const timeToNextChange = directionChangeTimes[this.size] * waitMultiplier;
     this.nextDirectionChangeAt = Date.now() + timeToNextChange;

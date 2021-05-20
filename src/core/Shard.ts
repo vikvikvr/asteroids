@@ -23,7 +23,6 @@ class Shard extends GameObject {
     const minSpeed = shardSpeeds[options.size];
     const shardSize = shardSizes[options.size];
     const duration = randomNumber(100, 200);
-    // const duration = 1000;
     super({
       type: 'shard',
       speed: randomNumber(3, minSpeed),

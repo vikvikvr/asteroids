@@ -3,8 +3,8 @@ import GameObject from './GameObject';
 
 interface BulletOptions {
   world: Rect;
-  direction: number;
   coords: Point;
+  direction: number;
   speed: number;
 }
 

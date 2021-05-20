@@ -29,25 +29,28 @@ class Spawner {
     this.world = world;
   }
 
-  public spawnAsteroid(options: AsteroidSpawnOptions): void {
+  public spawnAsteroid(spawnOptions: AsteroidSpawnOptions): void {
     const { asteroids } = this.state;
-    for (let i = 0; i < (options.count || 1); i++) {
-      const asteroidOptions = this.makeAsteroidOptions(options);
-      const asteroid = new Asteroid(asteroidOptions);
+    const howMany = spawnOptions.count || 1;
+    for (let i = 0; i < howMany; i++) {
+      const options = this.makeAsteroidOptions(spawnOptions);
+      const asteroid = new Asteroid(options);
       asteroids.push(asteroid);
     }
   }
 
-  private makeAsteroidOptions(options: AsteroidSpawnOptions): AsteroidOptions {
+  private makeAsteroidOptions(
+    spawnOptions: AsteroidSpawnOptions
+  ): AsteroidOptions {
     let direction = randomAngle();
-    if (options.notDirection) {
-      direction = notDirection(options.notDirection, this.CONE_ANGLE);
+    if (spawnOptions.notDirection) {
+      direction = notDirection(spawnOptions.notDirection, this.CONE_ANGLE);
     }
     return {
-      size: options.size,
+      size: spawnOptions.size,
       world: this.world,
       coords:
-        options.coords ||
+        spawnOptions.coords ||
         randomCoordsFarFrom(
           this.state.ship,
           this.world,
