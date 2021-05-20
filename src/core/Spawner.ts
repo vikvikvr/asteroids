@@ -1,7 +1,9 @@
 import { GameState } from './GameEngine';
 import {
+  circleFraction,
   notDirection,
   Point,
+  randomAngle,
   randomCoordsFarFrom,
   Rect
 } from '../lib/geometry';
@@ -20,7 +22,7 @@ class Spawner {
   public world: Rect;
   // private
   private HIT_BOX_MULTIPLIER = 5;
-  private CONE_ANGLE = Math.PI / 3;
+  private CONE_ANGLE = circleFraction(6);
 
   constructor(state: GameState, world: Rect) {
     this.state = state;
@@ -37,7 +39,7 @@ class Spawner {
   }
 
   private makeAsteroidOptions(options: AsteroidSpawnOptions): AsteroidOptions {
-    let direction = Math.random() * Math.PI * 2;
+    let direction = randomAngle();
     if (options.notDirection) {
       direction = notDirection(options.notDirection, this.CONE_ANGLE);
     }

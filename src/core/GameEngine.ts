@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import Ship from './Ship';
 import Asteroid, { AsteroidSize } from './Asteroid';
-import { haveCollided, Rect, centerOf } from '../lib/geometry';
+import { haveCollided, Rect, centerOf, randomIndex } from '../lib/geometry';
 import * as ev from './Events';
 import { remove, find } from 'lodash';
 import Spawner from './Spawner';
@@ -147,7 +147,7 @@ class GameEngine {
     for (let i = 0; i < shardsCount; i++) {
       this.state.shards.push(
         new Shard({
-          colorIndex: Math.floor(Math.random() * 4),
+          colorIndex: randomIndex(4),
           size: asteroid.size,
           coords: asteroid.coords,
           world: this.world,
@@ -172,8 +172,6 @@ class GameEngine {
         });
       }
       remove(asteroids, { id: event.asteroidId });
-    } else {
-      console.log('ship has collided with asteroid at previous update');
     }
     this.removeBullet(event.bulletId);
   }

@@ -1,6 +1,7 @@
 import P5 from 'p5';
 import Asteroid from '../core/Asteroid';
 import { Temperature } from '../core/GameEngine';
+import { circleFraction } from '../lib/geometry';
 import colors, { withAlpha, alphaFromTime } from './colors';
 
 const asteroidOffsets = {
@@ -73,9 +74,9 @@ export function shipLifeArc(
   temperature: Temperature
 ) {
   fullShipLifeArc(gr);
-  const subtractAngle = ((1 - life) * Math.PI) / 2;
+  const subtractAngle = ((1 - life) * circleFraction(2)) / 2;
   const startAngle = subtractAngle;
-  const endAngle = Math.PI - subtractAngle;
+  const endAngle = circleFraction(2) - subtractAngle;
   const isRestoring = life < 1 && temperature === Temperature.Normal;
   const color = isRestoring
     ? colors.asteroid[Temperature.Normal][0]
@@ -89,5 +90,5 @@ function fullShipLifeArc(gr: P5.Graphics) {
   gr.noFill();
   gr.strokeWeight(4);
   gr.stroke(withAlpha(colors.hud, 1 / 4));
-  gr.arc(0, 0, 100, 100, 0, Math.PI);
+  gr.arc(0, 0, 100, 100, 0, circleFraction(2));
 }

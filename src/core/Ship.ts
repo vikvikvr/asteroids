@@ -2,7 +2,7 @@ import GameObject from './GameObject';
 import { remove } from 'lodash';
 import Bullet from './Bullet';
 import { Temperature } from './GameEngine';
-import { Point, Rect } from '../lib/geometry';
+import { circleFraction, Point, Rect } from '../lib/geometry';
 
 type BulletPosition = 'center' | 'left' | 'right';
 
@@ -15,21 +15,21 @@ class Ship extends GameObject {
   // public
   public bullets: Bullet[] = [];
   // private
-  private rotationStep = Math.PI / 40;
-  private accelerationStep = 1 / 5;
+  private rotationStep = circleFraction(80);
+  private accelerationStep = 1 / 4;
   private minTimeToFire = 200;
   private firedAt = -Infinity;
   private lifeRegenRate = 0.0005;
   // readonly
-  readonly MAX_SPEED = 4;
+  readonly MAX_SPEED = 6;
   // constructor
   constructor(options: ShipOptions) {
     super({
       ...options,
       type: 'ship',
       hitBoxRadius: 30,
-      direction: -Math.PI / 2,
-      angularSpeed: Math.PI / 3 / 20,
+      direction: -circleFraction(4),
+      angularSpeed: circleFraction(120),
       tailLength: 7
     });
   }
@@ -101,8 +101,8 @@ class Ship extends GameObject {
 
   private makeBullet(position: BulletPosition): Bullet {
     const { x, y } = this.coords;
-    const deltaX = Math.cos(this.direction + Math.PI / 2);
-    const deltaY = Math.sin(this.direction + Math.PI / 2);
+    const deltaX = Math.cos(circleFraction(4, this.direction));
+    const deltaY = Math.sin(circleFraction(4, this.direction));
     type OffsetMap = Record<BulletPosition, number>;
     const offsetX: OffsetMap = {
       left: -20 * deltaX,

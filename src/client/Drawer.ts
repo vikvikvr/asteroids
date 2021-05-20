@@ -1,6 +1,12 @@
 import GameEngine, { Temperature } from '../core/GameEngine';
 import P5 from 'p5';
-import { drawableCoords, Point, toDrawableObject } from '../lib/geometry';
+import {
+  circleFraction,
+  drawableCoords,
+  Point,
+  randomNumber,
+  toDrawableObject
+} from '../lib/geometry';
 import GUI, { prettifyNumber } from './GUI';
 import colors, { withAlpha } from './colors';
 import Animation, { TextAnimation } from './Animation';
@@ -214,9 +220,9 @@ class Drawer {
     const stars = [];
     for (let i = 0; i < amount; i++) {
       const star: Star = {
-        x: Math.random() * width,
-        y: Math.random() * height,
-        diameter: Math.random() > 0.5 ? 2 : 1
+        x: randomNumber(width),
+        y: randomNumber(height),
+        diameter: randomNumber(0.5, 1.5)
       };
       stars.push(star);
     }
@@ -299,7 +305,7 @@ class Drawer {
     this.drawShipTail();
     const options = {
       rotateDirection: true,
-      rotationOffset: Math.PI / 2
+      rotationOffset: circleFraction(4)
     };
     const drawer = () => {
       shapes.ship(gr, ship.hitBoxRadius / 2);

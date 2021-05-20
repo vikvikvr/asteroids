@@ -69,6 +69,26 @@ export function haveCollided(obj1: Collidable, obj2: Collidable): boolean {
   return dist < minDistance ** 2;
 }
 
+export function randomIndex(length: number): number {
+  return Math.floor(Math.random() * length);
+}
+
+export function randomSign(): number {
+  return Math.random() > 0.5 ? 1 : -1;
+}
+
+export function randomAngle(): number {
+  return Math.random() * Math.PI * 2;
+}
+
+export function randomNumber(multiplier?: number, offset?: number): number {
+  return Math.random() * (multiplier || 1) + (offset || 0);
+}
+
+export function circleFraction(divisor = 1, offset = 0): number {
+  return (Math.PI * 2) / divisor + offset;
+}
+
 export function randomCoordsFarFrom(
   object: Collidable,
   world: Rect,
@@ -81,8 +101,8 @@ export function randomCoordsFarFrom(
     if (tries > 100) throw Error('Could not create randomCoordsFarFrom');
     tries++;
     coords = {
-      x: Math.random() * world.width,
-      y: Math.random() * world.height
+      x: randomNumber(world.width),
+      y: randomNumber(world.height)
     };
     squredDistance = minSquareDistance(coords, object.coords, world);
   } while (squredDistance < minDistance ** 2);
@@ -94,7 +114,7 @@ export function notDirection(direction: number, coneAngle: number): number {
   const adjustedDirection = direction + direction < 0 ? Math.PI : 0;
   let dir: number;
   do {
-    dir = Math.random() * Math.PI * 2;
+    dir = randomAngle();
   } while (Math.abs(dir - adjustedDirection) <= coneAngle / 2);
   return dir;
 }

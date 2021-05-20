@@ -1,4 +1,4 @@
-import { Point, Rect } from '../lib/geometry';
+import { Point, randomAngle, randomNumber, Rect } from '../lib/geometry';
 import { AsteroidSize } from './Asteroid';
 import { Temperature } from './GameEngine';
 import GameObject from './GameObject';
@@ -22,13 +22,13 @@ class Shard extends GameObject {
   constructor(options: ShardOptions) {
     const minSpeed = shardSpeeds[options.size];
     const shardSize = shardSizes[options.size];
-    const duration = 200 + 100 * Math.random();
+    const duration = randomNumber(100, 200);
     // const duration = 1000;
     super({
       type: 'shard',
-      speed: minSpeed + Math.random() * 3,
-      direction: Math.random() * Math.PI * 2,
-      hitBoxRadius: shardSize + (Math.random() * shardSize) / 2,
+      speed: randomNumber(3, minSpeed),
+      direction: randomAngle(),
+      hitBoxRadius: shardSize + randomNumber(shardSize) / 2,
       duration: duration,
       ...options
     });

@@ -1,5 +1,12 @@
 /* eslint-disable no-unused-vars */
-import { Point, Rect } from '../lib/geometry';
+import {
+  circleFraction,
+  Point,
+  randomAngle,
+  randomNumber,
+  randomSign,
+  Rect
+} from '../lib/geometry';
 import { Temperature } from './GameEngine';
 import GameObject from './GameObject';
 
@@ -27,7 +34,7 @@ class Asteroid extends GameObject {
   public damage: number;
   public nextDirectionChangeAt: number;
   constructor(options: AsteroidOptions) {
-    const sign = Math.random() > 0.5 ? 1 : -1;
+    const sign = randomSign();
     const size = options.size;
     super({
       world: options.world,
@@ -35,12 +42,12 @@ class Asteroid extends GameObject {
       hitBoxRadius: hitBoxes[size],
       speed: speeds[size],
       type: 'asteroid',
-      direction: options.direction ?? Math.random() * Math.PI * 2,
-      rotationSpeed: options.rotationSpeed ?? (sign * Math.PI) / 50,
-      angularSpeed: Math.PI / 3 / 40,
+      direction: options.direction ?? randomAngle(),
+      rotationSpeed: options.rotationSpeed ?? sign * circleFraction(100),
+      angularSpeed: circleFraction(240),
       tailLength: 10
     });
-    const toWait = directionChangeTimes[size] * Math.random();
+    const toWait = randomNumber(directionChangeTimes[size]);
     this.nextDirectionChangeAt = Date.now() + toWait;
     this.size = size;
     this.damage = damages[size];
@@ -60,8 +67,8 @@ class Asteroid extends GameObject {
   }
 
   private changeDirection(temperature: Temperature): void {
-    const angleChange = Math.PI / 3;
-    const sign = Math.random() > 0.5 ? 1 : -1;
+    const angleChange = circleFraction(6);
+    const sign = randomSign();
     const newDirection = this.direction + angleChange * sign;
     this.direction = newDirection;
     const waitMultiplier = temperature === Temperature.Low ? 1 : 0.5;
