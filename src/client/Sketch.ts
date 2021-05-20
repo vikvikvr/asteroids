@@ -11,22 +11,24 @@ let loaded = false;
 let engine: GameEngine;
 
 function Sketch(p5: P5) {
-  p5.setup = () => {
+  p5.setup = function () {
     setupGraphics(p5);
     setTimeout(() => start(p5), 500);
   };
 
-  p5.windowResized = () => drawer?.resizeScreen();
+  p5.windowResized = function () {
+    drawer?.resizeScreen();
+  };
 
-  p5.draw = () => {
+  p5.draw = function () {
     if (loaded) {
-      keyController.pressed(p5);
+      keyController.processPressedKeys(p5);
       drawer.drawScreen();
     }
   };
 }
 
-function setupGraphics(p5: P5) {
+function setupGraphics(p5: P5): void {
   p5.disableFriendlyErrors = true;
   p5.frameRate(60);
   p5.pixelDensity(2);

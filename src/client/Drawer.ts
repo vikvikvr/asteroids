@@ -22,7 +22,6 @@ interface DrawGameObjectOptions {
   rotateDirection?: boolean;
   ignoreOrientation?: boolean;
   rotationOffset?: number;
-  scale?: number;
 }
 
 export interface DrawableObject {
@@ -116,7 +115,6 @@ class Drawer {
     this.drawGameOverScore({ x, y });
     gr.textSize(20);
     gr.text('press F5 to try again', x, y + 90);
-    // gr.textAlign(gr.LEFT);
     this.p5.image(this.gr, 0, 0);
   }
 
@@ -166,7 +164,7 @@ class Drawer {
     events.length = 0;
   }
 
-  private addStageAnimation(event: GameEvent) {
+  private addStageAnimation(event: GameEvent): void {
     const textMap: Partial<Record<GameEventType, string>> = {
       LEVEL_UP: 'level up!',
       FREEZE: 'frozen!',
@@ -179,7 +177,7 @@ class Drawer {
     this.animations.push(animation);
   }
 
-  private addScoreAnimation(event: GameEvent) {
+  private addScoreAnimation(event: GameEvent): void {
     const { temperature } = this.engine.state;
     const { size, coords } = event as BulletHit;
     const score = bulletHitScore(size, temperature);
@@ -193,7 +191,7 @@ class Drawer {
     remove(this.animations, 'isExpired');
   }
 
-  private drawTextAnimations() {
+  private drawTextAnimations(): void {
     const { gr } = this;
     gr.textSize(30);
     gr.noStroke();
@@ -209,7 +207,7 @@ class Drawer {
     }
   }
 
-  private drawExplosionShards() {
+  private drawExplosionShards(): void {
     for (const shard of this.engine.state.shards) {
       const drawer = () => drawExplostionShard(this.gr, shard);
       this.drawGameObject(shard, {}, drawer);
@@ -288,7 +286,6 @@ class Drawer {
     angle += options.rotateDirection ? object.direction : 0;
     gr.translate(coords.x, coords.y);
     gr.rotate(angle);
-    gr.scale(options.scale || 1);
   }
 
   private drawHitBox(hitBoxRadius: number): void {

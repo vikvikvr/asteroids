@@ -142,7 +142,7 @@ class GameEngine {
     }
   }
 
-  private createExplosionShards(asteroid: Asteroid) {
+  private createExplosionShards(asteroid: Asteroid): void {
     const shardsCount = asteroid.size * 10 + 10;
     for (let i = 0; i < shardsCount; i++) {
       this.state.shards.push(
@@ -196,14 +196,14 @@ class GameEngine {
     this.state.score += scoreToAdd;
   }
 
-  private updateLevel() {
+  private updateLevel(): void {
     const spawnTime = this.levelDuration / 3;
     setTimeout(() => this.startFrozenStage(), spawnTime);
     setTimeout(() => this.startBurningStage(), spawnTime * 2);
     this.levelUp();
   }
 
-  private levelUp() {
+  private levelUp(): void {
     this.state.temperature = Temperature.Normal;
     const count = Math.floor(20 + this.state.level * 1.5);
     this.spawner.spawnAsteroid({ count, size: AsteroidSize.Large });
@@ -214,13 +214,13 @@ class GameEngine {
     this.state.level++;
   }
 
-  private startBurningStage() {
+  private startBurningStage(): void {
     this.state.temperature = Temperature.High;
     const event = new ev.GameEvent('BURN', this.state.ship.coords);
     this.state.events.push(event);
   }
 
-  private startFrozenStage() {
+  private startFrozenStage(): void {
     this.state.temperature = Temperature.Low;
     const event = new ev.GameEvent('FREEZE', this.state.ship.coords);
     this.state.events.push(event);

@@ -72,7 +72,7 @@ export function shipLifeArc(
   gr: P5.Graphics,
   life: number,
   temperature: Temperature
-) {
+): void {
   fullShipLifeArc(gr);
   const subtractAngle = ((1 - life) * circleFraction(2)) / 2;
   const startAngle = subtractAngle;
@@ -86,7 +86,7 @@ export function shipLifeArc(
   gr.arc(0, 0, 100, 100, startAngle, endAngle);
 }
 
-function fullShipLifeArc(gr: P5.Graphics) {
+function fullShipLifeArc(gr: P5.Graphics): void {
   gr.noFill();
   gr.strokeWeight(4);
   gr.stroke(withAlpha(colors.hud, 1 / 4));

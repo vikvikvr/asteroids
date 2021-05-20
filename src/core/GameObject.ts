@@ -26,7 +26,7 @@ class GameObject extends Entity {
   private expiresAt: number;
   // constructor
   constructor(options: GameObjectOptions) {
-    super({ ...options });
+    super(options);
     this.id = uuidv4();
     this.type = options.type;
     this.hitBoxRadius = options.hitBoxRadius;
@@ -37,7 +37,7 @@ class GameObject extends Entity {
     this.updatesCount = 0;
   }
 
-  public update(temperature: Temperature = Temperature.Normal): void {
+  public update(temperature = Temperature.Normal): void {
     super.update(temperature);
     this.isExpired = Date.now() > this.expiresAt;
     if (this.tailLength) {

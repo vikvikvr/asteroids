@@ -13,7 +13,7 @@ class KeyController {
     };
   }
 
-  public pressed(p5: p5) {
+  public processPressedKeys(p5: p5): void {
     for (const key in this.commandsMap) {
       const keyCode = parseInt(key);
       if (p5.keyIsDown(keyCode)) {

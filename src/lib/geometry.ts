@@ -81,12 +81,19 @@ export function randomAngle(): number {
   return Math.random() * Math.PI * 2;
 }
 
-export function randomNumber(multiplier?: number, offset?: number): number {
-  return Math.random() * (multiplier || 1) + (offset || 0);
+export function randomNumber(multiplier = 1, offset = 0): number {
+  return Math.random() * multiplier + offset;
 }
 
 export function circleFraction(divisor = 1, offset = 0): number {
   return (Math.PI * 2) / divisor + offset;
+}
+
+export function randomCoords(world: Rect): Point {
+  return {
+    x: randomNumber(world.width),
+    y: randomNumber(world.height)
+  };
 }
 
 export function randomCoordsFarFrom(
@@ -100,10 +107,7 @@ export function randomCoordsFarFrom(
   do {
     if (tries > 100) throw Error('Could not create randomCoordsFarFrom');
     tries++;
-    coords = {
-      x: randomNumber(world.width),
-      y: randomNumber(world.height)
-    };
+    coords = randomCoords(world);
     squredDistance = minSquareDistance(coords, object.coords, world);
   } while (squredDistance < minDistance ** 2);
 
@@ -123,7 +127,7 @@ function tryPuttingValueInsideRange(
   value: number,
   adjustment: number,
   max: number,
-  min = 0
+  min: number
 ): number {
   if (value < min) return value + adjustment;
   if (value > max) return value - adjustment;
@@ -152,7 +156,7 @@ function mostVisibleCoords(
   return { x: bestX, y: bestY };
 }
 
-function isBetween(value: number, max: number, min = 0): boolean {
+function isBetween(value: number, max: number, min: number): boolean {
   return value >= min && value <= max;
 }
 
