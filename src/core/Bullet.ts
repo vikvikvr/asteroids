@@ -1,4 +1,4 @@
-import { Point, Rect } from '../lib/geometry';
+import { Point, Rect } from 'lib/geometry';
 import GameObject from './GameObject';
 
 interface BulletOptions {

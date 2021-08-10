@@ -1,4 +1,4 @@
-import { DrawableObject } from '../client/Drawer';
+import { DrawableObject } from 'client/Drawer';
 
 export interface Point {
   x: number;

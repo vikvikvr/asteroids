@@ -1,5 +1,5 @@
 import P5 from 'p5';
-import Shard from '../core/Shard';
+import Shard from 'core/Shard';
 import { TextAnimation } from './Animation';
 import colors, { withAlpha } from './colors';
 

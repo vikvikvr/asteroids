@@ -1,4 +1,4 @@
-import GameEngine, { Temperature } from '../core/GameEngine';
+import GameEngine, { Temperature } from 'core/GameEngine';
 import P5 from 'p5';
 import {
   circleFraction,
@@ -6,15 +6,15 @@ import {
   Point,
   randomNumber,
   toDrawableObject
-} from '../lib/geometry';
+} from 'lib';
 import GUI, { prettifyNumber } from './GUI';
 import colors, { withAlpha } from './colors';
 import Animation, { TextAnimation } from './Animation';
 import { remove } from 'lodash';
-import { bulletHitScore } from '../core/game-rules';
-import { BulletHit, GameEvent, GameEventType } from '../core/Events';
-import Asteroid from '../core/Asteroid';
-import Bullet from '../core/Bullet';
+import { bulletHitScore } from 'core/game-rules';
+import { BulletHit, GameEvent, GameEventType } from 'core/Events';
+import Asteroid from 'core/Asteroid';
+import Bullet from 'core/Bullet';
 import * as shapes from './shapes';
 import { drawExplostionShard, drawTextAnimation } from './animations';
 

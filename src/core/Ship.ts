@@ -3,7 +3,7 @@ import GameObject from './GameObject';
 import { remove } from 'lodash';
 import Bullet from './Bullet';
 import { Temperature } from './GameEngine';
-import { circleFraction, Point, Rect } from '../lib/geometry';
+import { circleFraction, Point, Rect } from 'lib/geometry';
 
 enum BulletPosition {
   Center,

@@ -6,7 +6,7 @@ import {
   randomNumber,
   randomSign,
   Rect
-} from '../lib/geometry';
+} from 'lib/geometry';
 import { Temperature } from './GameEngine';
 import GameObject from './GameObject';
 

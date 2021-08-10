@@ -1,4 +1,4 @@
-import { Point, randomAngle, randomNumber, Rect } from '../lib/geometry';
+import { Point, randomAngle, randomNumber, Rect } from 'lib/geometry';
 import { AsteroidSize } from './Asteroid';
 import { Temperature } from './GameEngine';
 import GameObject from './GameObject';

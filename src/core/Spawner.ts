@@ -6,7 +6,7 @@ import {
   randomAngle,
   randomCoordsFarFrom,
   Rect
-} from '../lib/geometry';
+} from 'lib/geometry';
 import Asteroid, { AsteroidOptions, AsteroidSize } from './Asteroid';
 
 export interface AsteroidSpawnOptions {

@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Point } from '../lib/geometry';
+import { Point } from 'lib/geometry';
 import Asteroid, { AsteroidSize } from './Asteroid';
 import Bullet from './Bullet';
 

@@ -1,5 +1,5 @@
 import p5 from 'p5';
-import Ship from '../core/Ship';
+import Ship from 'core/Ship';
 
 class KeyController {
   private ship: Ship;

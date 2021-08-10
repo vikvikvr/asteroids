@@ -1,6 +1,6 @@
 import P5 from 'p5';
 import colors from './colors';
-import GameEngine from '../core/GameEngine';
+import GameEngine from 'core/GameEngine';
 
 const SPACING = 40;
 

@@ -1,4 +1,4 @@
-import { Point } from '../lib/geometry';
+import { Point } from 'lib';
 
 class Animation {
   public isExpired: boolean = false;

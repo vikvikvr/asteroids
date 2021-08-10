@@ -1,6 +1,6 @@
 import Entity, { EntityOptions } from './Entity';
 import { v4 as uuidv4 } from 'uuid';
-import { Point } from '../lib/geometry';
+import { Point } from 'lib/geometry';
 import { Temperature } from './GameEngine';
 
 export type GameObjectType = 'ship' | 'asteroid' | 'bullet' | 'shard';

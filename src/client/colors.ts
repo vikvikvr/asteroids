@@ -1,4 +1,4 @@
-import { Temperature } from '../core/GameEngine';
+import { Temperature } from 'core/GameEngine';
 import palette from './palette';
 
 type RGB = [number, number, number];

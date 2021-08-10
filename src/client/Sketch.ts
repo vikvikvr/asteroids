@@ -1,5 +1,5 @@
 import P5 from 'p5';
-import GameEngine from '../core/GameEngine';
+import GameEngine from 'core/GameEngine';
 import KeyController from './KeyController';
 import Drawer from './Drawer';
 
