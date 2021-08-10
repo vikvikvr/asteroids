@@ -85,6 +85,7 @@ class Drawer {
     this.drawAnimations();
     this.gr.pop();
     this.gui.draw(this.engine);
+    this.p5.clear();
     this.p5.image(this.gr, 0, 0);
   }
 
@@ -135,10 +136,7 @@ class Drawer {
   }
 
   private drawEnvironment(): void {
-    const { gr, engine } = this;
-    const { temperature } = engine.state;
-    const bgColor = colors.background[temperature];
-    gr.background(bgColor);
+    this.gr.clear();
     this.drawStars();
   }
 

@@ -3,7 +3,9 @@ body {
   padding: 0;
   font-family: 'Verdana';
   overflow: hidden;
-  background-color: #1a237e;
+  background: radial-gradient(circle at center, #303f9f, #1a237e);
+  width: 100vw;
+  height: 100vh;
   color: white;
 }
 
