@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import GameObject from './GameObject';
-import { remove } from 'lodash';
+import { find, remove } from 'lodash';
 import Bullet from './Bullet';
 import { circleFraction } from 'lib/geometry';
 import { BulletPosition, ShipOptions, Temperature } from 'types';
@@ -79,6 +79,20 @@ class Ship extends GameObject {
     if (temperature === Temperature.Normal) {
       this.life = Math.min(this.life + this.lifeRegenRate, 1);
     }
+  }
+
+  public removeBullet(bulletId: string, temperature: Temperature): void {
+    // try to pierce
+    if (temperature === Temperature.Low) {
+      const bullet = find(this.bullets, { id: bulletId })!;
+
+      if (bullet.piercesCount === 0) {
+        bullet.piercesCount++;
+        return;
+      }
+    }
+
+    remove(this.bullets, { id: bulletId });
   }
 
   private updateBullets(): void {
