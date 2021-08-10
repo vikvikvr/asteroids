@@ -1,40 +1,91 @@
-# Asteroids
+# Asteroids 🚀
 
 <p>
-<img src="https://api.netlify.com/api/v1/badges/11157af6-4bf4-4f1c-a572-faee83fd5bcd/deploy-status"/>
-<img src="https://badgen.net/badge/Built%20With/TypeScript/blue"/>
+  <a href="https://www.typescriptlang.org/">
+    <img src="https://img.shields.io/badge/Language-Typescript-3178C6.svg?logo=typescript"/>
+  </a>  
+  <a href="https://reactjs.org/">
+    <img src="https://img.shields.io/badge/Powered%20by-React-5ED3F3.svg?logo=react"/>
+   </a>  
+  <a href="https://p5js.org/">
+    <img src="https://img.shields.io/badge/Canvas-p5.js-ED225D.svg?logo=p5js"/>  
+  </a>
 </p>
 
-Jump back to the '80 on board of a spaceship and try to survive the deep space. Use the arrows on your keyboard to change your ship's direction. You can stop by pressing the space bar. [Try it now!](https://asteroids-client.netlify.app/)
+<p> 
+  <a href="https://asteroids-client.netlify.app/">
+    <img src="https://img.shields.io/badge/Fun-100%25-success.svg?logo=riotgames">
+  </a>
+  <a href="https://github.com/vikvikvr/asteroids">
+    <img src="https://img.shields.io/badge/PRs-welcome-success.svg?logo=github"/>
+  </a>
+  <a href="https://asteroids-client.netlify.app/">
+    <img src="https://img.shields.io/badge/Netlify-Live-3FA7BD.svg?logo=netlify">
+  </a>
+</p>
 
-[![preview.gif](https://media.giphy.com/media/bvgScptnWIB8jWlSox/source.gif)](https://asteroids-client.netlify.app/)
 
-This is a **side project** inspired by my passion for arcade games, where my goal is to explore **Typescript** more in depth and have fun developing something from the ground up!
+Jump back to the '80 on board of a spaceship and try to survive the asteroids field!
 
-The game is **deployed** on [Netlify](https://asteroids-client.netlify.app/).
+<a title="Play now!" href="https://asteroids-client.netlify.app/">
+  <img src="https://media.giphy.com/media/bvgScptnWIB8jWlSox/source.gif" alt="gameplay">
+</a>
 
-## Getting started
 
-Clone this repo
+> 🌐 [Website](https://asteroids-client.netlify.app/)
 
-```bash
-git clone https://github.com/vikvikvr/asteroids
+This is a **side project** inspired by my passion for arcade games.
+
+My goal was to explore **Typescript** more in depth while having fun!
+
+## How it works ℹ
+
+To control your spaceship:
+
+```
+🔁 Rotate -> arrows keys
+⏹ Stop -> space bar
 ```
 
-Install dependencies
+There are different **weather cycles**:
 
-```bash
-cd client && npm i
+```
+🙂 Normal -> nothing out of the ordinary
+🥶 Cold -> asteroids freeze in place and don't split if destroyed
+🥵 Hot -> you are given more fire power but the asteroids become crazy! 
 ```
 
-Start locally
+
+## Run locally 💻
+
+Here are the commands to get started:
 
 ```bash
-npm start
+$ git clone https://github.com/vikvikvr/asteroids
+$ cd asteroids/client
+$ npm install
+$ npm start
 ```
 
-## Tech Stack
+Remember, PRs are welcome! 🤝
 
-- [Typescript](https://www.typescriptlang.org/)
-- [React](https://reactjs.org/)
-- [p5.js](https://p5js.org/)
+## Tech Stack 🛠
+
+This project is **Front End** only.
+
+Was built with [Typescript](https://www.typescriptlang.org/), [React](https://reactjs.org/) and [p5.js](https://p5js.org/). Deployed using [Netlify](https://www.netlify.com/)
+
+<p>
+   <a href="https://www.typescriptlang.org/">
+    <img width ='32px' title="Typescript" src ='https://raw.githubusercontent.com/rahulbanerjee26/githubAboutMeGenerator/main/icons/typescript.svg'>  
+  </a>  
+  <a href="https://reactjs.org/">
+    <img width ='32px' title="React" src ='https://raw.githubusercontent.com/rahulbanerjee26/githubAboutMeGenerator/main/icons/reactjs.svg'> 
+   </a>  
+  <a href="https://p5js.org/">
+    <img width ='32px' title="p5.js" src ='http://blindedcyclops.neocities.org/p5js-icons/p5-sq-reverse-filled.png'>
+  </a>
+   <a href="https://www.netlify.com/">
+    <img width ='32px' title="Netlify" src ='https://seeklogo.com/images/N/netlify-logo-758722CDF4-seeklogo.com.png'>
+  </a>   
+</p>
