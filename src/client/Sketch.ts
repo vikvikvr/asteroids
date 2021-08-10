@@ -3,8 +3,6 @@ import GameEngine from 'core/GameEngine';
 import KeyController from './KeyController';
 import Drawer from './Drawer';
 
-export type AnimationType = 'explosion';
-
 let keyController: KeyController;
 let drawer: Drawer;
 let loaded = false;

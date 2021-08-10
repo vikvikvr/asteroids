@@ -2,19 +2,8 @@
 import GameObject from './GameObject';
 import { remove } from 'lodash';
 import Bullet from './Bullet';
-import { Temperature } from './GameEngine';
-import { circleFraction, Point, Rect } from 'lib/geometry';
-
-enum BulletPosition {
-  Center,
-  Left,
-  Right
-}
-
-export interface ShipOptions {
-  world: Rect;
-  coords: Point;
-}
+import { circleFraction } from 'lib/geometry';
+import { BulletPosition, ShipOptions, Temperature } from 'types';
 
 class Ship extends GameObject {
   // public

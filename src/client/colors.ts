@@ -1,7 +1,5 @@
-import { Temperature } from 'core/GameEngine';
+import { Temperature, RGB } from 'types';
 import palette from './palette';
-
-type RGB = [number, number, number];
 
 export function alphaFromTime(divisor = 10) {
   const time = Date.now() / divisor;

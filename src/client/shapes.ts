@@ -1,8 +1,8 @@
 import P5 from 'p5';
 import Asteroid from 'core/Asteroid';
-import { Temperature } from 'core/GameEngine';
 import { circleFraction } from 'lib/geometry';
 import colors, { withAlpha, alphaFromTime } from './colors';
+import { Temperature } from 'types';
 
 const asteroidOffsets = {
   x: [2, 2, -2, -2],

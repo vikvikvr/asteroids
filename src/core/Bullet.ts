@@ -1,12 +1,5 @@
-import { Point, Rect } from 'lib/geometry';
+import { BulletOptions } from 'types';
 import GameObject from './GameObject';
-
-interface BulletOptions {
-  world: Rect;
-  coords: Point;
-  direction: number;
-  speed: number;
-}
 
 class Bullet extends GameObject {
   public piercesCount: number;

@@ -1,29 +1,13 @@
 /* eslint-disable no-unused-vars */
 import Ship from './Ship';
-import Asteroid, { AsteroidSize } from './Asteroid';
-import { haveCollided, Rect, centerOf, randomIndex } from 'lib/geometry';
+import Asteroid from './Asteroid';
+import { haveCollided, centerOf, randomIndex } from 'lib/geometry';
 import * as ev from './Events';
 import { remove, find } from 'lodash';
 import Spawner from './Spawner';
 import { bulletHitScore, getHighScore, saveHighScore } from './game-rules';
 import Shard from './Shard';
-
-export type GameStatus = 'playing' | 'lost' | 'idle';
-export enum Temperature {
-  Low = 0,
-  Normal = 1,
-  High = 2
-}
-
-export interface GameState {
-  score: number;
-  level: number;
-  ship: Ship;
-  asteroids: Asteroid[];
-  shards: Shard[];
-  events: ev.TGameEvent[];
-  temperature: Temperature;
-}
+import { AsteroidSize, GameState, GameStatus, Rect, Temperature } from 'types';
 
 class GameEngine {
   // public

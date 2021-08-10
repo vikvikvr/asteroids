@@ -1,15 +1,6 @@
-import { Point, randomAngle, randomNumber, Rect } from 'lib/geometry';
-import { AsteroidSize } from './Asteroid';
-import { Temperature } from './GameEngine';
+import { randomAngle, randomNumber } from 'lib/geometry';
+import { ShardOptions, Temperature } from 'types';
 import GameObject from './GameObject';
-
-interface ShardOptions {
-  colorIndex: number;
-  size: AsteroidSize;
-  coords: Point;
-  world: Rect;
-  temperature: Temperature;
-}
 
 const shardSizes = [9, 12, 15];
 const shardSpeeds = [2, 3, 4];

@@ -1,16 +1,4 @@
-import { Point, Rect } from 'lib/geometry';
-import { Temperature } from './GameEngine';
-
-export type EntityOptions = {
-  world: Rect;
-  coords: Point;
-  speed?: number;
-  acceleration?: number;
-  direction?: number;
-  angularSpeed?: number;
-  orientation?: number;
-  rotationSpeed?: number;
-};
+import { EntityOptions, Point, Rect, Temperature } from 'types';
 
 const speedMultipliers = [0.05, 1, 2];
 

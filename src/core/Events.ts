@@ -1,14 +1,7 @@
+import { AsteroidSize, GameEventType, Point } from 'types';
 import { v4 as uuidv4 } from 'uuid';
-import { Point } from 'lib/geometry';
-import Asteroid, { AsteroidSize } from './Asteroid';
+import Asteroid from './Asteroid';
 import Bullet from './Bullet';
-
-export type GameEventType =
-  | 'BULLET_HIT'
-  | 'SHIP_HIT'
-  | 'FREEZE'
-  | 'BURN'
-  | 'LEVEL_UP';
 
 export class GameEvent {
   // public
@@ -52,5 +45,3 @@ export class BulletHit extends GameEvent {
     this.shattered = shattered;
   }
 }
-
-export type TGameEvent = ShipHit | BulletHit | GameEvent;

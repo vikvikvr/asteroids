@@ -1,16 +1,6 @@
-import Entity, { EntityOptions } from './Entity';
+import Entity from './Entity';
 import { v4 as uuidv4 } from 'uuid';
-import { Point } from 'lib/geometry';
-import { Temperature } from './GameEngine';
-
-export type GameObjectType = 'ship' | 'asteroid' | 'bullet' | 'shard';
-
-export interface GameObjectOptions extends EntityOptions {
-  type: GameObjectType;
-  hitBoxRadius: number;
-  duration?: number;
-  tailLength?: number;
-}
+import { GameObjectOptions, GameObjectType, Point, Temperature } from 'types';
 
 class GameObject extends Entity {
   // public

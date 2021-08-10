@@ -1,5 +1,4 @@
-import { AsteroidSize } from './Asteroid';
-import { Temperature } from './GameEngine';
+import { AsteroidSize, Temperature } from 'types';
 
 const SCORES = [200, 100, 50];
 

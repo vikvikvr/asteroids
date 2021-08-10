@@ -1,7 +1,4 @@
-export interface InterpolatorOptions {
-  current: number;
-  steps?: number;
-}
+import { InterpolatorOptions } from 'types';
 
 class Interpolator {
   target: number;

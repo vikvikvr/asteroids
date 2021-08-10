@@ -1,41 +1,29 @@
-import GameEngine, { Temperature } from 'core/GameEngine';
+import GameEngine from 'core/GameEngine';
 import P5 from 'p5';
 import {
   circleFraction,
   drawableCoords,
-  Point,
   randomNumber,
   toDrawableObject
 } from 'lib';
+import {
+  Temperature,
+  Point,
+  GameEventType,
+  Star,
+  DrawableObject,
+  DrawGameObjectOptions
+} from 'types';
 import GUI, { prettifyNumber } from './GUI';
 import colors, { withAlpha } from './colors';
 import Animation, { TextAnimation } from './Animation';
 import { remove } from 'lodash';
 import { bulletHitScore } from 'core/game-rules';
-import { BulletHit, GameEvent, GameEventType } from 'core/Events';
+import { BulletHit, GameEvent } from 'core/Events';
 import Asteroid from 'core/Asteroid';
 import Bullet from 'core/Bullet';
 import * as shapes from './shapes';
 import { drawExplostionShard, drawTextAnimation } from './animations';
-
-interface DrawGameObjectOptions {
-  rotateDirection?: boolean;
-  ignoreOrientation?: boolean;
-  rotationOffset?: number;
-}
-
-export interface DrawableObject {
-  coords: Point;
-  hitBoxRadius: number;
-  orientation: number;
-  direction: number;
-}
-
-interface Star {
-  x: number;
-  y: number;
-  diameter: number;
-}
 
 class Drawer {
   // private

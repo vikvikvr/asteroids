@@ -1,4 +1,4 @@
-import { Point } from 'lib';
+import { Point } from 'types';
 
 class Animation {
   public isExpired: boolean = false;

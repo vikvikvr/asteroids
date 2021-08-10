@@ -1,19 +1,4 @@
-import { DrawableObject } from 'client/Drawer';
-
-export interface Point {
-  x: number;
-  y: number;
-}
-
-export interface Rect {
-  width: number;
-  height: number;
-}
-
-export interface Collidable {
-  hitBoxRadius: number;
-  coords: Point;
-}
+import { Collidable, DrawableObject, Point, Rect } from 'types';
 
 export function centerOf(rect: Rect): Point {
   return {

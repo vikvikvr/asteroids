@@ -1,27 +1,12 @@
 /* eslint-disable no-unused-vars */
 import {
   circleFraction,
-  Point,
   randomAngle,
   randomNumber,
-  randomSign,
-  Rect
+  randomSign
 } from 'lib/geometry';
-import { Temperature } from './GameEngine';
+import { AsteroidOptions, AsteroidSize, Temperature } from 'types';
 import GameObject from './GameObject';
-
-export enum AsteroidSize {
-  Small = 0,
-  Medium = 1,
-  Large = 2
-}
-
-export interface AsteroidOptions {
-  size: AsteroidSize;
-  world: Rect;
-  coords: Point;
-  direction: number;
-}
 
 export const speeds = [5, 3, 1.5];
 export const damages = [0.1, 0.15, 0.2];

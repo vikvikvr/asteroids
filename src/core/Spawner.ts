@@ -1,20 +1,11 @@
-import { GameState } from './GameEngine';
 import {
   circleFraction,
   notDirection,
-  Point,
   randomAngle,
-  randomCoordsFarFrom,
-  Rect
+  randomCoordsFarFrom
 } from 'lib/geometry';
-import Asteroid, { AsteroidOptions, AsteroidSize } from './Asteroid';
-
-export interface AsteroidSpawnOptions {
-  size: AsteroidSize;
-  count?: number;
-  coords?: Point;
-  notDirection?: number;
-}
+import { AsteroidOptions, AsteroidSpawnOptions, GameState, Rect } from 'types';
+import Asteroid from './Asteroid';
 
 class Spawner {
   // public
