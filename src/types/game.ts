@@ -1,12 +1,22 @@
+import Asteroid from 'core/Asteroid';
+import Shard from 'core/Shard';
+import Ship from 'core/Ship';
 import { BulletHit, GameEvent, ShipHit } from 'core/Events';
+import { Temperature } from './enums';
 
-// **** Game logic ****
+export interface GameState {
+  score: number;
+  level: number;
+  ship: Ship;
+  asteroids: Asteroid[];
+  shards: Shard[];
+  events: TGameEvent[];
+  temperature: Temperature;
+}
 
 export type GameStatus = 'playing' | 'lost' | 'idle';
 
 export type GameObjectType = 'ship' | 'asteroid' | 'bullet' | 'shard';
-
-// **** Game events ****
 
 export type GameEventType =
   | 'BULLET_HIT'
@@ -16,7 +26,3 @@ export type GameEventType =
   | 'LEVEL_UP';
 
 export type TGameEvent = ShipHit | BulletHit | GameEvent;
-
-// **** Graphics ****
-
-export type RGB = [number, number, number];

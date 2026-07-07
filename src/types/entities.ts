@@ -1,8 +1,6 @@
-// **** Entities options ****
-
-import { Point, Rect } from './interfaces';
-import { GameObjectType } from '../types';
-import { AsteroidSize, Temperature } from '../enums';
+import { Point, Rect } from './geometry';
+import { GameObjectType } from './game';
+import { AsteroidSize, Temperature } from './enums';
 
 export interface EntityOptions {
   world: Rect;
@@ -48,25 +46,10 @@ export interface AsteroidSpawnOptions {
   notDirection?: number;
 }
 
-// **** Graphics options ****
-
-export interface DrawGameObjectOptions {
-  rotateDirection?: boolean;
-  ignoreOrientation?: boolean;
-  rotationOffset?: number;
-}
-
 export interface ShardOptions {
   colorIndex: number;
   size: AsteroidSize;
   coords: Point;
   world: Rect;
   temperature: Temperature;
-}
-
-// **** Physics options ****
-
-export interface InterpolatorOptions {
-  current: number;
-  steps?: number;
 }

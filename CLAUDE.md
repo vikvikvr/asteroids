@@ -54,3 +54,7 @@ All interfaces, enums, and type aliases are centralized under `src/types` and re
 - Built with Vite (no React plugin — no JSX/React anywhere in `src`); `src/index.ts` mounts the p5 sketch directly onto `#root` in `index.html` at the repo root. `vite.config.ts` uses `vite-tsconfig-paths` so the `baseUrl: "src"` absolute imports resolve, and configures Vitest (`jsdom` environment) for tests.
 - The game world wraps at its edges (`Entity.teleportOffEdges`) and collision/spawn math accounts for this by checking distances across the 8 mirrored copies of the world (`lib/geometry.ts`), not just direct distance.
 - Several test files (`Asteroid.test.ts`, `Bullet.test.ts`, `Entity.test.ts`, `Events.test.ts`, `GameEngine.test.ts`, `Ship.test.ts`, `Spawner.test.ts`) reference source APIs (`Drop`, `AsteroidSize` export, `setTargetDirection`, etc.) that no longer exist — pre-existing breakage from before the Vite migration, not something the tooling change caused.
+
+## Guidelines
+
+- when modifying graphic/GUI elements, ask the user for feedback by attaching screenshots, do NOT use playwright to check the screen yourself
