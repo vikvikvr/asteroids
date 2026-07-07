@@ -195,8 +195,9 @@ class Drawer {
 
   private drawExplosionShards(): void {
     for (const shard of this.engine.state.shards) {
-      const drawer = () => drawExplostionShard(this.gr, shard);
-      this.drawGameObject(shard, {}, drawer);
+      const drawer = (x: number, y: number) =>
+        drawExplostionShard(this.gr, x, y, shard);
+      this.drawParticle(shard.coords, shard.hitBoxRadius, drawer);
     }
   }
 
@@ -256,8 +257,23 @@ class Drawer {
       gr.push();
       this.transformObjectMatrix(object, options, coords);
       drawer();
-      this.drawHitBox(object.hitBoxRadius);
+      this.drawHitBox(0, 0, object.hitBoxRadius);
       gr.pop();
+    }
+  }
+
+  // Fast path for simple, non-rotated particles (shards, tail points, bullets):
+  // skips the push/translate/rotate/pop matrix stack since these shapes are
+  // symmetric and never actually spin (orientation stays 0 for them).
+  private drawParticle(
+    point: Point,
+    hitBoxRadius: number,
+    drawer: (x: number, y: number) => void
+  ): void {
+    const coords = this.drawableCoords(point);
+    if (coords) {
+      drawer(coords.x, coords.y);
+      this.drawHitBox(coords.x, coords.y, hitBoxRadius);
     }
   }
 
@@ -274,12 +290,12 @@ class Drawer {
     gr.rotate(angle);
   }
 
-  private drawHitBox(hitBoxRadius: number): void {
+  private drawHitBox(x: number, y: number, hitBoxRadius: number): void {
     const { gr } = this;
     if (this.showHitBoxes) {
       gr.noFill();
       gr.stroke(colors.hud);
-      gr.circle(0, 0, hitBoxRadius * 2);
+      gr.circle(x, y, hitBoxRadius * 2);
     }
   }
 
@@ -302,9 +318,9 @@ class Drawer {
     const length = asteroid.tail.length;
     for (let i = 0; i < length; i++) {
       const point = asteroid.tail[i];
-      const drawable = toDrawableObject(point);
-      const drawer = () => shapes.asteroidTail(this.gr, i, length);
-      this.drawGameObject(drawable, {}, drawer);
+      const drawer = (x: number, y: number) =>
+        shapes.asteroidTail(this.gr, x, y, i, length);
+      this.drawParticle(point, 2, drawer);
     }
   }
 
@@ -315,17 +331,17 @@ class Drawer {
     gr.noStroke();
     for (let i = 0; i < length; i++) {
       const point = tail[i];
-      const drawable = toDrawableObject(point);
-      const drawer = () => shapes.shipTail(gr, i, length);
-      this.drawGameObject(drawable, {}, drawer);
+      const drawer = (x: number, y: number) =>
+        shapes.shipTail(gr, x, y, i, length);
+      this.drawParticle(point, 2, drawer);
     }
   }
 
   private drawBullets(): void {
     const { bullets } = this.engine.state.ship;
     for (const bullet of bullets) {
-      const drawer = () => shapes.bullet(this.gr);
-      this.drawGameObject(bullet, {}, drawer);
+      const drawer = (x: number, y: number) => shapes.bullet(this.gr, x, y);
+      this.drawParticle(bullet.coords, bullet.hitBoxRadius, drawer);
       this.drawBulletTail(bullet);
     }
   }
@@ -335,10 +351,9 @@ class Drawer {
     const tailShapes = bullet.tail.length;
     for (let i = 0; i < tailShapes; i++) {
       const point = bullet.tail[i];
-      const drawable = toDrawableObject(point);
-      this.drawGameObject(drawable, {}, () =>
-        shapes.bulletTail(this.gr, i, tailLength)
-      );
+      const drawer = (x: number, y: number) =>
+        shapes.bulletTail(this.gr, x, y, i, tailLength);
+      this.drawParticle(point, 2, drawer);
     }
   }
 }

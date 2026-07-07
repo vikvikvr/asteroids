@@ -34,38 +34,48 @@ export function ship(gr: P5.Graphics, side: number): void {
   gr.triangle(0, side, 0, -2 * side, 2 * side, 2 * side);
 }
 
-export function bullet(gr: P5.Graphics): void {
+export function bullet(gr: P5.Graphics, x: number, y: number): void {
   gr.fill(colors.ship.dark);
-  gr.square(0, 0, 4);
+  gr.square(x, y, 4);
 }
 
 export function bulletTail(
   gr: P5.Graphics,
+  x: number,
+  y: number,
   index: number,
   length: number
 ): void {
   const percent = index / length;
   const color = withAlpha(colors.ship.light, percent / 2);
   gr.fill(color);
-  gr.square(0, 0, 3);
+  gr.square(x, y, 3);
 }
 
-export function shipTail(gr: P5.Graphics, index: number, length: number): void {
+export function shipTail(
+  gr: P5.Graphics,
+  x: number,
+  y: number,
+  index: number,
+  length: number
+): void {
   const difference = length - index;
   const alpha = (1 - difference / length) / 4;
   const color = withAlpha(colors.hud, alpha);
   gr.fill(color);
-  gr.circle(0, 0, difference / 1.5 + 15);
+  gr.circle(x, y, difference / 1.5 + 15);
 }
 
 export function asteroidTail(
   gr: P5.Graphics,
+  x: number,
+  y: number,
   index: number,
   length: number
 ): void {
   const color = withAlpha(colors.hud, index / length / 2);
   gr.fill(color);
-  gr.square(0, 0, 4);
+  gr.square(x, y, 4);
 }
 
 export function shipLifeArc(

@@ -10,9 +10,14 @@ export function drawTextAnimation(p5: P5, animation: TextAnimation): void {
   p5.text(text, 0, 0);
 }
 
-export function drawExplostionShard(p5: P5, shard: Shard) {
+export function drawExplostionShard(
+  p5: P5,
+  x: number,
+  y: number,
+  shard: Shard
+) {
   const { hitBoxRadius, temperature, colorIndex } = shard;
   const color = colors.asteroid[temperature][colorIndex];
   p5.fill(withAlpha(color, shard.life));
-  p5.circle(0, 0, hitBoxRadius);
+  p5.circle(x, y, hitBoxRadius);
 }
