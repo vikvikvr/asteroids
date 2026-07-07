@@ -21,6 +21,7 @@ function Sketch(p5: P5) {
   p5.draw = function () {
     if (loaded) {
       keyController.processPressedKeys(p5);
+      engine.update();
       drawer.drawScreen();
     }
   };

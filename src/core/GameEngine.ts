@@ -28,7 +28,6 @@ class GameEngine {
   public levelDuration = 30_000;
   public highScore: number;
   // private
-  private updateTimeout?: NodeJS.Timeout;
   private levelTimeout?: NodeJS.Timeout;
   // constructor
   constructor(world: Rect) {
@@ -49,14 +48,17 @@ class GameEngine {
   public startLevel(): void {
     this.status = 'playing';
     this.updateLevel();
-    this.updateTimeout = setInterval(this.update.bind(this), 16);
     this.levelTimeout = setInterval(
       this.updateLevel.bind(this),
       this.levelDuration
     );
   }
 
-  private update(): void {
+  public update(): void {
+    if (this.status !== 'playing') {
+      return;
+    }
+
     this.state.ship.update(this.state.temperature);
     this.updateAsteroids();
     this.updateShards();
@@ -70,7 +72,6 @@ class GameEngine {
     if (haveLost) {
       this.status = 'lost';
       saveHighScore(this.state.score, this.highScore);
-      this.stopUpdating();
       this.stopLevelingUp();
     }
   }
@@ -78,12 +79,6 @@ class GameEngine {
   private stopLevelingUp(): void {
     if (this.levelTimeout) {
       clearInterval(this.levelTimeout);
-    }
-  }
-
-  private stopUpdating(): void {
-    if (this.updateTimeout) {
-      clearInterval(this.updateTimeout);
     }
   }
 
