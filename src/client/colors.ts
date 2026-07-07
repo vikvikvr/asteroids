@@ -26,6 +26,24 @@ const colors = {
     [Temperature.Low]: palette.blue[900]
   },
   hud: palette.grey[50],
+  hudDim: withAlpha(palette.grey[50], 0.65),
+  hudFaint: withAlpha(palette.grey[50], 0.4),
+  hudPanel: 'rgba(13,18,48,0.55)',
+  hudKey: withAlpha(palette.grey[50], 0.16),
+  stage: {
+    [Temperature.Normal]: {
+      color: palette.teal[300],
+      bg: withAlpha(palette.teal[500], 0.22)
+    },
+    [Temperature.Low]: {
+      color: palette.lightBlue[300],
+      bg: withAlpha(palette.lightBlue[500], 0.22)
+    },
+    [Temperature.High]: {
+      color: palette.deepOrange[300],
+      bg: withAlpha(palette.deepOrange[700], 0.28)
+    }
+  },
   asteroid: {
     [Temperature.High]: [
       palette.orange[500],
