@@ -96,8 +96,8 @@ class Drawer {
 
   private drawGameOverScreen(): void {
     const { gr } = this;
-    const x = gr.windowWidth / 2;
-    const y = gr.windowHeight / 2;
+    const x = gr.width / 2;
+    const y = gr.height / 2;
     gr.background(colors.background[Temperature.Normal]);
     gr.fill(colors.hud);
     this.drawGameOverTitle({ x, y });

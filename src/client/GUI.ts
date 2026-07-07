@@ -28,14 +28,14 @@ class GUI {
     const { gr } = this;
     gr.textSize(20);
     const text = prettifyNumber(highScore);
-    gr.text(text, gr.windowWidth - SPACING, SPACING * 2);
+    gr.text(text, gr.width - SPACING, SPACING * 2);
   }
 
   private drawCurrentScore(score: number): void {
     const { gr } = this;
     gr.textAlign(gr.RIGHT);
     const text = prettifyNumber(score);
-    gr.text(text, gr.windowWidth - SPACING, SPACING);
+    gr.text(text, gr.width - SPACING, SPACING);
   }
 }
 
