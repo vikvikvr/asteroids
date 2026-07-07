@@ -71,7 +71,17 @@ Base scores by size: **Small 200, Medium 100, Large 50**.
 - **High**: base score × 2 (Small 400, Medium 200, Large 100).
 - **Low** ("shattered" — since splitting is suppressed, the score front-loads what the fragments would have been worth): Large → 1050 (`50 + 100*2 + 200*4`), Medium → 500 (`100 + 200*2`), Small → 200.
 
+Final awarded score is `bulletHitScore(size, temperature) * combo.multiplier` (see Combo below).
+
 High score persists in `localStorage` under key `asteroids-highscore`, updated only when the run's score exceeds the stored value, on game-over.
+
+## Combo/streak multiplier (`src/core/game-rules.ts`, `GameEngine`)
+
+- `GameState.combo` = `{ count, multiplier, expiresAt }`, starts at `{ 0, 1, 0 }`.
+- Every bullet-asteroid kill increments `combo.count` and resets `combo.expiresAt` to `Date.now() + COMBO_WINDOW_MS` (**1,500ms**).
+- If `Date.now()` passes `combo.expiresAt` without a new kill (checked once per `update()` tick), the combo resets to `{ 0, 1, 0 }`. It also resets immediately on any ship hit.
+- `multiplier` is derived from `count` via fixed thresholds: **x1** (0–2 kills), **x2** (3–5), **x3** (6–9), **x4** (10–14), **x5** (15+) — see `comboMultiplier()`.
+- The multiplier applies to every bullet-hit score award (including Low-temperature "shattered" payouts and High-temperature doubled payouts), so it compounds with temperature bonuses.
 
 ## World wraparound
 

@@ -6,7 +6,13 @@ import { haveCollided, centerOf, randomIndex } from 'lib/geometry';
 import * as ev from './Events';
 import { remove, find } from 'lodash';
 import Spawner from './Spawner';
-import { bulletHitScore, getHighScore, saveHighScore } from './game-rules';
+import {
+  bulletHitScore,
+  comboMultiplier,
+  COMBO_WINDOW_MS,
+  getHighScore,
+  saveHighScore
+} from './game-rules';
 import Shard from './Shard';
 import {
   AsteroidSize,
@@ -38,7 +44,8 @@ class GameEngine {
       ship: new Ship({ world, coords: centerOf(world) }),
       score: 0,
       level: 0,
-      temperature: Temperature.Normal
+      temperature: Temperature.Normal,
+      combo: { count: 0, multiplier: 1, expiresAt: 0 }
     };
     this.highScore = getHighScore();
     this.world = world;
@@ -62,8 +69,27 @@ class GameEngine {
     this.state.ship.update(this.state.temperature);
     this.updateAsteroids();
     this.updateShards();
+    this.updateCombo();
     this.checkCollisions();
     this.checkGameLost();
+  }
+
+  private updateCombo(): void {
+    const { combo } = this.state;
+    if (combo.count > 0 && Date.now() > combo.expiresAt) {
+      this.resetCombo();
+    }
+  }
+
+  private registerComboHit(): void {
+    const { combo } = this.state;
+    combo.count++;
+    combo.expiresAt = Date.now() + COMBO_WINDOW_MS;
+    combo.multiplier = comboMultiplier(combo.count);
+  }
+
+  private resetCombo(): void {
+    this.state.combo = { count: 0, multiplier: 1, expiresAt: 0 };
   }
 
   private checkGameLost(): void {
@@ -126,6 +152,7 @@ class GameEngine {
     this.createExplosionShards(asteroid);
     this.state.events.push(event);
     this.processBulletHit(event);
+    this.registerComboHit();
     this.assignScore(event);
   }
 
@@ -185,7 +212,9 @@ class GameEngine {
   }
 
   private assignScore(event: ev.BulletHit): void {
-    const scoreToAdd = bulletHitScore(event.size, this.state.temperature);
+    const scoreToAdd =
+      bulletHitScore(event.size, this.state.temperature) *
+      this.state.combo.multiplier;
     this.state.score += scoreToAdd;
   }
 
@@ -227,6 +256,7 @@ class GameEngine {
 
     remove(asteroids, { id: event.asteroidId });
     ship.life -= event.damage;
+    this.resetCombo();
   }
 }
 

@@ -1,7 +1,8 @@
 import P5 from 'p5';
-import colors from './colors';
+import colors, { withAlpha } from './colors';
 import GameEngine from 'core/GameEngine';
-import { Temperature } from 'types';
+import { Combo, Temperature } from 'types';
+import { COMBO_WINDOW_MS } from 'core/game-rules';
 
 const SPACING = 40;
 
@@ -31,12 +32,13 @@ class GUI {
   }
 
   public draw(engine: GameEngine): void {
-    const { level, score, temperature } = engine.state;
+    const { level, score, temperature, combo } = engine.state;
     this.gr.noStroke();
     this.drawLevel(level);
     this.drawStage(temperature);
     this.drawCurrentScore(score);
     this.drawHighScore(engine.highScore);
+    this.drawCombo(combo);
     this.drawHotkeys();
   }
 
@@ -99,6 +101,33 @@ class GUI {
     gr.fill(colors.hudDim);
     gr.textSize(18);
     gr.text(prettifyNumber(highScore), x, SPACING + 56);
+  }
+
+  private drawCombo(combo: Combo): void {
+    if (combo.multiplier < 2) {
+      return;
+    }
+
+    const { gr } = this;
+    const barWidth = 140;
+    const barHeight = 6;
+    const x = gr.width - SPACING;
+    const y = SPACING + 90;
+    const remaining = Math.max(
+      0,
+      Math.min(1, (combo.expiresAt - Date.now()) / COMBO_WINDOW_MS)
+    );
+
+    gr.textAlign(gr.RIGHT, gr.TOP);
+    gr.fill(colors.hudFaint);
+    gr.textSize(11);
+    gr.text(`COMBO x${combo.multiplier}`, x, y);
+
+    const barY = y + 16;
+    gr.fill(withAlpha(colors.hud, 0.15));
+    gr.rect(x - barWidth, barY, barWidth, barHeight, barHeight / 2);
+    gr.fill(colors.ship.light);
+    gr.rect(x - barWidth, barY, barWidth * remaining, barHeight, barHeight / 2);
   }
 
   private drawHotkeys(): void {

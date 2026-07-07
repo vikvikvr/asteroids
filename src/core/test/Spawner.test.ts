@@ -16,7 +16,8 @@ beforeEach(() => {
     events: [],
     score: 0,
     level: 0,
-    temperature: Temperature.Normal
+    temperature: Temperature.Normal,
+    combo: { count: 0, multiplier: 1, expiresAt: 0 }
   };
   spawner = new Spawner(state, world);
 });

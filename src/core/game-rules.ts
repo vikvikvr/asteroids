@@ -2,6 +2,21 @@ import { AsteroidSize, Temperature } from 'types';
 
 const SCORES = [200, 100, 50];
 
+export const COMBO_WINDOW_MS = 1_500;
+
+// Kill counts required to reach x1, x2, x3, x4, x5.
+const COMBO_THRESHOLDS = [0, 3, 6, 10, 15];
+
+export function comboMultiplier(count: number): number {
+  let multiplier = 1;
+  for (let i = 1; i < COMBO_THRESHOLDS.length; i++) {
+    if (count >= COMBO_THRESHOLDS[i]) {
+      multiplier = i + 1;
+    }
+  }
+  return multiplier;
+}
+
 export function bulletHitScore(
   size: AsteroidSize,
   temperature: Temperature

@@ -33,6 +33,7 @@ class Drawer {
   private engine: GameEngine;
   private gui: GUI;
   private animations: Animation[] = [];
+  private lastComboMultiplier = 1;
   private shakeEndTime: number;
   private gr: P5.Graphics;
   // constructor
@@ -148,6 +149,19 @@ class Drawer {
       }
     }
     events.length = 0;
+    this.addComboTierAnimation();
+  }
+
+  private addComboTierAnimation(): void {
+    const { multiplier } = this.engine.state.combo;
+    if (multiplier > this.lastComboMultiplier) {
+      const animation = new TextAnimation(
+        `x${multiplier} combo!`,
+        this.engine.state.ship.coords
+      );
+      this.animations.push(animation);
+    }
+    this.lastComboMultiplier = multiplier;
   }
 
   private addStageAnimation(event: GameEvent): void {
@@ -164,9 +178,9 @@ class Drawer {
   }
 
   private addScoreAnimation(event: GameEvent): void {
-    const { temperature } = this.engine.state;
+    const { temperature, combo } = this.engine.state;
     const { size, coords } = event as BulletHit;
-    const score = bulletHitScore(size, temperature);
+    const score = bulletHitScore(size, temperature) * combo.multiplier;
     const animation = new TextAnimation(`+${score}`, coords);
     this.animations.push(animation);
   }

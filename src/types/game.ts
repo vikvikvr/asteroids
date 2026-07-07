@@ -4,6 +4,12 @@ import Ship from 'core/Ship';
 import { BulletHit, GameEvent, ShipHit } from 'core/Events';
 import { Temperature } from './enums';
 
+export interface Combo {
+  count: number;
+  multiplier: number;
+  expiresAt: number;
+}
+
 export interface GameState {
   score: number;
   level: number;
@@ -12,6 +18,7 @@ export interface GameState {
   shards: Shard[];
   events: TGameEvent[];
   temperature: Temperature;
+  combo: Combo;
 }
 
 export type GameStatus = 'playing' | 'lost' | 'idle';
