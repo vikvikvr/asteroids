@@ -40,6 +40,13 @@ function start(p5: P5): void {
   drawer = new Drawer(p5, engine);
   keyController = new KeyController(engine.state.ship);
   engine.startLevel();
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      engine.pause();
+    } else {
+      engine.resume();
+    }
+  });
 }
 
 function hideLoadingScreen(): void {

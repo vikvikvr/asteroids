@@ -21,7 +21,7 @@ export interface GameState {
   combo: Combo;
 }
 
-export type GameStatus = 'playing' | 'lost' | 'idle';
+export type GameStatus = 'playing' | 'paused' | 'lost' | 'idle';
 
 export type GameObjectType = 'ship' | 'asteroid' | 'bullet' | 'shard';
 

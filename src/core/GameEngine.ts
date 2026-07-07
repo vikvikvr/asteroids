@@ -61,6 +61,18 @@ class GameEngine {
     );
   }
 
+  public pause(): void {
+    if (this.status === 'playing') {
+      this.status = 'paused';
+    }
+  }
+
+  public resume(): void {
+    if (this.status === 'paused') {
+      this.status = 'playing';
+    }
+  }
+
   public update(): void {
     if (this.status !== 'playing') {
       return;
@@ -219,6 +231,10 @@ class GameEngine {
   }
 
   private updateLevel(): void {
+    if (this.status !== 'playing') {
+      return;
+    }
+
     const spawnTime = this.levelDuration / 3;
     setTimeout(this.startFrozenStage.bind(this), spawnTime);
     setTimeout(this.startBurningStage.bind(this), spawnTime * 2);
@@ -242,11 +258,19 @@ class GameEngine {
   }
 
   private startBurningStage(): void {
+    if (this.status !== 'playing') {
+      return;
+    }
+
     this.state.temperature = Temperature.High;
     this.addGameEvent('BURN', this.state.ship.coords);
   }
 
   private startFrozenStage(): void {
+    if (this.status !== 'playing') {
+      return;
+    }
+
     this.state.temperature = Temperature.Low;
     this.addGameEvent('FREEZE', this.state.ship.coords);
   }
