@@ -43,7 +43,7 @@ describe('geometry', () => {
     var result: number;
     const unwanted = Math.PI / 2;
 
-    var random: jest.Mock<number> = jest.fn();
+    var random = vi.fn<() => number>();
     it('should return a good lower value', () => {
       random.mockReturnValueOnce(0);
       result = notDirection(unwanted, CONE_ANGLE, random);

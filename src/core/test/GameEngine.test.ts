@@ -7,11 +7,11 @@ import Drop from '../Drop';
 
 const world = { height: 10000, width: 10000 };
 var engine: GameEngine;
-var mock = jest.fn();
+var mock = vi.fn();
 
 beforeEach(() => {
   engine = new GameEngine(world);
-  jest.resetAllMocks();
+  vi.resetAllMocks();
 });
 
 describe('gameEngine', () => {

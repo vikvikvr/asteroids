@@ -98,29 +98,29 @@ describe('Spawner', () => {
   });
   describe('asteroid every', () => {
     it('calls spawn asteroid with the given interval', () => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
       let ms = 500;
-      spawner.spawnAsteroid = jest.fn();
+      spawner.spawnAsteroid = vi.fn();
       spawner.asteroidEvery(ms);
-      jest.advanceTimersByTime(ms * 5);
+      vi.advanceTimersByTime(ms * 5);
       expect(spawner.spawnAsteroid).toHaveBeenCalledTimes(5);
     });
     it('passes options to spawn asteroid', () => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
       let ms = 500;
-      spawner.spawnAsteroid = jest.fn();
+      spawner.spawnAsteroid = vi.fn();
       spawner.asteroidEvery(ms, { count: 2 });
-      jest.advanceTimersByTime(ms);
+      vi.advanceTimersByTime(ms);
       expect(spawner.spawnAsteroid).toHaveBeenLastCalledWith({ count: 2 });
     });
     it('updates time of next spawn', () => {
-      let now = jest.spyOn(global.Date, 'now');
-      jest.useFakeTimers();
+      let now = vi.spyOn(global.Date, 'now');
+      vi.useFakeTimers();
       let interval = 500;
       spawner.asteroidEvery(interval);
       for (let i = 1; i < 3; i++) {
         now.mockReturnValue(10_000 * i);
-        jest.advanceTimersByTime(interval);
+        vi.advanceTimersByTime(interval);
         expect(spawner.nextAsteroidSpawnAt).toBe(10_000 * i + interval);
       }
     });

@@ -10,15 +10,15 @@ A front-end-only Asteroids clone built with TypeScript and rendered via p5.js (n
 
 ```bash
 npm install     # install dependencies
-npm start       # run dev server (react-scripts/CRA)
-npm test        # run Jest tests in watch mode (react-scripts test)
-npm run build   # production build
+npm start       # run Vite dev server
+npm test        # run Vitest in watch mode
+npm run build   # production build (vite build, outputs to build/)
 npm run deploy  # publish build/ to gh-pages
 ```
 
-To run a single test file: `npm test -- Ship.test.ts` (or any substring of the path). Tests live alongside `src/core/test/*.test.ts` and as `*.test.ts` files next to their source (e.g. `src/lib/geometry.test.ts`, `src/client/Drawer.test.ts`).
+To run a single test file: `npm test -- Ship.test.ts` (or any substring of the path). Tests live alongside `src/core/test/*.test.ts` and as `*.test.ts` files next to their source (e.g. `src/lib/geometry.test.ts`, `src/client/Drawer.test.ts`). Vitest runs with `globals: true` (`vite.config.ts`), so `describe`/`it`/`expect`/`vi` are available without imports, matching the old Jest-global style.
 
-There is no separate lint command; ESLint config lives inline in `package.json` (`eslintConfig`) and runs as part of `react-scripts` tooling.
+There is no separate lint command; ESLint config lives inline in `package.json` (`eslintConfig`), for editor integration only.
 
 ## Architecture
 
@@ -51,5 +51,6 @@ All interfaces, enums, and type aliases are centralized under `src/types` and re
 
 ## Notes
 
-- `redux`, `redux-devtools-extension`, and `xstate` are listed in `package.json` but are not used anywhere in `src` except an unused scratch file (`src/utils/xstate.ts`) — leftovers from the CRA template/experimentation, not part of the active architecture. Likewise, no React components are rendered; `src/index.ts` mounts the p5 sketch directly onto `#root`.
+- Built with Vite (no React plugin — no JSX/React anywhere in `src`); `src/index.ts` mounts the p5 sketch directly onto `#root` in `index.html` at the repo root. `vite.config.ts` uses `vite-tsconfig-paths` so the `baseUrl: "src"` absolute imports resolve, and configures Vitest (`jsdom` environment) for tests.
 - The game world wraps at its edges (`Entity.teleportOffEdges`) and collision/spawn math accounts for this by checking distances across the 8 mirrored copies of the world (`lib/geometry.ts`), not just direct distance.
+- Several test files (`Asteroid.test.ts`, `Bullet.test.ts`, `Entity.test.ts`, `Events.test.ts`, `GameEngine.test.ts`, `Ship.test.ts`, `Spawner.test.ts`) reference source APIs (`Drop`, `AsteroidSize` export, `setTargetDirection`, etc.) that no longer exist — pre-existing breakage from before the Vite migration, not something the tooling change caused.

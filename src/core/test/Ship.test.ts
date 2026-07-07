@@ -144,7 +144,7 @@ describe('ship', () => {
     });
     it('updates bullets', () => {
       let ship = new Ship();
-      let mock = jest.fn();
+      let mock = vi.fn();
       ship.fire();
       ship.bullets[0].update = mock;
       ship.update();
