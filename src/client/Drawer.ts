@@ -315,9 +315,9 @@ class Drawer {
   }
 
   private drawAsteroidTail(asteroid: Asteroid, temperature: Temperature): void {
-    const length = asteroid.tail.length;
+    const length = asteroid.tailCount;
     for (let i = 0; i < length; i++) {
-      const point = asteroid.tail[i];
+      const point = asteroid.tailAt(i);
       const drawer = (x: number, y: number) =>
         shapes.asteroidTail(this.gr, x, y, i, length);
       this.drawParticle(point, 2, drawer);
@@ -326,11 +326,11 @@ class Drawer {
 
   private drawShipTail(): void {
     const { gr } = this;
-    const { tail } = this.engine.state.ship;
-    const length = tail.length;
+    const ship = this.engine.state.ship;
+    const length = ship.tailCount;
     gr.noStroke();
     for (let i = 0; i < length; i++) {
-      const point = tail[i];
+      const point = ship.tailAt(i);
       const drawer = (x: number, y: number) =>
         shapes.shipTail(gr, x, y, i, length);
       this.drawParticle(point, 2, drawer);
@@ -348,9 +348,9 @@ class Drawer {
 
   private drawBulletTail(bullet: Bullet): void {
     const tailLength = bullet.tailLength;
-    const tailShapes = bullet.tail.length;
+    const tailShapes = bullet.tailCount;
     for (let i = 0; i < tailShapes; i++) {
-      const point = bullet.tail[i];
+      const point = bullet.tailAt(i);
       const drawer = (x: number, y: number) =>
         shapes.bulletTail(this.gr, x, y, i, tailLength);
       this.drawParticle(point, 2, drawer);

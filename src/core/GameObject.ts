@@ -9,9 +9,11 @@ class GameObject extends Entity {
   public hitBoxRadius: number;
   public life: number;
   public isExpired: boolean;
-  public tail: Point[] = [];
   public tailLength: number;
   // private
+  private tailBuffer: Point[] = [];
+  private tailHead = 0;
+  private tailCountValue = 0;
   private updatesCount: number;
   private expiresAt: number;
   // constructor
@@ -36,13 +38,27 @@ class GameObject extends Entity {
     this.updatesCount++;
   }
 
+  public get tailCount(): number {
+    return this.tailCountValue;
+  }
+
+  // Returns the tail point at logical index i, ordered oldest (0) to newest.
+  public tailAt(i: number): Point {
+    return this.tailBuffer[(this.tailHead + i) % this.tailLength];
+  }
+
   private updateTail(): void {
     const shouldUpdate = this.updatesCount % 2 === 0;
-    if (shouldUpdate) {
-      if (this.tail.length === this.tailLength) {
-        this.tail.shift();
-      }
-      this.tail.push({ ...this.coords });
+    if (!shouldUpdate) {
+      return;
+    }
+    const point = { ...this.coords };
+    if (this.tailCountValue < this.tailLength) {
+      this.tailBuffer[this.tailCountValue] = point;
+      this.tailCountValue++;
+    } else {
+      this.tailBuffer[this.tailHead] = point;
+      this.tailHead = (this.tailHead + 1) % this.tailLength;
     }
   }
 }
