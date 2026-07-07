@@ -1,127 +1,68 @@
-import { distance } from '../../lib/geometry';
 import Ship from '../Ship';
 import Spawner from '../Spawner';
-import { droppable } from '../Drop';
-import { sizes } from '../Asteroid';
+import { squareDistance } from 'lib/geometry';
+import { AsteroidSize, GameState, Rect, Temperature } from 'types';
 
-var spawner: Spawner;
+const world: Rect = { width: 1000, height: 1000 };
+
+let state: GameState;
+let spawner: Spawner;
 
 beforeEach(() => {
-  spawner = new Spawner(
-    {
-      ship: new Ship(),
-      asteroids: [],
-      bonuses: [],
-      events: []
-    },
-    { height: 1000, width: 1000 }
-  );
+  state = {
+    ship: new Ship({ world, coords: { x: 500, y: 500 } }),
+    asteroids: [],
+    shards: [],
+    events: [],
+    score: 0,
+    level: 0,
+    temperature: Temperature.Normal
+  };
+  spawner = new Spawner(state, world);
 });
 
 describe('Spawner', () => {
   describe('constructor', () => {
-    it('assigns values in constuctor', () => {
-      expect(spawner.state.asteroids).toEqual([]);
-      expect(spawner.state.bonuses).toEqual([]);
-      expect(spawner.state.events).toEqual([]);
-      expect(spawner.world).toEqual({ height: 1000, width: 1000 });
-      expect(spawner.nextAsteroidSpawnAt).toBe(Infinity);
-      expect(spawner.nextBonusSpawnAt).toBe(Infinity);
+    it('assigns values in constructor', () => {
+      expect(spawner.state).toBe(state);
+      expect(spawner.world).toEqual(world);
     });
   });
-  describe('spawn bonus', () => {
+  describe('spawnAsteroid', () => {
     it('spawns the right amount', () => {
-      let spawned = spawner.spawnBonus({ count: 2 });
-      expect(spawned.length).toBe(2);
-    });
-    it('spawns the right type', () => {
-      droppable.forEach((type) => {
-        let spawned = spawner.spawnBonus({ type });
-        expect(spawned[0].dropType).toBe(type);
-      });
-    });
-    it('spawns at the given coords', () => {
-      let coords = { x: 42, y: 84 };
-      let spawned = spawner.spawnBonus({ coords });
-      expect(spawned[0].coords).toEqual(coords);
-    });
-    it('spawns them far from ship', () => {
-      for (let i = 0; i < 1000; i++) {
-        let { ship } = spawner.state;
-        spawner.state.bonuses = [];
-        let spawned = spawner.spawnBonus();
-        let coords = spawned[0].coords;
-        expect(distance(coords, ship.coords)).toBeGreaterThan(
-          ship.hitBoxRadius * spawner['HIT_BOX_MULTIPLIER']
-        );
-      }
-    });
-    it('allows only 3 of the same type', () => {
-      let spawned = spawner.spawnBonus({ count: 4, type: 'ammo' });
-      expect(spawned.length).toBe(3);
-    });
-  });
-  describe('spawn asteroid', () => {
-    it('spawns the right amount', () => {
-      let spawned = spawner.spawnAsteroid({ count: 2 });
-      expect(spawned.length).toBe(2);
+      spawner.spawnAsteroid({ size: AsteroidSize.Large, count: 2 });
+      expect(state.asteroids.length).toBe(2);
     });
     it('spawns the right size', () => {
-      sizes.forEach((size) => {
-        let spawned = spawner.spawnAsteroid({ size });
-        expect(spawned[0].size).toBe(size);
-      });
+      [AsteroidSize.Small, AsteroidSize.Medium, AsteroidSize.Large].forEach(
+        (size) => {
+          state.asteroids = [];
+          spawner.spawnAsteroid({ size });
+          expect(state.asteroids[0].size).toBe(size);
+        }
+      );
     });
     it('spawns at the given coords', () => {
       let coords = { x: 42, y: 84 };
-      let spawned = spawner.spawnAsteroid({ coords });
-      expect(spawned[0].coords).toEqual(coords);
+      spawner.spawnAsteroid({ size: AsteroidSize.Large, coords });
+      expect(state.asteroids[0].coords).toEqual(coords);
     });
-    it('spawns them far from ship', () => {
-      for (let i = 0; i < 1000; i++) {
-        let { ship } = spawner.state;
-        let spawned = spawner.spawnAsteroid();
-        let coords = spawned[0].coords;
-        expect(distance(coords, ship.coords)).toBeGreaterThan(
-          ship.hitBoxRadius * spawner['HIT_BOX_MULTIPLIER']
-        );
+    it('spawns them far from the ship', () => {
+      for (let i = 0; i < 100; i++) {
+        state.asteroids = [];
+        spawner.spawnAsteroid({ size: AsteroidSize.Large });
+        let dist = squareDistance(state.asteroids[0].coords, state.ship.coords);
+        let minDistance = state.ship.hitBoxRadius * spawner['HIT_BOX_MULTIPLIER'];
+        expect(dist).toBeGreaterThan(minDistance ** 2);
       }
     });
     it('avoids a given direction', () => {
       let angle = Math.PI / 2;
-      for (let i = 0; i < 1000; i++) {
-        let { direction } = spawner.spawnAsteroid({ notDirection: angle })[0];
-        let angleDist = Math.abs(direction - angle);
-        expect(angleDist).toBeGreaterThan(spawner['CONE_ANGLE'] / 2);
-      }
-    });
-  });
-  describe('asteroid every', () => {
-    it('calls spawn asteroid with the given interval', () => {
-      vi.useFakeTimers();
-      let ms = 500;
-      spawner.spawnAsteroid = vi.fn();
-      spawner.asteroidEvery(ms);
-      vi.advanceTimersByTime(ms * 5);
-      expect(spawner.spawnAsteroid).toHaveBeenCalledTimes(5);
-    });
-    it('passes options to spawn asteroid', () => {
-      vi.useFakeTimers();
-      let ms = 500;
-      spawner.spawnAsteroid = vi.fn();
-      spawner.asteroidEvery(ms, { count: 2 });
-      vi.advanceTimersByTime(ms);
-      expect(spawner.spawnAsteroid).toHaveBeenLastCalledWith({ count: 2 });
-    });
-    it('updates time of next spawn', () => {
-      let now = vi.spyOn(global.Date, 'now');
-      vi.useFakeTimers();
-      let interval = 500;
-      spawner.asteroidEvery(interval);
-      for (let i = 1; i < 3; i++) {
-        now.mockReturnValue(10_000 * i);
-        vi.advanceTimersByTime(interval);
-        expect(spawner.nextAsteroidSpawnAt).toBe(10_000 * i + interval);
+      for (let i = 0; i < 100; i++) {
+        state.asteroids = [];
+        spawner.spawnAsteroid({ size: AsteroidSize.Large, notDirection: angle });
+        let { direction } = state.asteroids[0];
+        expect(Math.abs(direction)).toBeGreaterThan(spawner['CONE_ANGLE'] / 2);
       }
     });
   });

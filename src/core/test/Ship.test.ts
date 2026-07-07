@@ -1,226 +1,111 @@
-import { DropType, droppable } from '../Drop';
 import Ship from '../Ship';
+import { Temperature } from 'types';
+
+const world = { width: 1000, height: 1000 };
+const coords = { x: 500, y: 500 };
+
+function makeShip() {
+  return new Ship({ world, coords });
+}
 
 describe('ship', () => {
   describe('constructor', () => {
     it('creates an instance with the right initial values', () => {
-      let ship = new Ship();
-      expect(ship.ammo).toBe(100);
+      let ship = makeShip();
+      expect(ship.type).toBe('ship');
       expect(ship.life).toBe(1);
-      expect(ship.fuel).toBe(1);
       expect(ship.bullets).toHaveLength(0);
-      expect(ship.cargo).toEqual({
-        ammo: 0,
-        fix: 0,
-        fuel: 0
-      });
+      expect(ship.hitBoxRadius).toBe(30);
     });
   });
-  describe('accelerate', () => {
-    it('assigns positive sprints when there are none', () => {
-      let ship = new Ship();
-      ship.accelerate();
-      expect(ship['sprints']).toBe(ship['ACC_SPRINTS']);
-      ship['sprints'] = -5;
-      ship.accelerate();
-      expect(ship['sprints']).toBe(ship['ACC_SPRINTS']);
-    });
-    it('adds positive sprints to existing positive sprints', () => {
-      let ship = new Ship();
-      ship.accelerate(3);
-      expect(ship['sprints']).toBe(ship['ACC_SPRINTS'] * 3);
-    });
-    it('does not add sprints when out of fuel', () => {
-      let ship = new Ship();
-      ship.fuel = 0;
-      ship.accelerate();
-      expect(ship['sprints']).toBe(0);
+  describe('turnLeft / turnRight', () => {
+    it('turns left and right', () => {
+      let ship = makeShip();
+      let startingDirection = ship.direction;
+      ship.turnLeft();
+      expect(ship.direction).toBeLessThan(startingDirection);
+      ship.turnRight();
+      expect(ship.direction).toBeCloseTo(startingDirection);
     });
   });
-  describe('decelerate', () => {
-    it('assigns negative sprints when there are none', () => {
-      let ship = new Ship();
-      ship.decelerate();
-      expect(ship['sprints']).toBe(-ship['DEC_SPRINTS']);
-      ship['sprints'] = 5;
-      ship.decelerate();
-      expect(ship['sprints']).toBe(-ship['DEC_SPRINTS']);
+  describe('accelerate / decelerate', () => {
+    it('increases speed up to MAX_SPEED', () => {
+      let ship = makeShip();
+      for (let i = 0; i < 100; i++) {
+        ship.accelerate();
+      }
+      expect(ship.speed).toBe(ship.MAX_SPEED);
     });
-    it('adds negative sprints to existing negative sprints', () => {
-      let ship = new Ship();
-      ship.decelerate(3);
-      expect(ship['sprints']).toBe(-ship['DEC_SPRINTS'] * 3);
-    });
-    it('does not add sprints when out of fuel', () => {
-      let ship = new Ship();
-      ship.fuel = 0;
+    it('decreases speed down to zero', () => {
+      let ship = makeShip();
+      ship.accelerate();
       ship.decelerate();
-      expect(ship['sprints']).toBe(0);
+      expect(ship.speed).toBe(0);
     });
-  });
-  it('turn left and right', () => {
-    let ship = new Ship();
-    var startingDirection = ship.direction;
-    ship.turnLeft();
-    ship.update(20);
-    expect(ship.direction).toBeLessThan(startingDirection);
-    ship.turnRight();
-    ship.update(20);
-    expect(ship.direction).toBe(ship['startingDirection']);
   });
   describe('fire', () => {
-    it('does not allow firing when out of bullets', () => {
-      let ship = new Ship();
-      ship.ammo = 0;
-      ship.fire();
+    it('creates a bullet after enough time has passed', () => {
+      let ship = makeShip();
+      ship.fire(Temperature.Normal);
+      expect(ship.bullets.length).toBe(1);
+    });
+    it('does not fire again before the cooldown expires', () => {
+      let ship = makeShip();
+      ship.fire(Temperature.Normal);
+      ship.fire(Temperature.Normal);
+      expect(ship.bullets.length).toBe(1);
+    });
+    it('fires two bullets when hot', () => {
+      let ship = makeShip();
+      ship.fire(Temperature.High);
+      expect(ship.bullets.length).toBe(2);
+    });
+  });
+  describe('restoreLife', () => {
+    it('regenerates life at normal temperature', () => {
+      let ship = makeShip();
+      ship.life = 0.5;
+      ship.restoreLife(Temperature.Normal);
+      expect(ship.life).toBeGreaterThan(0.5);
+    });
+    it('does not regenerate life at other temperatures', () => {
+      let ship = makeShip();
+      ship.life = 0.5;
+      ship.restoreLife(Temperature.High);
+      expect(ship.life).toBe(0.5);
+    });
+    it('never exceeds max life', () => {
+      let ship = makeShip();
+      ship.restoreLife(Temperature.Normal);
+      expect(ship.life).toBe(1);
+    });
+  });
+  describe('removeBullet', () => {
+    it('removes the bullet by id', () => {
+      let ship = makeShip();
+      ship.fire(Temperature.Normal);
+      let bulletId = ship.bullets[0].id;
+      ship.removeBullet(bulletId, Temperature.Normal);
       expect(ship.bullets.length).toBe(0);
     });
-    it('creates a bullet with the right direction and speed', () => {
-      let ship = new Ship();
-      ship.fire();
+    it('pierces once before removing when cold', () => {
+      let ship = makeShip();
+      ship.fire(Temperature.Normal);
       let bullet = ship.bullets[0];
-      expect(bullet.direction).toBe(ship.direction);
-      expect(bullet.speed).toBeGreaterThan(ship.speed);
+      ship.removeBullet(bullet.id, Temperature.Low);
+      expect(ship.bullets.length).toBe(1);
+      expect(bullet.piercesCount).toBe(1);
+      ship.removeBullet(bullet.id, Temperature.Low);
+      expect(ship.bullets.length).toBe(0);
     });
   });
   describe('update', () => {
-    describe('acceleration cycle', () => {
-      let ship = new Ship();
-      let prevSpeed = ship.speed;
-      it('uses positive sprints to accelerate forward', () => {
-        ship.accelerate();
-        for (let i = 0; i < ship['ACC_SPRINTS']; i++) {
-          ship.update();
-          expect(ship.speed).toBeGreaterThan(prevSpeed);
-          prevSpeed = ship.speed;
-        }
-      });
-      it('decelerates back to zero after using positive sprints', () => {
-        for (let i = 0; i < ship['ACC_SPRINTS']; i++) {
-          ship.update();
-          expect(ship.speed).toBeLessThan(prevSpeed);
-          prevSpeed = ship.speed;
-        }
-        ship.update();
-        expect(ship.speed).toBe(0);
-      });
-      it('does not allow speeds higher than max speed', () => {
-        for (let i = 1; i < 10; i++) {
-          let ship = new Ship();
-          ship.accelerate(i * 20);
-          ship.update(ship['ACC_SPRINTS'] * i * 20);
-          expect(ship.speed).toBeLessThan(ship.MAX_SPEED);
-        }
-      });
-    });
-    describe('deceleration cycle', () => {
-      let ship = new Ship();
-      let prevSpeed = ship.speed;
-      it('uses negative sprints to accelerate backwards', () => {
-        ship.decelerate();
-        for (let i = 0; i < ship['DEC_SPRINTS']; i++) {
-          ship.update();
-          expect(ship.speed).toBeLessThan(prevSpeed);
-          prevSpeed = ship.speed;
-        }
-      });
-      it('decelerates back to zero after using negative sprints', () => {
-        for (let i = 0; i < ship['DEC_SPRINTS']; i++) {
-          ship.update();
-          expect(ship.speed).toBeGreaterThan(prevSpeed);
-          prevSpeed = ship.speed;
-        }
-        ship.update();
-        expect(ship.speed).toBe(0);
-      });
-      it('does not allow speeds lower than -max speed', () => {
-        for (let i = 1; i < 10; i++) {
-          let ship = new Ship();
-          ship.decelerate(20 * i);
-          ship.update(ship['DEC_SPRINTS'] * 20 * i);
-          expect(ship.speed).toBeGreaterThan(-ship.MAX_SPEED);
-        }
-      });
-    });
-    it('updates bullets', () => {
-      let ship = new Ship();
-      let mock = vi.fn();
-      ship.fire();
-      ship.bullets[0].update = mock;
-      ship.update();
-      expect(mock).toHaveBeenCalledTimes(1);
-    });
     it('removes expired bullets', () => {
-      let ship = new Ship();
-      ship.fire();
-      ship.bullets[0].isExpired = true;
-      ship.update();
+      let ship = makeShip();
+      ship.fire(Temperature.Normal);
+      ship.bullets[0]['expiresAt'] = Date.now() - 1;
+      ship.update(Temperature.Normal);
       expect(ship.bullets).toHaveLength(0);
-    });
-    it('consumes fuel only while moving', () => {
-      let ship = new Ship();
-      ship.update(5);
-      expect(ship.fuel).toBe(1);
-      ship.accelerate();
-      ship.update(5);
-      expect(ship.fuel).toBeLessThan(1);
-    });
-  });
-  describe('use bonus', () => {
-    const collectAndUse = (ship: Ship, bonus: DropType) => {
-      ship.collectBonus(bonus);
-      ship.useBonus(bonus);
-    };
-    it('does not allow using missing bonus', () => {
-      let ship = new Ship();
-      ship.fuel = 0.3;
-      ship.useBonus('fuel');
-      expect(ship.fuel).toBe(0.3);
-    });
-    it('uses ammo to restore ammo', () => {
-      let ship = new Ship();
-      ship.ammo = 30;
-      collectAndUse(ship, 'ammo');
-      expect(ship.ammo).toBe(100);
-      expect(ship.cargo.ammo).toBe(0);
-    });
-    it('does not allow using ammo at full ammo', () => {
-      let ship = new Ship();
-      collectAndUse(ship, 'ammo');
-      expect(ship.cargo.ammo).toBe(1);
-    });
-    it('uses fix to restore life', () => {
-      let ship = new Ship();
-      ship.life = 0.3;
-      collectAndUse(ship, 'fix');
-      expect(ship.life).toBe(1);
-      expect(ship.cargo.fix).toBe(0);
-    });
-    it('does not allow using fix at full life', () => {
-      let ship = new Ship();
-      collectAndUse(ship, 'fix');
-      expect(ship.cargo.fix).toBe(1);
-    });
-    it('uses fuel to restore fuel', () => {
-      let ship = new Ship();
-      ship.fuel = 0.3;
-      collectAndUse(ship, 'fuel');
-      expect(ship.fuel).toBe(1);
-      expect(ship.cargo.fuel).toBe(0);
-    });
-    it('does not allow using fuel at full fuel', () => {
-      let ship = new Ship();
-      collectAndUse(ship, 'fuel');
-      expect(ship.cargo.fuel).toBe(1);
-    });
-  });
-  describe('collect bonus', () => {
-    it(`stores bonuses in cargo`, () => {
-      let ship = new Ship();
-      droppable.forEach((drop) => {
-        ship.collectBonus(drop);
-        expect(ship.cargo[drop]).toBe(1);
-      });
     });
   });
 });

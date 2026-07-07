@@ -1,4 +1,4 @@
-import { Point } from '../lib/geometry';
+import { Point } from 'types';
 
 const world = {
   width: 2000,

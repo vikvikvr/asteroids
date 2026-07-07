@@ -1,13 +1,16 @@
-import { makeBullet } from '../../utils/test-utils';
 import GameEngine from '../GameEngine';
 import Ship from '../Ship';
+import Bullet from '../Bullet';
 import * as ev from '../Events';
-import { AsteroidSize, damages } from '../Asteroid';
-import Drop from '../Drop';
+import { AsteroidSize } from 'types';
 
 const world = { height: 10000, width: 10000 };
-var engine: GameEngine;
-var mock = vi.fn();
+let engine: GameEngine;
+let mock = vi.fn();
+
+function makeBullet(coords = { x: 0, y: 0 }) {
+  return new Bullet({ world, coords, direction: 0, speed: 10 });
+}
 
 beforeEach(() => {
   engine = new GameEngine(world);
@@ -21,121 +24,104 @@ describe('gameEngine', () => {
     });
   });
   describe('update', () => {
+    beforeEach(() => {
+      engine.status = 'playing';
+    });
     it('updates ship', () => {
       engine.state.ship.update = mock;
-      engine['update']();
+      engine.update();
       expect(mock).toHaveBeenCalledTimes(1);
     });
     it('updates asteroids', () => {
-      engine['spawner'].spawnAsteroid({});
+      engine.spawner.spawnAsteroid({ size: AsteroidSize.Large });
       engine.state.asteroids[0].update = mock;
-      engine['update']();
+      engine.update();
       expect(mock).toHaveBeenCalledTimes(1);
     });
     it('checks collisions', () => {
       engine['checkCollisions'] = mock;
-      engine['update']();
+      engine.update();
       expect(mock).toHaveBeenCalledTimes(1);
+    });
+    it('does nothing when not playing', () => {
+      engine.status = 'idle';
+      engine.state.ship.update = mock;
+      engine.update();
+      expect(mock).not.toHaveBeenCalled();
     });
   });
   describe('detects collisions', () => {
     it('asteroid vs bullet', () => {
       let { ship, asteroids, events } = engine.state;
-      engine['spawner'].spawnAsteroid();
-      ship.bullets.push(makeBullet(world, asteroids[0].coords));
+      engine.spawner.spawnAsteroid({ size: AsteroidSize.Large });
+      ship.bullets.push(makeBullet(asteroids[0].coords));
       engine['checkCollisions']();
       expect(events[0]).toBeInstanceOf(ev.BulletHit);
     });
     it('asteroid vs ship', () => {
       let { ship, events } = engine.state;
-      engine['spawner'].spawnAsteroid({ size: 'large', coords: ship.coords });
+      engine.spawner.spawnAsteroid({
+        size: AsteroidSize.Large,
+        coords: ship.coords
+      });
       engine['checkCollisions']();
       expect(events[0]).toBeInstanceOf(ev.ShipHit);
     });
-    it('ship vs bonus', () => {
-      let { bonuses, events, ship } = engine.state;
-      bonuses.push(new Drop({ type: 'fix', coords: ship.coords }));
+  });
+  describe('process bullet hit', () => {
+    function spawnAndHit(size: AsteroidSize) {
+      let { ship, asteroids } = engine.state;
+      engine.spawner.spawnAsteroid({ size });
+      let asteroid = asteroids[0];
+      let bullet = makeBullet(asteroid.coords);
+      ship.bullets.push(bullet);
+      return { asteroidId: asteroid.id, bulletId: bullet.id };
+    }
+    it('splits large asteroids', () => {
+      spawnAndHit(AsteroidSize.Large);
       engine['checkCollisions']();
-      expect(events[0]).toBeInstanceOf(ev.GotBonus);
+      let sizes = engine.state.asteroids.map((a) => a.size);
+      expect(sizes.filter((s) => s === AsteroidSize.Large).length).toBe(0);
+      expect(sizes.filter((s) => s === AsteroidSize.Medium).length).toBe(2);
+    });
+    it('splits medium asteroids', () => {
+      spawnAndHit(AsteroidSize.Medium);
+      engine['checkCollisions']();
+      let sizes = engine.state.asteroids.map((a) => a.size);
+      expect(sizes.filter((s) => s === AsteroidSize.Medium).length).toBe(0);
+      expect(sizes.filter((s) => s === AsteroidSize.Small).length).toBe(2);
+    });
+    it('does not split small asteroids', () => {
+      spawnAndHit(AsteroidSize.Small);
+      engine['checkCollisions']();
+      expect(engine.state.asteroids.length).toBe(0);
+    });
+    it('removes original asteroid and bullet', () => {
+      let { ship } = engine.state;
+      let { asteroidId, bulletId } = spawnAndHit(AsteroidSize.Large);
+      engine['checkCollisions']();
+      expect(
+        engine.state.asteroids.find((a) => a.id === asteroidId)
+      ).toBeUndefined();
+      expect(ship.bullets.find((b) => b.id === bulletId)).toBeUndefined();
+    });
+    it('adds to the score', () => {
+      spawnAndHit(AsteroidSize.Large);
+      engine['checkCollisions']();
+      expect(engine.state.score).toBeGreaterThan(0);
     });
   });
-  describe('process events', () => {
-    describe('bullet hit', () => {
-      function spawnAndHit(size: AsteroidSize) {
-        let { ship } = engine.state;
-        let asteroid = engine['spawner'].spawnAsteroid({ size })[0];
-        let bullet = makeBullet(world, asteroid.coords);
-        ship.bullets.push(bullet);
-        return { asteroidId: asteroid.id, bulletId: bullet.id };
-      }
-      it('splits large asteroids', () => {
-        spawnAndHit('large');
-        engine['checkCollisions']();
-        expect(engine['countAsteroids']('large')).toBe(0);
-        expect(engine['countAsteroids']('medium')).toBe(2);
+  describe('process ship hit', () => {
+    it('damages ship based on asteroid size and removes it', () => {
+      let { ship, asteroids } = engine.state;
+      engine.spawner.spawnAsteroid({
+        size: AsteroidSize.Large,
+        coords: ship.coords
       });
-      it('splits medium asteroids', () => {
-        spawnAndHit('medium');
-        engine['checkCollisions']();
-        expect(engine['countAsteroids']('medium')).toBe(0);
-        expect(engine['countAsteroids']('small')).toBe(2);
-      });
-      it('does not split small asteroids', () => {
-        let { asteroids } = engine.state;
-        spawnAndHit('small');
-        engine['checkCollisions']();
-        expect(asteroids.length).toBe(0);
-      });
-      it('removes original asteroid and bullet', () => {
-        let { ship } = engine.state;
-        let { asteroidId, bulletId } = spawnAndHit('large');
-        engine['checkCollisions']();
-        expect(engine['hasAsteroid'](asteroidId)).toBe(false);
-        expect(ship['hasBullet'](bulletId)).toBe(false);
-      });
-    });
-    describe('ship hit', () => {
-      describe('damages ship based on asteroid size', () => {
-        const sizes: AsteroidSize[] = ['large', 'medium', 'small'];
-        sizes.forEach((size) => {
-          it(`${size}`, () => {
-            let { ship, events } = engine.state;
-            let { id, damage, coords } = engine['spawner'].spawnAsteroid({
-              size
-            })[0];
-            events.push(new ev.ShipHit(id, damage, coords));
-            engine['checkCollisions']();
-            expect(ship.life).toBe(1 - damages[size]);
-          });
-        });
-      });
-      it('removes asteroid and damages ship', () => {
-        let { events, asteroids } = engine.state;
-        let { id, damage, coords } = engine['spawner'].spawnAsteroid()[0];
-        events.push(new ev.ShipHit(id, damage, coords));
-        engine['checkCollisions']();
-        expect(asteroids.length).toBe(0);
-      });
-    });
-    describe('got bonus', () => {
-      beforeEach(() => {
-        let { bonuses, events } = engine.state;
-        let bonus = new Drop({ type: 'fix' });
-        bonuses.push(bonus);
-        events.push(new ev.GotBonus(bonus.id, bonus.dropType, bonus.coords));
-      });
-      it('gives bonus type to ship', () => {
-        engine.state.ship.collectBonus = mock;
-        engine['checkCollisions']();
-        expect(mock).toHaveBeenLastCalledWith('fix');
-      });
-    });
-    it('removes all events after', () => {
-      engine.state.events.push(
-        new ev.BulletHit('first-id', 'second-id', { x: 0, y: 0 })
-      );
+      let damage = asteroids[0].damage;
       engine['checkCollisions']();
-      expect(engine.state.events.length).toBe(0);
+      expect(ship.life).toBeCloseTo(1 - damage);
+      expect(asteroids.length).toBe(0);
     });
   });
 });

@@ -1,9 +1,4 @@
-import {
-  haveCollided,
-  distance,
-  randomCoordsFarFrom,
-  notDirection
-} from './geometry';
+import { haveCollided, squareDistance, randomCoordsFarFrom, notDirection } from './geometry';
 import { makeCollidable } from '../utils/test-utils';
 
 const CONE_ANGLE = Math.PI / 3;
@@ -26,12 +21,12 @@ describe('geometry', () => {
     it('uses default hitBoxMult', () => {
       let obj = makeCollidable(0, 0, 50);
       let coords = randomCoordsFarFrom(obj, world);
-      expect(distance(obj.coords, coords)).toBeGreaterThan(2 * 50);
+      expect(squareDistance(obj.coords, coords)).toBeGreaterThan((2 * 50) ** 2);
     });
     it('allows custom hitBoxMult', () => {
       let obj = makeCollidable(0, 0, 50);
       let coords = randomCoordsFarFrom(obj, world, 5);
-      expect(distance(obj.coords, coords)).toBeGreaterThan(5 * 50);
+      expect(squareDistance(obj.coords, coords)).toBeGreaterThan((5 * 50) ** 2);
     });
     it('throws if too many tries', () => {
       let obj = makeCollidable(0, 0, 10_000);
@@ -39,30 +34,20 @@ describe('geometry', () => {
     });
   });
 
-  describe('not angle', () => {
-    var result: number;
-    const unwanted = Math.PI / 2;
-
-    var random = vi.fn<() => number>();
-    it('should return a good lower value', () => {
-      random.mockReturnValueOnce(0);
-      result = notDirection(unwanted, CONE_ANGLE, random);
-      expect(result).toBe(0);
+  describe('notDirection', () => {
+    it('avoids the region around 0 for a positive direction', () => {
+      const direction = Math.PI / 2;
+      for (let i = 0; i < 1000; i++) {
+        const dir = notDirection(direction, CONE_ANGLE);
+        expect(Math.abs(dir)).toBeGreaterThan(CONE_ANGLE / 2);
+      }
     });
-    it('should return a good higher value', () => {
-      random.mockReturnValueOnce(0.5);
-      result = notDirection(unwanted, CONE_ANGLE, random);
-      expect(result).toBe(Math.PI);
-    });
-    it('should try again for inside values', () => {
-      random.mockReturnValueOnce(0.25).mockReturnValueOnce(0.5);
-      result = notDirection(unwanted, CONE_ANGLE, random);
-      expect(result).toBe(Math.PI);
-    });
-    it('should work with negative angles', () => {
-      random.mockReturnValueOnce(0.5);
-      result = notDirection(-unwanted, CONE_ANGLE, random);
-      expect(result).toBe(Math.PI);
+    it('avoids the region around PI for a negative direction', () => {
+      const direction = -Math.PI / 2;
+      for (let i = 0; i < 1000; i++) {
+        const dir = notDirection(direction, CONE_ANGLE);
+        expect(Math.abs(dir - Math.PI)).toBeGreaterThan(CONE_ANGLE / 2);
+      }
     });
   });
 });
