@@ -119,33 +119,31 @@ function tryPuttingValueInsideRange(
   return value;
 }
 
-function mostVisibleCoords(
-  screenCoords: Point,
-  world: Rect,
-  screen: Rect
-): Point {
+function mostVisibleCoords(screenCoords: Point, world: Rect, screen: Rect): Point {
   const overlap = 100;
-  const bestX = tryPuttingValueInsideRange(
+  screenCoords.x = tryPuttingValueInsideRange(
     screenCoords.x,
     world.width,
     screen.width + overlap,
     -overlap
   );
-  const bestY = tryPuttingValueInsideRange(
+  screenCoords.y = tryPuttingValueInsideRange(
     screenCoords.y,
     world.height,
     screen.height + overlap,
     -overlap
   );
-
-  return { x: bestX, y: bestY };
+  return screenCoords;
 }
 
 function isBetween(value: number, max: number, min: number): boolean {
   return value >= min && value <= max;
 }
 
+const drawableCoordsScratch: Point = { x: 0, y: 0 };
+
 // assuming origin is always drawn in the middle of the screen
+// mutates and returns a shared scratch point - copy it if you need to retain the value
 export function drawableCoords(
   object: Point,
   origin: Point,
@@ -154,10 +152,10 @@ export function drawableCoords(
 ): Point | null {
   const deltaX = object.x - origin.x;
   const deltaY = object.y - origin.y;
-  const screenX = screen.width / 2 + deltaX;
-  const screenY = screen.height / 2 + deltaY;
-  const screenCoords = { x: screenX, y: screenY };
-  const result = mostVisibleCoords(screenCoords, world, screen);
+  const result = drawableCoordsScratch;
+  result.x = screen.width / 2 + deltaX;
+  result.y = screen.height / 2 + deltaY;
+  mostVisibleCoords(result, world, screen);
   const overlap = 100;
   if (!isBetween(result.x, screen.width + overlap, -overlap)) return null;
   if (!isBetween(result.y, screen.height + overlap, -overlap)) return null;
