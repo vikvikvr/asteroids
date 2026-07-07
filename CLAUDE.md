@@ -58,3 +58,4 @@ All interfaces, enums, and type aliases are centralized under `src/types` and re
 ## Guidelines
 
 - when modifying graphic/GUI elements, ask the user for feedback by attaching screenshots, do NOT use playwright to check the screen yourself
+- [`.claude/docs/game-rules.md`](.claude/docs/game-rules.md) documents the game rules (ship/asteroid/bullet/shard behavior, scoring, level/weather progression) derived from `src/core` and `src/lib/geometry.ts`. Whenever a change touches gameplay logic in those areas, update that doc to match.
